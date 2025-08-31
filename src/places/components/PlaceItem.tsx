@@ -12,7 +12,7 @@ type PlaceItemProps = {
 export const PlaceItem = ({ place }: PlaceItemProps) => {
     return (
         <Link to={`/places/${place.id}`}>
-            <div className='my-4 rounded-md bg-primary/10 p-4 flex flex-col gap-2'>
+            <div className='rounded-md py-4 flex flex-col gap-2'>
                 <div className='flex gap-2 relative items-center -mt-1'>
                     <span className='absolute -top-2 right-0'>{place.distance}</span>
                     <img src={place.imageUrl} className='w-12 h-12 rounded-full' />
@@ -24,7 +24,7 @@ export const PlaceItem = ({ place }: PlaceItemProps) => {
                 </div>
                 <div className='flex gap-2'>
                     <PlaceStatus status={place.status} />
-                    {place.tags.map((tag: string) => (<Tag name={tag} />))}
+                    {place.tags.map((tag: string) => (<Tag key={`place-${place.id}-tag-${tag}`} name={tag} />))}
                 </div>
                 <p>{place.description}</p>
             </div>

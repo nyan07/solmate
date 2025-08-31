@@ -11,6 +11,7 @@ export default {
         neutral: {
           lightest: '#FCFBF5',
           light: '#f2eacfff',
+          DEFAULT: 'gray',
           dark: '#0d0a1aff'
         },
         accent: {

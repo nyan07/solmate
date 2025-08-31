@@ -67,8 +67,8 @@ const placeholder: Place[] = [
 
 function PlacesList() {
     return (
-        <SwipeUp>
-            <ul className='w-full p-4'>
+        <SwipeUp title="Sunny places near you">
+            <ul className='w-full divide-y divide-primary/50'>
                 {placeholder.map((item) => (
                     <li key={`place-${item.id}`}>
                         <PlaceItem place={item} />

@@ -9,5 +9,7 @@ const PLACE_STATUS_CSS = {
 
 export const PlaceStatus = ({ status }: { status: PlaceStatuses }) => {
     const classNameSuffix = PLACE_STATUS_CSS[status];
-    return (<Tag className={`text-${classNameSuffix} border-${classNameSuffix}`} name={status} />);
+    const className = `text-${classNameSuffix} border-${classNameSuffix}`;
+
+    return (<Tag className={className} name={status} />);
 }

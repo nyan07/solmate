@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { motion, useDragControls, useMotionValue, useSpring } from "framer-motion";
+import { motion, useDragControls, useMotionValue } from "framer-motion";
+import { XMarkIcon } from '@heroicons/react/24/solid';
+import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/solid'
+import { useNavigate } from "react-router-dom";
 
 type SwipeUpProps = {
     children: React.ReactNode;
@@ -14,6 +17,7 @@ type SwipeUpProps = {
     open?: boolean;
     /** Called when user finishes swipe to snap to a point */
     onSnap?: (snapIndex: number) => void;
+    title?: string;
 };
 
 export default function SwipeUp({
@@ -22,14 +26,15 @@ export default function SwipeUp({
     defaultOpen = true,
     onOpenChange,
     open,
+    title = "",
 }: SwipeUpProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const translateY = useMotionValue(0);
-    //const springY = useSpring(translateY, { stiffness: 400, damping: 40 });
     const vh = typeof window !== "undefined" ? window.innerHeight : 800;
     const defaultHeight = Math.round(vh * openHeight);
-    const closedTranslate = defaultHeight + 20;
-    const controls = useDragControls()
+    const closedTranslate = defaultHeight - 74;
+    const controls = useDragControls();
+    const navigate = useNavigate();
 
     // Sync controlled mode
     useEffect(() => {
@@ -67,24 +72,20 @@ export default function SwipeUp({
             drag="y"
             dragConstraints={{ top: 0, bottom: closedTranslate }}
             dragControls={controls}
-            style={{ touchAction: "none" }}
+            style={{ height: `${defaultHeight}px` }}
             onDragEnd={handleDragEnd}
-            className={`fixed left-0 right-0 bottom-0 z-40 flex justify-center`}
+            className={`fixed left-0 right-0 bottom-0 z-40 flex flex-col justify-center bg-neutral-lightest rounded-t-2xl w-full shadow-2xl py-2`}
             initial={{ y: defaultOpen ? 0 : closedTranslate }}
         >
-            <div
-                className="w-full rounded-t-2xl shadow-2xl py-6 bg-neutral-lightest"
-                style={{
-                    maxHeight: `${defaultHeight}px`,
-                    overflow: "hidden auto",
-                    boxSizing: "border-box",
-                }}
-            >
-                <div className="flex justify-center mb-3">
-                    <div className="w-12 h-1.5 rounded-full bg-primary/50" style={{ touchAction: "none" }} onPointerDown={event => controls.start(event)} />
-                </div>
-                <div className="h-full overflow-auto">{children}</div>
+            <div className="flex justify-center w-full" style={{ touchAction: "none" }} onPointerDown={event => controls.start(event)}>
+                <div className="w-12 h-1.5 rounded-full bg-primary/50" />
             </div>
+            <div className="w-full p-4 px-6 border-b border-primary/50 flex gap-2">
+                <h2 className="grow text-xl text-primary">{title}</h2>
+                <AdjustmentsHorizontalIcon className="text-primary h-8 w-8 rounded-full p-1 bg-primary/20" />
+                <XMarkIcon className="text-primary h-8 w-8 rounded-full p-1 bg-primary/20" onClick={() => navigate('/')} />
+            </div>
+            <div className="h-full overflow-y-scroll p-6">{children}</div>
         </motion.div >
     );
 }
