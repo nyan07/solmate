@@ -1,0 +1,1 @@
+export type PlaceStatuses = 'open now' | 'closed' | 'closing soon';

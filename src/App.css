@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@config '../tailwind.config.js';
+
+#root {
+  margin: 0 auto;
+}

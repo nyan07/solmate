@@ -1,0 +1,1 @@
+export type PlaceTypes = 'bar' | 'cafe' | 'restaurant';
