@@ -7,15 +7,19 @@ const containerStyle = {
   height: '100vh',
 }
 
-// Centro de Berlim
-const center = {
+type LatLng = {
+  lat: number,
+  lng: number
+}
+
+const center: LatLng = {
   lat: 52.5200,
   lng: 13.4050,
 }
 
-function generateRandomPins(center, count: number, radius = 0.005) {
+function generateRandomPins(center: LatLng, count: number, radius = 0.005) {
   return Array.from({ length: count }, () => ({
-    lat: center.lat + Math.random() * radius * 3, 
+    lat: center.lat + Math.random() * radius * 3,
     lng: center.lng + (Math.random() - 0.5) * radius * 2,
   }))
 }
@@ -30,23 +34,11 @@ function Mappr() {
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   })
 
-  const [map, setMap] = React.useState(null)
-
-  const onLoad = React.useCallback(function callback(map) {
-    setMap(map)
-  }, [])
-
-  const onUnmount = React.useCallback(function callback(map) {
-    setMap(null)
-  }, [])
-
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={center}
       zoom={14}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
       options={{
         streetViewControl: false,
         mapTypeControl: false,
