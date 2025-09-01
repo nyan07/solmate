@@ -1,43 +1,28 @@
 import React from 'react'
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 import { useNavigate } from 'react-router-dom'
+import { useGeolocation } from './hooks/useGeolocation'
+import { useNearbyPlaces } from './places/hooks/useNearbyPlaces'
 
 const containerStyle = {
   width: '100vw',
   height: '100vh',
 }
 
-type LatLng = {
-  lat: number,
-  lng: number
-}
-
-const center: LatLng = {
-  lat: 52.5200,
-  lng: 13.4050,
-}
-
-function generateRandomPins(center: LatLng, count: number, radius = 0.005) {
-  return Array.from({ length: count }, () => ({
-    lat: center.lat + Math.random() * radius * 3,
-    lng: center.lng + (Math.random() - 0.5) * radius * 2,
-  }))
-}
-
-const pins = generateRandomPins(center, 6)
-
 function Mappr() {
   const navigate = useNavigate();
+  const { location } = useGeolocation();
+  const { data: places } = useNearbyPlaces(location);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-  })
+  });
 
-  return isLoaded ? (
+  return isLoaded && places && location ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
+      center={new google.maps.LatLng(location.lat, location.lng)}
       zoom={14}
       options={{
         streetViewControl: false,
@@ -46,8 +31,8 @@ function Mappr() {
         zoomControl: false,
       }}
     >
-      {pins.map((pin, index) => (
-        <Marker key={index} position={pin} onClick={() => navigate('/places/1')} />
+      {places.map((place) => (
+        <Marker key={place.id} position={place.location} onClick={() => navigate('/places/1')} />
       ))}
     </GoogleMap>
   ) : (
