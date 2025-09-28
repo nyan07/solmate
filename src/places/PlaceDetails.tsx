@@ -45,13 +45,13 @@ function PlaceDetails() {
                     <span className="flex gap-1 my-4"><StarIcon className="w-6 h-6 text-amber-300" />4,5</span>
                 </div>
 
-                <p>Best time to catch up the sun here today:</p>
+                <p>Best time to catch the sun here today:</p>
                 <DaylightBar startTime="10:45" endTime="16:15" />
 
                 <div className="flex w-full gap-2 mt-8 ">
                     <Button className="grow">Navigate</Button>
                     <Button className="grow">Streetview</Button>
-                    <Button className="grow">Book a place</Button>
+                    <Button className="grow">Book a table</Button>
                 </div>
             </div>
         </SwipeUp>

@@ -16,8 +16,8 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
             <div className='rounded-md py-4 flex flex-col gap-2'>
                 <div className='flex gap-2 relative items-center -mt-1'>
                     <span className='absolute -top-2 right-0'>{distance}</span>
-                    <img src="https://www.tastingtable.com/img/gallery/the-20-best-coffee-shops-in-la-ranked/goodboybob-1685443920.webp" className='w-12 h-12 rounded-full' />
-                    <h4 className='text-neutral-dark grow-1 text-2xl flex'>
+                    <img src={place.imageUrl || "/image.png"} className='w-12 h-12 rounded-full bg-gray-300' />
+                    <h4 className='text-neutral-dark grow-1 text-   l flex'>
                         <span className="pt-1">{place.displayName}</span>
                         <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
                     </h4>
@@ -25,8 +25,8 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
                 </div>
                 <div className='flex gap-2'>
                     <PlaceStatus status="open now" />
-                    <Tag name="Terrace" />
-                    {/* {place.tags.map((tag: string) => (<Tag key={`place-${place.id}-tag-${tag}`} name={tag} />))} */}
+                    {place.hasOutdoorSeating && <Tag name="Terrace" />}
+                    {/* \{place.tags.map((tag: string) => (<Tag key={`place-${place.id}-tag-${tag}`} name={tag} />))} */}
                 </div>
                 <p>{place.editorialSummary}</p>
             </div>

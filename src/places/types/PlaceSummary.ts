@@ -7,5 +7,22 @@ export type PlaceSummary = {
     primaryType: PlaceTypes,
     editorialSummary: string,
     //regularOpeningHours: any,
-    location: LatLng
+    location: LatLng,
+    hasOutdoorSeating: boolean,
+    imageUrl: string,
+    regularOpeningHours: {
+        periods: OpeningHoursPeriod[],
+        weekdayDescriptions: string[]
+    }
+}
+
+type OpeningHoursPeriod = {
+    close: OpeningHoursPoint
+    open: OpeningHoursPoint
+}
+
+type OpeningHoursPoint = {
+    day: number,
+    hour: number,
+    minute: number
 }
