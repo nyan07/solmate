@@ -31,7 +31,6 @@ export default function SwipeUp({
     const defaultHeight = Math.round(vh * openHeight);
     const closedTranslate = defaultHeight - 74;
     const controls = useDragControls();
-    const navigate = useNavigate();
 
     // Sync controlled mode
     useEffect(() => {
