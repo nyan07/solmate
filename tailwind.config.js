@@ -9,7 +9,7 @@ export default {
           DEFAULT: '#909cc2ff',
         },
         neutral: {
-          lightest: '#FCFBF5',
+          lightest: '#fff',
           light: '#f2eacfff',
           DEFAULT: 'gray',
           dark: '#0d0a1aff'
