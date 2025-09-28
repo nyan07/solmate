@@ -13,15 +13,23 @@ function App() {
       {/* <header className="bg-neutral-light p-4 flex fixed w-full top-0 left-0 right-0 h-16 shadow-lg z-100">
         <h1 className='text-primary font-bold grow text-center text-lg'>SolMate</h1>
       </header> */}
-      <Mappr />
 
+
+
+      <Mappr />
       <Suspense fallback={<div>Loading...</div>}>
+
         <Routes>
           <Route path="/" element={<Navigate to="/places" replace />} />
           <Route path="/places" element={<PlacesList />} />
           <Route path="/places/:placeId" element={<PlaceDetails />} />
         </Routes>
+
       </Suspense>
+      <div className='fixed bottom-0 h-16 p-2 bg-neutral-lightest w-full z-50'>
+        <img src="/arkie.png" className='max-h-10 m-auto' />
+      </div>
+
     </>
   )
 }

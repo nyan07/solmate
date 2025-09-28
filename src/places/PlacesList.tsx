@@ -9,8 +9,8 @@ function PlacesList() {
     const { data: places } = useNearbyPlaces(location);
 
     return (
-        <SwipeUp title="Sunny places near you">
-            <ul className='w-full divide-y divide-primary/50'>
+        <SwipeUp>
+            <ul className='w-full gap-2 flex flex-col'>
                 {places && location && places.map((place) => (
                     <li key={`place-${place.id}`}>
                         <PlaceItem place={place} distance={calculateDistance(location, place.location)} />

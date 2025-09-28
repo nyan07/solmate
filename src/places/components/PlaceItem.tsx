@@ -16,7 +16,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
 
     return (
         <Link to={`/places/${place.id}`}>
-            <div className='rounded-md py-4 flex flex-col gap-2'>
+            <div className='rounded-lg p-4 flex flex-col gap-2 bg-primary/20'>
                 <div className='flex gap-2 relative items-center -mt-1'>
                     <span className='absolute -top-2 right-0'>{distance}</span>
                     <img src={place.imageUrl || "/image.png"} className='w-12 h-12 rounded-full bg-gray-300' />

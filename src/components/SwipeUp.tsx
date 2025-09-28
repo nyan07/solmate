@@ -74,18 +74,17 @@ export default function SwipeUp({
             dragControls={controls}
             style={{ height: `${defaultHeight}px` }}
             onDragEnd={handleDragEnd}
-            className={`fixed left-0 right-0 bottom-0 z-40 flex flex-col justify-center bg-neutral-lightest rounded-t-2xl w-full shadow-2xl py-2`}
+            className={`fixed left-0 right-0 bottom-16 z-40 flex flex-col justify-center bg-neutral-lightest rounded-t-2xl w-full shadow-2xl py-2`}
             initial={{ y: defaultOpen ? 0 : closedTranslate }}
         >
             <div className="flex justify-center w-full" style={{ touchAction: "none" }} onPointerDown={event => controls.start(event)}>
                 <div className="w-12 h-1.5 rounded-full bg-primary/50" />
             </div>
-            <div className="w-full p-4 px-6 border-b border-primary/50 flex gap-2">
-                <h2 className="grow text-xl text-primary">{title}</h2>
-                <AdjustmentsHorizontalIcon className="text-primary h-8 w-8 rounded-full p-1 bg-primary/20" />
-                <XMarkIcon className="text-primary h-8 w-8 rounded-full p-1 bg-primary/20" onClick={() => navigate('/')} />
+            <div className="w-full p-1 border-b border-primary/20 flex gap-2">
+                {/* <AdjustmentsHorizontalIcon className="text-primary h-8 w-8 rounded-full p-1 bg-primary/20" />
+                <XMarkIcon className="text-primary h-8 w-8 rounded-full p-1 bg-primary/20" onClick={() => navigate('/')} /> */}
             </div>
-            <div className="h-full overflow-y-scroll p-6">{children}</div>
+            <div className="h-full overflow-y-scroll p-2">{children}</div>
         </motion.div >
     );
 }
