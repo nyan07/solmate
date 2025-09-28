@@ -10,7 +10,7 @@ function PlacesList() {
 
     return (
         <SwipeUp>
-            <ul className='w-full gap-2 flex flex-col'>
+            <ul className='w-full gap-2 flex flex-col px-2 py-2'>
                 {places && location && places.map((place) => (
                     <li key={`place-${place.id}`}>
                         <PlaceItem place={place} distance={calculateDistance(location, place.location)} />
