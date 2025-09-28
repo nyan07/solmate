@@ -6,16 +6,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#909cc2ff',
+          DEFAULT: '#FF5958',
         },
         neutral: {
-          lightest: '#FCFBF5',
-          light: '#f2eacfff',
-          DEFAULT: 'gray',
-          dark: '#0d0a1aff'
+          lightest: '#fff',
+          light: '#fff',
+          DEFAULT: '000',
+          dark: '#000'
         },
         accent: {
-          DEFAULT: '#ff5959ff',
+          DEFAULT: '#FF5958',
         },
         success: "#798E36",
         warning: "#E4B21D",
