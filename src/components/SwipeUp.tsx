@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { motion, useDragControls, useMotionValue } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 
 type SwipeUpProps = {
     children: React.ReactNode;
