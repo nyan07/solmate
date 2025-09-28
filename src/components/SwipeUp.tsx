@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { motion, useDragControls, useMotionValue } from "framer-motion";
-import { XMarkIcon } from '@heroicons/react/24/solid';
-import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/solid'
 import { useNavigate } from "react-router-dom";
 
 type SwipeUpProps = {
@@ -26,7 +24,6 @@ export default function SwipeUp({
     defaultOpen = true,
     onOpenChange,
     open,
-    title = "",
 }: SwipeUpProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const translateY = useMotionValue(0);
