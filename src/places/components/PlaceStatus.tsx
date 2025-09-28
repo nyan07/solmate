@@ -2,8 +2,7 @@ import { Tag } from '../../components/Tag';
 import type { PlaceStatuses } from '../types/PlaceStatuses';
 
 const PLACE_STATUS_CSS = {
-    'open now': 'success',
-    'closing soon': 'warning',
+    'open': 'success',
     'closed': 'neutral'
 }
 

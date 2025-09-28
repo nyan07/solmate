@@ -16,12 +16,12 @@ export type PlaceSummary = {
     }
 }
 
-type OpeningHoursPeriod = {
+export type OpeningHoursPeriod = {
     close: OpeningHoursPoint
     open: OpeningHoursPoint
 }
 
-type OpeningHoursPoint = {
+export type OpeningHoursPoint = {
     day: number,
     hour: number,
     minute: number
