@@ -14,7 +14,7 @@ const place: Place =
     type: "cafe",
     tags: ["Terrace", "Allow Dogs"],
     distance: "300m",
-    status: 'open now',
+    status: 'open',
     description: "Casual café serving freshly brewed coffee, light breakfast options, and a selection of vegan pastries and sandwiches.",
     imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=300&auto=format&fit=crop",
 }
