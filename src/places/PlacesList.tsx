@@ -5,15 +5,15 @@ import { useNearbyPlaces } from "./hooks/useNearbyPlaces";
 import { calculateDistance } from "../utils/calculateDistance";
 
 function PlacesList() {
-    const { geoLocation } = useGeolocation();
-    const { data: places } = useNearbyPlaces(geoLocation);
+    const { geolocation } = useGeolocation();
+    const { data: places } = useNearbyPlaces(geolocation);
 
     return (
         <SwipeUp>
             <ul className='w-full gap-2 flex flex-col px-2 py-2'>
                 {places && location && places.map((place) => (
                     <li key={`place-${place.id}`}>
-                        <PlaceItem place={place} distance={geoLocation ? calculateDistance(geoLocation, place.location) : ""} />
+                        <PlaceItem place={place} distance={geolocation ? calculateDistance(geolocation, place.location) : ""} />
                     </li>
                 ))}
             </ul>
