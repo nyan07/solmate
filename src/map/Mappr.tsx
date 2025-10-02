@@ -18,10 +18,11 @@ import { Range } from "../components/Range";
 import { useMapCenter } from "./hooks/useMapCenter";
 import { useSunTimes } from "./hooks/useSunTimes";
 import { useSunDirection } from "./hooks/useSunDirection";
+import { roundToHalfHour } from "../utils/roundToHalfHour";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
-const CesiumMap: React.FC = () => {
+const Mappr: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
 
@@ -33,9 +34,10 @@ const CesiumMap: React.FC = () => {
   const mapCenter = useMapCenter(viewerRef.current);
   const sunTimes = useSunTimes(date, mapCenter);
 
+  const [showControls, setShowControls] = useState(false);
 
-  const sunriseHour = sunTimes ? sunTimes.sunrise.getHours() : 6;
-  const sunsetHour = sunTimes ? sunTimes.sunset.getHours() : 18;
+  const sunriseValue = sunTimes ? roundToHalfHour(sunTimes.sunrise, "up") : 6;
+  const sunsetValue = sunTimes ? roundToHalfHour(sunTimes.sunset, "down") : 18;
 
   const CAMERA_DISTANCE = 800;
 
@@ -72,7 +74,8 @@ const CesiumMap: React.FC = () => {
 
       viewerRef.current = viewer;
       viewer.scene.preRender.addEventListener(preRenderHandler);
-    }
+      viewer.scene.postRender.addEventListener(cameraDistanceHandler);
+    };
 
     const preRenderHandler = () => {
       if (geolocation && !viewerReady) {
@@ -86,14 +89,22 @@ const CesiumMap: React.FC = () => {
         });
         setViewerReady(true);
         viewer.scene.preRender.removeEventListener(preRenderHandler);
-      };
+      }
+    };
+
+    const cameraDistanceHandler = () => {
+      if (!viewer) return;
+      const carto = viewer.camera.positionCartographic;
+      const height = carto.height;
+      setShowControls(height <= CAMERA_DISTANCE + 10);
     };
 
     initViewer();
 
     return () => {
-      viewer.scene.preRender.removeEventListener(preRenderHandler);
-    }
+      viewer?.scene?.preRender.removeEventListener(preRenderHandler);
+      viewer?.scene?.postRender.removeEventListener(cameraDistanceHandler);
+    };
   }, [geolocation]);
 
   const sunData = useSunDirection(date, hour, geolocation);
@@ -101,7 +112,7 @@ const CesiumMap: React.FC = () => {
   useEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer || !viewerReady || !sunData) return;
-  
+
     if (!viewer.scene.light) {
       viewer.scene.light = new DirectionalLight({
         direction: sunData.direction,
@@ -110,31 +121,38 @@ const CesiumMap: React.FC = () => {
     } else {
       (viewer.scene.light as DirectionalLight).direction = sunData.direction;
     }
-  
+
     viewer.clock.currentTime = sunData.time;
   }, [sunData, viewerReady]);
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      {sunTimes && geolocation && (
-        <div className="p-6 absolute top-0 left-0 right-0 bg-neutral-lightest shadow-md rounded-b-xl z-50 flex flex-col gap-4 items-center">
+      <div
+        className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"
+          }`}
+      >
+        <div className="p-6 bg-neutral-lightest shadow-md rounded-b-xl flex flex-col gap-4 items-center">
           <div className="flex gap-4 items-center w-full">
             <DatePicker value={date} onChange={setDate} />
             <FiSunrise className="text-primary" />
             <Range
-              min={sunriseHour}
-              max={sunsetHour}
+              min={sunriseValue}
+              max={sunsetValue}
+              step={0.5}
               value={hour}
               onChange={(value) => setHour(value)}
             />
+
             <FiSunset className="text-primary" />
-            <span className="w-12 text-center py-2 rounded-xl bg-primary/20">{hour}h</span>
+            <span className="w-16 text-center py-2 rounded-xl bg-primary/20">
+              {Math.floor(hour)}:{hour % 1 === 0 ? "00" : "30"}
+            </span>
           </div>
         </div>
-      )}
+      </div>
       <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );
 };
 
-export default CesiumMap;
+export default Mappr;

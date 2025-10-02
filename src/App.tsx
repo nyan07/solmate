@@ -3,18 +3,13 @@ import './App.css'
 import { Navigate, Route, Routes } from 'react-router-dom';
 import PlacesList from './places/PlacesList';
 import PlaceDetails from './places/PlaceDetails';
-import CesiumMap from './map/CesiumMap';
+import Mappr from './map/Mappr';
 
 function App() {
   return (
-    // <div className='font-sans overflow-hidden text-neutral-dark'>
     <>
-      {/* <header className="bg-neutral-light p-4 flex fixed w-full top-0 left-0 right-0 h-16 shadow-lg z-100">
-        <h1 className='text-primary font-bold grow text-center text-lg'>SolMate</h1>
-      </header> */}
-
       <Suspense fallback={<div>Loading...</div>}>
-        <CesiumMap />
+        <Mappr />
         <Routes>
           <Route path="/" element={<Navigate to="/places" replace />} />
           <Route path="/places" element={<PlacesList />} />
