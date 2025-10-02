@@ -35,7 +35,6 @@ const useMapCenter = (viewer: Viewer | null) => {
         });
 
         return () => {
-            // cleanup
             handler();
         };
     }, [viewer]);

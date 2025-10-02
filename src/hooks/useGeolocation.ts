@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { LatLng } from "../types/LatLng";
 
 export const useGeolocation = ({ active = true }: { active?: boolean } = {}) => {
-  const [geoLocation, setGeoLocation] = useState<LatLng | null>(null);
+  const [geolocation, setGeoLocation] = useState<LatLng | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,5 +31,5 @@ export const useGeolocation = ({ active = true }: { active?: boolean } = {}) => 
     navigator.geolocation.getCurrentPosition(success, fail);
   }, [active]);
 
-  return { geoLocation, error, loading };
+  return { geolocation, error, loading };
 };

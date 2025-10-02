@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Viewer,
   IonImageryProvider,
@@ -7,36 +7,45 @@ import {
   Cartesian3,
   Color,
   DirectionalLight,
-  JulianDate,
   Ion
 } from "cesium";
-import SunCalc from "suncalc";
+
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { FiSunset, FiSunrise } from "react-icons/fi";
 import { DatePicker } from "../components/DatePicker";
 import { Range } from "../components/Range";
+import { useMapCenter } from "./hooks/useMapCenter";
+import { useSunTimes } from "./hooks/useSunTimes";
+import { useSunDirection } from "./hooks/useSunDirection";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
 const CesiumMap: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
-  const { geoLocation } = useGeolocation({ active: true });
 
+  const { geolocation } = useGeolocation();
   const [viewerReady, setViewerReady] = useState(false);
-  const [cameraCentered, setCameraCentered] = useState(false);
 
   const [date, setDate] = useState<Date>(new Date());
   const [hour, setHour] = useState<number>(new Date().getHours());
+  const mapCenter = useMapCenter(viewerRef.current);
+  const sunTimes = useSunTimes(date, mapCenter);
 
-  // Inicializa o Cesium Viewer
+
+  const sunriseHour = sunTimes ? sunTimes.sunrise.getHours() : 6;
+  const sunsetHour = sunTimes ? sunTimes.sunset.getHours() : 18;
+
+  const CAMERA_DISTANCE = 800;
+
   useEffect(() => {
-    if (!mapRef.current || viewerRef.current) return;
+    if (!geolocation && !viewerReady) return;
+    let viewer: Viewer;
 
     const initViewer = async () => {
       const terrain = await createWorldTerrainAsync();
-      const viewer = new Viewer(mapRef.current!, {
+      viewer = new Viewer(mapRef.current!, {
         terrainProvider: terrain,
         baseLayerPicker: false,
         timeline: false,
@@ -62,68 +71,52 @@ const CesiumMap: React.FC = () => {
       viewer.scene.globe.enableLighting = true;
 
       viewerRef.current = viewer;
+      viewer.scene.preRender.addEventListener(preRenderHandler);
+    }
 
-      // Espera o scene e os OSM Buildings estarem prontos
-      viewer.scene.preRender.addEventListener(function onPreRender() {
-        if (geoLocation && !cameraCentered) {
-          viewer.camera.setView({
-            destination: Cartesian3.fromDegrees(
-              geoLocation.lng,
-              geoLocation.lat,
-              800
-            ),
-          });
-          setCameraCentered(true);
-        }
-      });
-
-      setViewerReady(true);
+    const preRenderHandler = () => {
+      if (geolocation && !viewerReady) {
+        viewer.camera.flyTo({
+          destination: Cartesian3.fromDegrees(
+            geolocation.lng,
+            geolocation.lat,
+            CAMERA_DISTANCE
+          ),
+          duration: 2
+        });
+        setViewerReady(true);
+        viewer.scene.preRender.removeEventListener(preRenderHandler);
+      };
     };
 
     initViewer();
-  }, [geoLocation, cameraCentered]);
 
-  // Calcular nascer/pôr do sol
-  const sunTimes = useMemo(() => {
-    if (!geoLocation) return null;
-    return SunCalc.getTimes(date, geoLocation.lat, geoLocation.lng);
-  }, [geoLocation, date]);
+    return () => {
+      viewer.scene.preRender.removeEventListener(preRenderHandler);
+    }
+  }, [geolocation]);
 
-  const sunriseHour = sunTimes ? sunTimes.sunrise.getHours() : 6;
-  const sunsetHour = sunTimes ? sunTimes.sunset.getHours() : 18;
+  const sunData = useSunDirection(date, hour, geolocation);
 
-  // Atualiza a direção do Sol e sombras quando a hora muda
   useEffect(() => {
-    if (!viewerRef.current || !geoLocation) return;
     const viewer = viewerRef.current;
-
-    const current = new Date(date);
-    current.setHours(hour, 0, 0, 0);
-
-    const sunPos = SunCalc.getPosition(current, geoLocation.lat, geoLocation.lng);
-    const altitude = sunPos.altitude;
-    const azimuth = sunPos.azimuth;
-
-    const distance = 1_000_000;
-    const x = distance * Math.cos(altitude) * Math.sin(azimuth);
-    const y = distance * Math.cos(altitude) * Math.cos(azimuth);
-    const z = distance * Math.sin(altitude);
-
+    if (!viewer || !viewerReady || !sunData) return;
+  
     if (!viewer.scene.light) {
       viewer.scene.light = new DirectionalLight({
-        direction: new Cartesian3(x, y, z),
-        color: Color.WHITE
+        direction: sunData.direction,
+        color: Color.WHITE,
       });
     } else {
-      (viewer.scene.light as DirectionalLight).direction = new Cartesian3(x, y, z);
+      (viewer.scene.light as DirectionalLight).direction = sunData.direction;
     }
-
-    viewer.clock.currentTime = JulianDate.fromDate(current);
-  }, [hour, date, geoLocation]);
+  
+    viewer.clock.currentTime = sunData.time;
+  }, [sunData, viewerReady]);
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      {sunTimes && geoLocation && (
+      {sunTimes && geolocation && (
         <div className="p-6 absolute top-0 left-0 right-0 bg-neutral-lightest shadow-md rounded-b-xl z-50 flex flex-col gap-4 items-center">
           <div className="flex gap-4 items-center w-full">
             <DatePicker value={date} onChange={setDate} />
