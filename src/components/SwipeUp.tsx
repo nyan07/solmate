@@ -20,7 +20,7 @@ type SwipeUpProps = {
 export default function SwipeUp({
     children,
     openHeight = 0.6,
-    defaultOpen = true,
+    defaultOpen = false,
     onOpenChange,
     open,
 }: SwipeUpProps) {

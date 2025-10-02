@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import type { LatLng } from "../types/LatLng";
 
-export const useGeolocation = () => {
-  const [location, setLocation] = useState<LatLng | null>(null);
+export const useGeolocation = ({ active = true }: { active?: boolean } = {}) => {
+  const [geoLocation, setGeoLocation] = useState<LatLng | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+
+
   useEffect(() => {
+    if (!active) return;
+
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
       setLoading(false);
@@ -15,7 +19,7 @@ export const useGeolocation = () => {
 
     const success = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
-      setLocation({ lat: latitude, lng: longitude });
+      setGeoLocation({ lat: latitude, lng: longitude });
       setLoading(false);
     };
 
@@ -25,7 +29,7 @@ export const useGeolocation = () => {
     };
 
     navigator.geolocation.getCurrentPosition(success, fail);
-  }, []);
+  }, [active]);
 
-  return { location, error, loading };
+  return { geoLocation, error, loading };
 };

@@ -10,4 +10,7 @@ export default defineConfig({
     tailwindcss(),
     svgr()
   ],
+  define: {
+    CESIUM_BASE_URL: JSON.stringify('/Cesium'),
+  },
 })
