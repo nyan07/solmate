@@ -2,50 +2,38 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import type { LatLng } from "../../types/LatLng";
 import type { PlaceSummary } from "../types/PlaceSummary";
 
+export const fetchNearbyPlaces = async (
+    location: LatLng,
+    radius = 500
+): Promise<PlaceSummary[]> => {
+    try {
+        const res = await fetch("/api/places/nearby", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ latitude: location.lat, longitude: location.lng, radius }),
+        });
 
-const parsePlaceSummary = ({ location: { lat, lng }, displayName, regularOpeningHours, primaryType, editorialSummary, id, hasOutdoorSeating, photos }: any): PlaceSummary => {
-    const photo = photos[0];
-    const imageUrl = photo?.getURI({ maxHeight: 100, maxWIdth: 100 });
-    
-    return {
-        id,
-        displayName,
-        primaryType,
-        editorialSummary,
-        location: { lat: lat(), lng: lng() },
-        hasOutdoorSeating,
-        imageUrl,
-        regularOpeningHours
+        const data = await res.json();
+        if (!data.places) return [];
+
+        return data.places as PlaceSummary[];
+    } catch (err) {
+        console.error("fetchNearbyPlaces error:", err);
+        return [];
     }
-}
-
-const fetchNearbyPlaces = async (location: LatLng): Promise<PlaceSummary[]> => {
-    const placesLib = await google.maps.importLibrary("places") as any;
-    const { Place, SearchNearbyRankPreference } = placesLib;
-
-    const request: google.maps.places.SearchNearbyRequest = {
-        fields: ["id", "displayName", "primaryType", "editorialSummary", "location", "hasOutdoorSeating", "photos", "regularOpeningHours"],
-        locationRestriction: {
-            center: location,
-            radius: 500,
-        },
-        includedPrimaryTypes: ["restaurant", "cafe", "bar"],
-        maxResultCount: 20,
-        language: 'en-US',
-        rankPreference: SearchNearbyRankPreference.DISTANCE,
-    };
-
-    const { places } = await Place.searchNearby(request);
-    return places.map(parsePlaceSummary) ?? [];
 };
 
-export const useNearbyPlaces = (location: LatLng | null): UseQueryResult<PlaceSummary[]> => {
+
+
+export const useNearbyPlaces = (location: LatLng | null, {enabled }:{ enabled: boolean } = { enabled: true } ): UseQueryResult<PlaceSummary[]> => {
     return useQuery({
         queryKey: ["nearbyPlaces", location],
         queryFn: () =>
             location
                 ? fetchNearbyPlaces(location)
                 : Promise.resolve([]),
-        enabled: !!location,
+        enabled: !!location && enabled,
     });
 };

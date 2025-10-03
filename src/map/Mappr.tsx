@@ -19,6 +19,7 @@ import { useMapCenter } from "./hooks/useMapCenter";
 import { useSunTimes } from "./hooks/useSunTimes";
 import { useSunDirection } from "./hooks/useSunDirection";
 import { useUserLocationPos } from "./hooks/useUserLocationPos";
+import { useCameraDistance } from "./hooks/useCameraDistance";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
@@ -36,8 +37,17 @@ const Mappr: React.FC = () => {
 
   const { geolocation, error: geolocationError, loading: isGeolocationLoading } = useGeolocation();
   const mapCenter = useMapCenter(viewerRef.current);
+  const cameraDistance = useCameraDistance(viewerRef.current);
   const sunTimes = useSunTimes(date, mapCenter);
+
+  const sunData = useSunDirection(date, hour, geolocation);
   useUserLocationPos(viewerRef.current, geolocation, showControls);
+
+  useEffect(() => {
+    if (cameraDistance) {
+      setShowControls(cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10);
+    }
+  }, [cameraDistance]);
 
   // Inicialização do Viewer
   useEffect(() => {
@@ -73,7 +83,6 @@ const Mappr: React.FC = () => {
 
       viewerRef.current = viewer;
       viewer.scene.preRender.addEventListener(preRenderHandler);
-      viewer.scene.postRender.addEventListener(cameraDistanceHandler);
     };
 
     const preRenderHandler = () => {
@@ -92,24 +101,18 @@ const Mappr: React.FC = () => {
       }
     };
 
-    const cameraDistanceHandler = () => {
-      if (!viewer) return;
-      const carto = viewer.camera.positionCartographic;
-      const height = carto.height;
-      setShowControls(height <= DEFAULT_CAMERA_DISTANCE + 10);
-    };
 
     initViewer();
     if (!geolocationError) updateUserLocation();
 
     return () => {
       viewer?.scene?.preRender.removeEventListener(preRenderHandler);
-      viewer?.scene?.postRender.removeEventListener(cameraDistanceHandler);
     };
   }, [geolocation, geolocationError, isGeolocationLoading]);
 
   // Atualiza posição e luz do Sol
-  const sunData = useSunDirection(date, hour, geolocation);
+
+
   useEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer || !viewerReady || !sunData) return;
@@ -151,26 +154,6 @@ const Mappr: React.FC = () => {
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      {/* Controles com animação */}
-      {/* 
-      {screenPos && (
-        <div
-          style={{
-            position: "absolute",
-            left: screenPos.x,
-            top: screenPos.y,
-            transform: "translate(-50%, -50%)",
-            width: 12,
-            height: 12,
-            borderRadius: "50%",
-            backgroundColor: "blue",
-            border: "2px solid white",
-            pointerEvents: "none",
-            zIndex: 1000
-          }}
-        />
-      )} */}
-
       <div
         className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"
           }`}

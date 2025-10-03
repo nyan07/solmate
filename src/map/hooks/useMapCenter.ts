@@ -1,6 +1,7 @@
 import { Cartesian2, Cartographic, Math as CesiumMath, Viewer } from "cesium";
 import { useEffect, useState } from "react";
 import type { LatLng } from "../../types/LatLng";
+import { useMapContext } from "../MapContext";
 
 function getMapCenter(viewer: Viewer) {
     const scene = viewer.scene;
@@ -23,14 +24,15 @@ function getMapCenter(viewer: Viewer) {
 }
 
 const useMapCenter = (viewer: Viewer | null) => {
-    const [mapCenter, setMapCenter] = useState<LatLng | null>(null);
+    const { center, setCenter } = useMapContext();
+
     useEffect(() => {
         if (!viewer) return;
 
         const handler = viewer.camera.changed.addEventListener(() => {
             const center = getMapCenter(viewer);
             if (center) {
-                setMapCenter(center)
+                setCenter(center);
             }
         });
 
@@ -39,7 +41,7 @@ const useMapCenter = (viewer: Viewer | null) => {
         };
     }, [viewer]);
 
-    return mapCenter;
+    return center;
 }
 
 export { useMapCenter };
