@@ -107,9 +107,9 @@ const parsePlace = (place) => {
   return result;
 }
 
-export default async function handler(req) {
+export default async function POST(request) {
   try {
-    const body = await req.json(); // pega JSON do POST
+    const body = await request.json();
     const { latitude, longitude, radius = 500 } = body;
 
     if (!latitude || !longitude) {
@@ -132,8 +132,8 @@ export default async function handler(req) {
     ];
 
     const url = "https://places.googleapis.com/v1/places:searchNearby";
-    const origin = req.headers.get("origin") || "";
-    const host = req.headers.get("host") || "";
+    const origin = request.headers.get("origin") || "";
+    const host = request.headers.get("host") || "";
 
     const headers = {
       "Content-Type": "application/json",
@@ -178,13 +178,7 @@ export default async function handler(req) {
 
     console.log("Parsed places:", places.length);
 
-    return new Response(JSON.stringify(places), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    return new Response(JSON.stringify(places));
 
   } catch (err) {
     console.error("Error calling Places API:", err);
