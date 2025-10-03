@@ -1,6 +1,5 @@
 import { Cartesian2, Cartographic, Math as CesiumMath, Viewer } from "cesium";
-import { useEffect, useState } from "react";
-import type { LatLng } from "../../types/LatLng";
+import { useEffect } from "react";
 import { useMapContext } from "../MapContext";
 
 function getMapCenter(viewer: Viewer) {
