@@ -23,7 +23,8 @@ import { useUserLocationPos } from "./hooks/useUserLocationPos";
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
 const Mappr: React.FC = () => {
-  const DEFAULT_CAMERA_DISTANCE = 800;
+  const DEFAULT_CAMERA_DISTANCE = 700;
+  const FALLBACK_LOCATION = { lat: 52.5195605, lng: 13.3988917 } // Berlin
 
   const mapRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
@@ -33,14 +34,14 @@ const Mappr: React.FC = () => {
   const [viewerReady, setViewerReady] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
-  const { geolocation } = useGeolocation();
+  const { geolocation, error: geolocationError, loading: isGeolocationLoading } = useGeolocation();
   const mapCenter = useMapCenter(viewerRef.current);
   const sunTimes = useSunTimes(date, mapCenter);
   useUserLocationPos(viewerRef.current, geolocation, showControls);
 
   // Inicialização do Viewer
   useEffect(() => {
-    if (!geolocation && !viewerReady) return;
+    if (isGeolocationLoading && !viewerReady) return;
     let viewer: Viewer;
 
     const initViewer = async () => {
@@ -76,11 +77,12 @@ const Mappr: React.FC = () => {
     };
 
     const preRenderHandler = () => {
-      if (geolocation && !viewerReady) {
+      const initialPos = geolocation || FALLBACK_LOCATION;
+      if (!viewerReady) {
         viewer.camera.flyTo({
           destination: Cartesian3.fromDegrees(
-            geolocation.lng,
-            geolocation.lat,
+            initialPos.lng,
+            initialPos.lat,
             DEFAULT_CAMERA_DISTANCE
           ),
           duration: 2,
@@ -95,17 +97,16 @@ const Mappr: React.FC = () => {
       const carto = viewer.camera.positionCartographic;
       const height = carto.height;
       setShowControls(height <= DEFAULT_CAMERA_DISTANCE + 10);
-      // updateUserLocation();
     };
 
     initViewer();
-    updateUserLocation();
+    if (!geolocationError) updateUserLocation();
 
     return () => {
       viewer?.scene?.preRender.removeEventListener(preRenderHandler);
       viewer?.scene?.postRender.removeEventListener(cameraDistanceHandler);
     };
-  }, [geolocation]);
+  }, [geolocation, geolocationError, isGeolocationLoading]);
 
   // Atualiza posição e luz do Sol
   const sunData = useSunDirection(date, hour, geolocation);
