@@ -20,12 +20,13 @@ import { useSunTimes } from "./hooks/useSunTimes";
 import { useSunDirection } from "./hooks/useSunDirection";
 import { useUserLocationPos } from "./hooks/useUserLocationPos";
 import { useCameraDistance } from "./hooks/useCameraDistance";
+import type { LatLng } from "../types/LatLng";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
 const Mappr: React.FC = () => {
   const DEFAULT_CAMERA_DISTANCE = 700;
-  const FALLBACK_LOCATION = { lat: 52.5195605, lng: 13.3988917 } // Berlin
+  const FALLBACK_LOCATION: LatLng = { latitude: 52.5195605, longitude: 13.3988917 } // Berlin
 
   const mapRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
