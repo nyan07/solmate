@@ -2,6 +2,17 @@ export const config = {
   runtime: "edge",
 };
 
+const parseUrl = (url) => {
+    const parts = url.pathname.split("/");
+  
+    const placeId = parts[3];
+    const photoId = parts[5];
+  
+    if (placeId && photoId) {
+      return { placeId, photoId };
+    }
+}
+
 export async function GET(req) {
   const abortController = new AbortController();
 
@@ -12,10 +23,7 @@ export async function GET(req) {
 
   try {
     const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-    const regex = /\/api\/places\/([^/]+)\/photos\/([^/?#]+)/;
-    const match = requestUrl.pathname.match(regex);
-
-    const [, placeId, photoId] = match;
+    const {placeId, photoId} = parseUrl(requestUrl);
 
     if (!placeId || !photoId) {
       return error("PlaceId or PhotoId is not defined");
