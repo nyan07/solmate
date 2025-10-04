@@ -10,7 +10,7 @@ export function useSunDirection(date: Date, hour: number, position?: LatLng | nu
     const current = new Date(date);
     current.setHours(hour, 0, 0, 0);
 
-    const sunPos = SunCalc.getPosition(current, position.lat, position.lng);
+    const sunPos = SunCalc.getPosition(current, position.latitude, position.longitude);
     const altitude = sunPos.altitude;
     const azimuth = sunPos.azimuth;
 

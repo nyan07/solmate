@@ -24,7 +24,7 @@ export const useUserLocationPos = (
     if (!viewer || !geolocation || !visible) return;
 
     const loadHeight = async () => {
-      const cartographic = Cartographic.fromDegrees(geolocation.lng, geolocation.lat);
+      const cartographic = Cartographic.fromDegrees(geolocation.longitude, geolocation.latitude);
       const [terrainSample] = await sampleTerrainMostDetailed(viewer.terrainProvider, [cartographic]);
       setTerrainHeight((terrainSample.height ?? 0) + offsetHeight);
     };
@@ -37,7 +37,7 @@ export const useUserLocationPos = (
 
     // Cria posição da esfera
     const spherePos = new CallbackPositionProperty(
-      () => Cartesian3.fromDegrees(geolocation.lng, geolocation.lat, terrainHeight),
+      () => Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight),
       false,
       ReferenceFrame.FIXED
     );
@@ -45,8 +45,8 @@ export const useUserLocationPos = (
     // Cria posição da linha (do chão até a esfera)
     const linePos = new CallbackProperty(
       () => {
-        const ground = Cartesian3.fromDegrees(geolocation.lng, geolocation.lat, terrainHeight - offsetHeight);
-        const top = Cartesian3.fromDegrees(geolocation.lng, geolocation.lat, terrainHeight);
+        const ground = Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight - offsetHeight);
+        const top = Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight);
         return [ground, top];
       },
       false

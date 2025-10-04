@@ -90,8 +90,8 @@ const Mappr: React.FC = () => {
       if (!viewerReady) {
         viewer.camera.flyTo({
           destination: Cartesian3.fromDegrees(
-            initialPos.lng,
-            initialPos.lat,
+            initialPos.longitude,
+            initialPos.latitude,
             DEFAULT_CAMERA_DISTANCE
           ),
           duration: 2,
@@ -141,7 +141,7 @@ const Mappr: React.FC = () => {
     // adiciona novo marcador
     viewer.entities.add({
       id: "user-location",
-      position: Cartesian3.fromDegrees(geolocation.lng, geolocation.lat, 100),
+      position: Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, 100),
       point: {
         pixelSize: 12,
         color: Color.BLUE.withAlpha(0.8),

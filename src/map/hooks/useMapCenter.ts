@@ -16,8 +16,8 @@ function getMapCenter(viewer: Viewer) {
 
     const cartographic = Cartographic.fromCartesian(pickPosition);
     return {
-        lat: CesiumMath.toDegrees(cartographic.latitude),
-        lng: CesiumMath.toDegrees(cartographic.longitude),
+        latitude: CesiumMath.toDegrees(cartographic.latitude),
+        longitude: CesiumMath.toDegrees(cartographic.longitude),
         height: cartographic.height,
     };
 }

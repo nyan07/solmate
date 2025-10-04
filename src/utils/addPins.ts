@@ -10,7 +10,7 @@ export const addEstablishmentPins = (viewer: Viewer, places: PlaceSummary[], off
         if (!entity) {
             entity = viewer.entities.add({
                 id: place.id,
-                position: Cartesian3.fromDegrees(place.location.lng, place.location.lat, offsetHeight),
+                position: Cartesian3.fromDegrees(place.location.longitude, place.location.latitude, offsetHeight),
                 point: {
                     pixelSize: 10,
                     color: Color.RED,

@@ -6,8 +6,6 @@ export const useGeolocation = ({ active = true }: { active?: boolean } = {}) => 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-
-
   useEffect(() => {
     if (!active) return;
 
@@ -19,7 +17,7 @@ export const useGeolocation = ({ active = true }: { active?: boolean } = {}) => 
 
     const success = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
-      setGeoLocation({ lat: latitude, lng: longitude });
+      setGeoLocation({ latitude, longitude });
       setLoading(false);
     };
 

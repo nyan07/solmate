@@ -77,7 +77,6 @@ function parseOpeningHours(openingHours) {
 }
 
 const parsePrimaryType = (type) => {
-  console.log(type)
   if (restaurants.includes(type)) return "restaurant";
   if (cafes.includes(type)) return "cafe";
   if (bars.includes(type)) return "bar";
@@ -90,7 +89,7 @@ const parsePlace = (place) => {
 
   if (place.photos) {
     const [photo] = place.photos
-    photoUrl = `/api/places/photo/?id=${photo.name}&w=200&h=200`
+    photoUrl = `/api/${photo.name}?w=200&h=200`
   }
 
   console.log(place.primaryType)
@@ -176,9 +175,10 @@ export default async function POST(request) {
 
     const places = data.places.map(parsePlace);
 
-    console.log("Parsed places:", places.length);
-
-    return new Response(JSON.stringify(places));
+    return new Response(JSON.stringify(places), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
 
   } catch (err) {
     console.error("Error calling Places API:", err);

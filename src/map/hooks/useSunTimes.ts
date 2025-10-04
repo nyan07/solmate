@@ -28,7 +28,7 @@ export function useSunTimes(date: Date, position?: LatLng | null) {
 
   const sunTimes = useMemo(() => {
     if (!position) return null;
-    return SunCalc.getTimes(date, position.lat, position.lng);
+    return SunCalc.getTimes(date, position.latitude, position.longitude);
   }, [date, position]);
 
   const sunriseValue = sunTimes

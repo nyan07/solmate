@@ -12,20 +12,18 @@ export const fetchNearbyPlaces = async (
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ latitude: location.lat, longitude: location.lng, radius }),
+            body: JSON.stringify({ latitude: location.latitude, longitude: location.longitude, radius }),
         });
 
         const data = await res.json();
-        if (!data.places) return [];
+        if (!data) return [];
 
-        return data.places as PlaceSummary[];
+        return data as PlaceSummary[];
     } catch (err) {
         console.error("fetchNearbyPlaces error:", err);
         return [];
     }
 };
-
-
 
 export const useNearbyPlaces = (location: LatLng | null, {enabled }:{ enabled: boolean } = { enabled: true } ): UseQueryResult<PlaceSummary[]> => {
     return useQuery({
