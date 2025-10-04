@@ -17,7 +17,6 @@ export async function GET(req) {
   const abortController = new AbortController();
 
   req.signal.addEventListener('abort', () => {
-    console.log('request aborted');
     abortController.abort();
   });
 

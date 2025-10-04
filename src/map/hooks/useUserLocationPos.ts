@@ -18,6 +18,8 @@ export const useUserLocationPos = (
   offsetHeight: number = 20
 ) => {
   const [terrainHeight, setTerrainHeight] = useState<number | null>(null);
+  const pinLightColor = Color.fromCssColorString("#F2EACF");
+  const pinDarkColor = Color.fromCssColorString("#dbd0ab");
 
   // Carrega altura do terreno
   useEffect(() => {
@@ -60,8 +62,8 @@ export const useUserLocationPos = (
         position: spherePos,
         point: {
           pixelSize: 14,
-          color: Color.BLUE,
-          outlineColor: Color.WHITE,
+          color: pinLightColor,
+          outlineColor: pinDarkColor,
           outlineWidth: 2,
         },
       });
@@ -77,7 +79,7 @@ export const useUserLocationPos = (
         polyline: {
           positions: linePos,
           width: 2,
-          material: Color.BLUE,
+          material: pinDarkColor,
         },
       });
     } else {

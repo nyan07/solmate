@@ -21,6 +21,7 @@ import { useSunDirection } from "./hooks/useSunDirection";
 import { useUserLocationPos } from "./hooks/useUserLocationPos";
 import { useCameraDistance } from "./hooks/useCameraDistance";
 import type { LatLng } from "../types/LatLng";
+import { usePins } from "./hooks/usePins";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
@@ -43,6 +44,7 @@ const Mappr: React.FC = () => {
 
   const sunData = useSunDirection(date, hour, geolocation);
   useUserLocationPos(viewerRef.current, geolocation, showControls);
+  usePins(viewerRef.current, showControls);
 
   useEffect(() => {
     if (cameraDistance) {

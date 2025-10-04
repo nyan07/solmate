@@ -92,7 +92,6 @@ const parsePlace = (place) => {
     photoUrl = `/api/${photo.name}?w=200&h=200`
   }
 
-  console.log(place.primaryType)
   const result = {
     id: place.id,
     displayName: place.displayName?.text,

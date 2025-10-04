@@ -25,8 +25,24 @@ export const fetchNearbyPlaces = async (
     }
 };
 
-export const useNearbyPlaces = (location: LatLng | null, {enabled }:{ enabled: boolean } = { enabled: true } ): UseQueryResult<PlaceSummary[]> => {
+type UseNearbyPlacesOptions = {
+    enabled: boolean,
+    cacheFirst?: boolean
+}
+
+export const useNearbyPlaces = (location: LatLng | null, { enabled, cacheFirst }: UseNearbyPlacesOptions = { enabled: true, cacheFirst: false }): UseQueryResult<PlaceSummary[]> => {
+    const cacheOptions = cacheFirst ?
+        {
+            staleTime: Infinity,
+            cacheTime: Infinity,
+            refetchOnMount: false,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+            refetchInterval: 0,
+        } : {};
+
     return useQuery({
+        ...cacheOptions,
         queryKey: ["nearbyPlaces", location],
         queryFn: () =>
             location
