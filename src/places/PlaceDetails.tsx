@@ -22,8 +22,8 @@ import { useParams } from "react-router-dom";
 
 function PlaceDetails() {
     const { geolocation } = useGeolocation();
-    let { id } = useParams();
-    const { data: place } = usePlace(id, { enabled: !!id });
+    let { placeId } = useParams();
+    const { data: place } = usePlace(placeId, { enabled: !!placeId });
 
     if (!place) return;
 
