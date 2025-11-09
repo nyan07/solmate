@@ -6,10 +6,9 @@ export const config = {
       const parts = url.pathname.split("/");
     
       const placeId = parts[3];
-      const photoId = parts[5];
     
-      if (placeId && photoId) {
-        return { placeId, photoId };
+      if (placeId) {
+        return { placeId };
       }
   }
   
@@ -22,13 +21,11 @@ export const config = {
   
     try {
       const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-      const {placeId, photoId} = parseUrl(requestUrl);
+      const {placeId} = parseUrl(requestUrl);
   
-      if (!placeId || !photoId) {
-        return error("PlaceId or PhotoId is not defined");
+      if (!placeId) {
+        return error("PlaceId is not defined");
       }
-  
-      const { searchParams } = new URL(req.url);
 
       const fields = [
         "id",

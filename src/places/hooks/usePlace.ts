@@ -5,7 +5,7 @@ export const fetchPlace = async (
     id: string | undefined
 ): Promise<Place> => {
     const res = await fetch(`/api/places/${id}`, {
-        method: "POST",
+        method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
