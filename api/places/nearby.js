@@ -144,7 +144,7 @@ export default async function POST(request) {
       includedPrimaryTypes: restaurants.concat(bars).concat(cafes),
       maxResultCount: 20,
       languageCode: "en",
-      rankPreference: "POPULARITY",
+      rankPreference: "DISTANCE",
       locationRestriction: {
         circle: {
           center: {
