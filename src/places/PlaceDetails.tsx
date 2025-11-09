@@ -29,9 +29,9 @@ function PlaceDetails() {
                     <span className="pl-2"><PlaceTypeIcon type={place.type} className="w-4 h-4 inline" /></span>
                 </h4>
 
-                <div className='w-full h-48 rounded-2xl overflow-hidden'>
+                {/* <div className='w-full h-48 rounded-2xl overflow-hidden'>
                     <img src={place.imageUrl} className="object-cover w-full h-full" />
-                </div>
+                </div> */}
 
                 <p>{place.description}</p>
 

@@ -88,7 +88,7 @@ const Mappr: React.FC = () => {
       viewer.scene.shadowMap.enabled = true;
       viewer.scene.shadowMap.softShadows = true;
       viewer.scene.globe.enableLighting = true;
-      viewer.scene.screenSpaceCameraController.enableRotate = false;
+
 
       viewerRef.current = viewer;
       viewer.scene.preRender.addEventListener(preRenderHandler);
@@ -97,6 +97,7 @@ const Mappr: React.FC = () => {
     const preRenderHandler = () => {
       const initialPos = geolocation || FALLBACK_LOCATION;
       if (!viewerReady) {
+
         viewer.camera.flyTo({
           destination: Cartesian3.fromDegrees(
             initialPos.longitude,
@@ -134,6 +135,15 @@ const Mappr: React.FC = () => {
     } else {
       (viewer.scene.light as DirectionalLight).direction = sunData.direction;
     }
+
+
+    const controller = viewer.scene.screenSpaceCameraController;
+    // Always allow zoom, disable rotate/tilt
+    controller.enableZoom = true;
+    controller.enableTilt = false;
+    controller.enableLook = false;
+    controller.enableRotate = false;
+
 
     viewer.clock.currentTime = sunData.time;
   }, [sunData, viewerReady]);
