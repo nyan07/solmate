@@ -6,42 +6,53 @@ import type { Place } from "./types/Place";
 import Button from "../components/Button";
 import { StarIcon, MapPinIcon } from '@heroicons/react/24/solid'
 import { DaylightBar } from "./components/DaylightBar";
+import { calculateDistance } from "../utils/calculateDistance";
+import { useGeolocation } from "../hooks/useGeolocation";
+import type { PlaceSummary } from "./types/PlaceSummary";
+import { usePlace } from "./hooks/usePlace";
+import { useParams } from "react-router-dom";
 
-const place: Place =
-{
-    id: 1,
-    name: "Brew & Bloom",
-    type: "cafe",
-    tags: ["Terrace", "Allow Dogs"],
-    distance: "300m",
-    status: 'open',
-    description: "Casual café serving freshly brewed coffee, light breakfast options, and a selection of vegan pastries and sandwiches.",
-    imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=300&auto=format&fit=crop",
-}
+// const place: Place =
+// {
+//     id: 1,
+//     name: "Brew & Bloom",
+//     type: "cafe",
+//     tags: ["Terrace", "Allow Dogs"],
+//     distance: "300m",
+//     status: 'open',
+//     description: "Casual café serving freshly brewed coffee, light breakfast options, and a selection of vegan pastries and sandwiches.",
+//     imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=300&auto=format&fit=crop",
+// }
 
 function PlaceDetails() {
+    const { geolocation } = useGeolocation();
+    let { id } = useParams();
+    const { data: place } = usePlace(id, { enabled: !!id });
+
+    if (!place) return;
+
     return (
         <SwipeUp>
             <div className='flex flex-col gap-4'>
 
                 <h4 className='text-neutral-dark grow-1 text-2xl flex'>
-                    <span className="pt-1">{place.name}</span>
-                    <span className="pl-2"><PlaceTypeIcon type={place.type} className="w-4 h-4 inline" /></span>
+                    <span className="pt-1">{place.displayName}</span>
+                    <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
                 </h4>
 
                 {/* <div className='w-full h-48 rounded-2xl overflow-hidden'>
                     <img src={place.imageUrl} className="object-cover w-full h-full" />
                 </div> */}
 
-                <p>{place.description}</p>
+                {place.editorialSummary && <p>{place.editorialSummary}</p>}
 
-                <div className='flex gap-2'>
+                {/* <div className='flex gap-2'>
                     <PlaceStatus status={place.status} />
                     {place.tags.map((tag: string) => (<Tag key={`tag-${tag}`} name={tag} />))}
-                </div>
+                </div> */}
 
                 <div className="flex gap-4 items-center">
-                    <span className="flex gap-1 my-4"><MapPinIcon className="w-6 h-6 text-accent" />{place.distance}</span>
+                    {geolocation && <span className="flex gap-1 my-4"><MapPinIcon className="w-6 h-6 text-accent" />{calculateDistance(geolocation, place.location)}</span>}
                     <span className="flex gap-1 my-4"><StarIcon className="w-6 h-6 text-amber-300" />4,5</span>
                 </div>
 
