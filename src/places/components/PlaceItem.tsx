@@ -19,7 +19,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
             <div className='rounded-lg p-4 flex flex-col gap-2 bg-primary/20'>
                 <div className='flex gap-2 relative items-center -mt-1'>
                     <span className='absolute -top-2 right-0'>{distance}</span>
-                    {place.photoUrl && <img src={place.photoUrl} className='w-12 h-12 rounded-full bg-gray-300' />}
+                    {/* {place.photoUrl && <img src={place.photoUrl} className='w-12 h-12 rounded-full bg-gray-300' />} */}
                     <h4 className='text-neutral-dark grow-1 text-lg flex'>
                         <span className="pt-1">{place.displayName}</span>
                         <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
