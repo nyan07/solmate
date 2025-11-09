@@ -49,15 +49,15 @@ function PlaceDetails() {
 
                 <div className="flex gap-4 items-center">
                     {geolocation && <span className="flex gap-1 my-4"><MapPinIcon className="w-6 h-6 text-accent" />{calculateDistance(geolocation, place.location)}</span>}
-                    <span className="flex gap-1 my-4"><StarIcon className="w-6 h-6 text-amber-300" />4,5</span>
+                    <span className="flex gap-1 my-4"><StarIcon className="w-6 h-6 text-amber-300" />{place.rating}</span>
                 </div>
 
                 <p>Best time to catch the sun here today:</p>
                 <DaylightBar startTime="10:45" endTime="16:15" />
 
                 <div className="flex w-full gap-2 mt-8 ">
-                    <Button className="grow">Navigate</Button>
-                    <Button className="grow">Streetview</Button>
+                <a href={`https://www.google.com/maps/dir/@?api=1&query=${place.displayName}`} className="grow">Navigate</a>
+                    <a href={`https://www.google.com/maps/@?api=1&map_action=pano&query=${place.displayName}`} className="grow">Streetview</a>
                     <Button className="grow">Book a table</Button>
                 </div>
             </div>

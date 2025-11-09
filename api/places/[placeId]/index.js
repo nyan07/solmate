@@ -52,7 +52,7 @@ export const config = {
       const response = await fetch(url, { signal: abortController.signal });
   
       if (!response.ok) {
-        return error(500, "Failed to fetch photo");
+        return error(500, `Failed to fetch: ${response.error}`);
       }
   
       return new Response(await response.arrayBuffer(), {

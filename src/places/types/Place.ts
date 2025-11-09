@@ -8,5 +8,6 @@ export type Place = PlaceSummary & {
     type: PlaceTypes,
     tags: string[],
     description: string,
-    status: PlaceStatuses
+    status: PlaceStatuses,
+    rating: number,
 }
