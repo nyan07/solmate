@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Viewer,
-  IonImageryProvider,
   createWorldTerrainAsync,
   createOsmBuildingsAsync,
   Cartesian3,
   Color,
   DirectionalLight,
-  Ion
+  Ion,
+  UrlTemplateImageryProvider
 } from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
@@ -72,8 +72,13 @@ const Mappr: React.FC = () => {
         shadows: true,
       });
 
-      const imagery = await IonImageryProvider.fromAssetId(2);
-      viewer.imageryLayers.addImageryProvider(imagery);
+      // https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png
+
+      const osmLayer = new UrlTemplateImageryProvider({
+        url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png?layers=V",
+      });
+      viewer.imageryLayers.addImageryProvider(osmLayer);
+
 
       const osmBuildings = await createOsmBuildingsAsync();
       osmBuildings.shadows = 2;
