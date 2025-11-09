@@ -1,14 +1,10 @@
-import { PlaceStatus } from "./components/PlaceStatus";
 import { PlaceTypeIcon } from "./components/PlaceTypeIcon";
 import SwipeUp from "../components/SwipeUp";
-import { Tag } from "../components/Tag";
-import type { Place } from "./types/Place";
 import Button from "../components/Button";
 import { StarIcon, MapPinIcon } from '@heroicons/react/24/solid'
 import { DaylightBar } from "./components/DaylightBar";
 import { calculateDistance } from "../utils/calculateDistance";
 import { useGeolocation } from "../hooks/useGeolocation";
-import type { PlaceSummary } from "./types/PlaceSummary";
 import { usePlace } from "./hooks/usePlace";
 import { useParams } from "react-router-dom";
 
