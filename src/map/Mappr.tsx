@@ -88,6 +88,7 @@ const Mappr: React.FC = () => {
       viewer.scene.shadowMap.enabled = true;
       viewer.scene.shadowMap.softShadows = true;
       viewer.scene.globe.enableLighting = true;
+      viewer.scene.screenSpaceCameraController.enableRotate = false;
 
       viewerRef.current = viewer;
       viewer.scene.preRender.addEventListener(preRenderHandler);
