@@ -4,3 +4,7 @@
 #root {
   margin: 0 auto;
 }
+
+html, body {
+  overscroll-behavior: none;
+}
