@@ -2,9 +2,10 @@
 @config '../tailwind.config.js';
 
 #root {
-  margin: 0 auto;
+    margin: 0 auto;
 }
 
-html, body {
-  overscroll-behavior: none;
+html,
+body {
+    overscroll-behavior: none;
 }

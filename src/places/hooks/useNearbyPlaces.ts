@@ -3,12 +3,19 @@ import type { LatLng } from "../../types/LatLng";
 import type { PlaceSummary } from "../types/PlaceSummary";
 import { CACHE_FIRST_OPTIONS } from "./cacheFirstOptions";
 
-export const fetchNearbyPlaces = async (location: LatLng, radius = 500): Promise<PlaceSummary[]> => {
+export const fetchNearbyPlaces = async (
+    location: LatLng,
+    radius = 500
+): Promise<PlaceSummary[]> => {
     try {
         const res = await fetch("/api/places/nearby", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ latitude: location.latitude, longitude: location.longitude, radius }),
+            body: JSON.stringify({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                radius,
+            }),
         });
 
         const data = await res.json();
@@ -33,7 +40,7 @@ export const useNearbyPlaces = (
     return useQuery({
         ...(cacheFirst ? CACHE_FIRST_OPTIONS : {}),
         queryKey: ["nearbyPlaces", location],
-        queryFn: () => location ? fetchNearbyPlaces(location) : Promise.resolve([]),
+        queryFn: () => (location ? fetchNearbyPlaces(location) : Promise.resolve([])),
         enabled: !!location && enabled,
     });
 };

@@ -36,4 +36,4 @@ const DatePicker: React.FC<{
     );
 };
 
-export { DatePicker }
+export { DatePicker };

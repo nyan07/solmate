@@ -38,29 +38,39 @@ function PlaceDetails() {
     ].filter((t): t is string => !!t);
 
     const statusDetail: PlaceStatusDetail | null =
-        place.businessStatus === 'CLOSED_TEMPORARILY' ? { status: 'temporarily closed' } :
-            place.businessStatus === 'CLOSED_PERMANENTLY' ? { status: 'permanently closed' } :
-                getPlaceStatusDetail(place.openingHours);
+        place.businessStatus === "CLOSED_TEMPORARILY"
+            ? { status: "temporarily closed" }
+            : place.businessStatus === "CLOSED_PERMANENTLY"
+              ? { status: "permanently closed" }
+              : getPlaceStatusDetail(place.openingHours);
 
     return (
-        <SwipeUp defaultOpen={true} topOffset={topBarHeight} onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}>
+        <SwipeUp
+            defaultOpen={true}
+            topOffset={topBarHeight}
+            onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}
+        >
             <div className="sticky top-0 z-10 bg-neutral-lightest">
-                <div className={`flex items-start gap-2 min-w-0 rounded-t-lg p-4 bg-primary-50 ${scrolled && 'shadow'}`}>
+                <div
+                    className={`flex items-start gap-2 min-w-0 rounded-t-lg p-4 bg-primary-50 ${scrolled && "shadow"}`}
+                >
                     <PlaceName
-                        name={getText(place.displayName) ?? ''}
+                        name={getText(place.displayName) ?? ""}
                         type={place.primaryType}
                         typeLabel={place.primaryTypeDisplayName}
                         size="lg"
-                        className={`flex-1 min-w-0${scrolled ? ' truncate' : ''}`}
+                        className={`flex-1 min-w-0${scrolled ? " truncate" : ""}`}
                     />
-                    <button onClick={() => navigate('/places')} className="text-neutral-dark/40 hover:text-neutral-dark shrink-0 mt-1.5 bg-primary-100 rounded-full p-1">
+                    <button
+                        onClick={() => navigate("/places")}
+                        className="text-neutral-dark/40 hover:text-neutral-dark shrink-0 mt-1.5 bg-primary-100 rounded-full p-1"
+                    >
                         <XMarkIcon className="w-5 h-5" />
                     </button>
                 </div>
             </div>
-            <div className='flex flex-col rounded-b-lg p-4 pt-0 gap-6 bg-primary-50'>
-
-                    {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
+            <div className="flex flex-col rounded-b-lg p-4 pt-0 gap-6 bg-primary-50">
+                {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
 
                 <PlaceMeta
                     geolocation={geolocation}
@@ -70,8 +80,12 @@ function PlaceDetails() {
                 />
 
                 {place.photoUrl && (
-                    <div className='w-full h-48 rounded-xl overflow-hidden bg-primary-100'>
-                        <img src={place.photoUrl} className="object-cover w-full h-full" />
+                    <div className="w-full h-48 rounded-xl overflow-hidden bg-primary-100">
+                        <img
+                            src={place.photoUrl}
+                            alt={getText(place.displayName) ?? ""}
+                            className="object-cover w-full h-full"
+                        />
                     </div>
                 )}
 
@@ -82,10 +96,9 @@ function PlaceDetails() {
                     </div>
                 )}
 
-
-
-                {place.editorialSummary && <p className="text-neutral-dark/80">{getText(place.editorialSummary)}</p>}
-
+                {place.editorialSummary && (
+                    <p className="text-neutral-dark/80">{getText(place.editorialSummary)}</p>
+                )}
 
                 <div className="flex flex-col gap-0.5">
                     <PlaceOpeningHours
@@ -97,18 +110,37 @@ function PlaceDetails() {
                     <PlaceAccessibility options={place.accessibilityOptions} position="last" />
                 </div>
 
-
                 {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                        {tags.map((tag) => <Tag key={tag} name={tag} />)}
+                        {tags.map((tag) => (
+                            <Tag key={tag} name={tag} />
+                        ))}
                     </div>
                 )}
 
                 <div className="flex w-full gap-2">
-                    <Button variant="outline" href={`https://www.google.com/maps/dir/?api=1&destination=${place.location.latitude},${place.location.longitude}&destination_place_id=${place.id}`} target="_blank" rel="noopener noreferrer" className="grow">Navigate</Button>
-                    <Button variant="outline" href={`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${place.location.latitude},${place.location.longitude}`} target="_blank" rel="noopener noreferrer" className="grow">Streetview</Button>
+                    <Button
+                        variant="outline"
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${place.location.latitude},${place.location.longitude}&destination_place_id=${place.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="grow"
+                    >
+                        Navigate
+                    </Button>
+                    <Button
+                        variant="outline"
+                        href={`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${place.location.latitude},${place.location.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="grow"
+                    >
+                        Streetview
+                    </Button>
                     {place.reservable && (
-                        <Button href={place.websiteUri} className="grow">Book a table</Button>
+                        <Button href={place.websiteUri} className="grow">
+                            Book a table
+                        </Button>
                     )}
                 </div>
             </div>

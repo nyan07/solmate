@@ -13,7 +13,8 @@ export function getBoundingBox(center: LatLng, radiusMeters: number): BoundingBo
     const lng = center.longitude;
 
     const deltaLat = (radiusMeters / earthRadius) * (180 / Math.PI);
-    const deltaLng = (radiusMeters / (earthRadius * Math.cos((lat * Math.PI) / 180))) * (180 / Math.PI);
+    const deltaLng =
+        (radiusMeters / (earthRadius * Math.cos((lat * Math.PI) / 180))) * (180 / Math.PI);
 
     return {
         south: lat - deltaLat,

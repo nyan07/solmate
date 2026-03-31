@@ -1,4 +1,4 @@
-import { StarIcon, MapPinIcon, WalletIcon } from '@heroicons/react/24/solid';
+import { StarIcon, MapPinIcon, WalletIcon } from "@heroicons/react/24/solid";
 import { Dot } from "../../components/Dot";
 import { calculateDistance } from "../../utils/calculateDistance";
 import type { LatLng } from "../../types/LatLng";

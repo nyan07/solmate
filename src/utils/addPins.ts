@@ -1,16 +1,24 @@
 import { Cartesian2, Cartesian3, Color, Viewer } from "cesium";
 import type { PlaceSummary } from "../places/types/PlaceSummary";
 
-export const addEstablishmentPins = (viewer: Viewer, places: PlaceSummary[], offsetHeight: number = 0) => {
+export const addEstablishmentPins = (
+    viewer: Viewer,
+    places: PlaceSummary[],
+    offsetHeight: number = 0
+) => {
     if (!viewer || !places || places.length === 0) return;
 
-    places.forEach(place => {
+    places.forEach((place) => {
         // Checa se já existe o pin
         let entity = viewer.entities.getById(place.id);
         if (!entity) {
             entity = viewer.entities.add({
                 id: place.id,
-                position: Cartesian3.fromDegrees(place.location.longitude, place.location.latitude, offsetHeight),
+                position: Cartesian3.fromDegrees(
+                    place.location.longitude,
+                    place.location.latitude,
+                    offsetHeight
+                ),
                 point: {
                     pixelSize: 10,
                     color: Color.RED,

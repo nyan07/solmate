@@ -7,14 +7,14 @@ export type AccessibilityOptions = {
     wheelchairAccessibleSeating?: boolean;
 };
 
-export type BusinessStatus = 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY';
+export type BusinessStatus = "OPERATIONAL" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY";
 
 export type PriceLevel =
-    | 'PRICE_LEVEL_FREE'
-    | 'PRICE_LEVEL_INEXPENSIVE'
-    | 'PRICE_LEVEL_MODERATE'
-    | 'PRICE_LEVEL_EXPENSIVE'
-    | 'PRICE_LEVEL_VERY_EXPENSIVE';
+    | "PRICE_LEVEL_FREE"
+    | "PRICE_LEVEL_INEXPENSIVE"
+    | "PRICE_LEVEL_MODERATE"
+    | "PRICE_LEVEL_EXPENSIVE"
+    | "PRICE_LEVEL_VERY_EXPENSIVE";
 
 export type Place = PlaceSummary & {
     rating?: number;

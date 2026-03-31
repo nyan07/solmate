@@ -1,11 +1,11 @@
 import { PlaceType } from "./PlaceType";
 
-type Size = 'sm' | 'md' | 'lg';
+type Size = "sm" | "md" | "lg";
 
 const SIZE_CLASS: Record<Size, string> = {
-    sm: 'text-base',
-    md: 'text-lg',
-    lg: 'text-2xl',
+    sm: "text-base",
+    md: "text-lg",
+    lg: "text-2xl",
 };
 
 type Props = {
@@ -16,8 +16,8 @@ type Props = {
     className?: string;
 };
 
-export const PlaceName = ({ name, type, typeLabel, size = 'md', className = '' }: Props) => {
-    const isTruncated = className.includes('truncate');
+export const PlaceName = ({ name, type, typeLabel, size = "md", className = "" }: Props) => {
+    const isTruncated = className.includes("truncate");
 
     if (isTruncated) {
         return (
@@ -27,14 +27,16 @@ export const PlaceName = ({ name, type, typeLabel, size = 'md', className = '' }
         );
     }
 
-    const words = name.split(' ');
-    const last = words.pop() ?? '';
+    const words = name.split(" ");
+    const last = words.pop() ?? "";
 
     return (
         <h4 className={`text-neutral-dark ${SIZE_CLASS[size]} ${className}`}>
-            {words.join(' ')}{words.length > 0 ? ' ' : ''}
+            {words.join(" ")}
+            {words.length > 0 ? " " : ""}
             <span className="whitespace-nowrap inline-flex items-center gap-1">
-                {last}<PlaceType type={type} label={typeLabel} />
+                {last}
+                <PlaceType type={type} label={typeLabel} />
             </span>
         </h4>
     );

@@ -13,9 +13,9 @@ type Props = {
 function to24h(time: string): string {
     return time.replace(/(\d+):(\d+)\s*(AM|PM)/gi, (_, h, m, period) => {
         let hour = parseInt(h);
-        if (period.toUpperCase() === 'AM' && hour === 12) hour = 0;
-        if (period.toUpperCase() === 'PM' && hour !== 12) hour += 12;
-        return `${String(hour).padStart(2, '0')}:${m}`;
+        if (period.toUpperCase() === "AM" && hour === 12) hour = 0;
+        if (period.toUpperCase() === "PM" && hour !== 12) hour += 12;
+        return `${String(hour).padStart(2, "0")}:${m}`;
     });
 }
 
@@ -35,7 +35,9 @@ export const PlaceOpeningHours = ({ statusDetail, weekdayDescriptions, position 
                             const [day, time] = line.split(": ");
                             return (
                                 <tr key={line}>
-                                    <td className="pr-4 py-0.5 font-medium whitespace-nowrap">{day}</td>
+                                    <td className="pr-4 py-0.5 font-medium whitespace-nowrap">
+                                        {day}
+                                    </td>
                                     <td>{time ? to24h(time) : time}</td>
                                 </tr>
                             );

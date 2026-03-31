@@ -41,6 +41,6 @@ const useMapCenter = (viewer: Viewer | null) => {
     }, [viewer]);
 
     return center;
-}
+};
 
 export { useMapCenter };

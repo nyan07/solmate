@@ -75,7 +75,10 @@ export default function SwipeUp({
         if (expanded || !(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
         const delta = e.clientY - dragStartY.current;
         const open = dragStartOpen.current ? delta < 40 : delta < -40;
-        controls.start({ y: open ? 0 : defaultHeight - peekHeight, transition: { type: "spring", stiffness: 300, damping: 30 } });
+        controls.start({
+            y: open ? 0 : defaultHeight - peekHeight,
+            transition: { type: "spring", stiffness: 300, damping: 30 },
+        });
         setIsOpen(open);
     };
 

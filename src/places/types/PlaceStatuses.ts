@@ -1,1 +1,1 @@
-export type PlaceStatuses = 'open' | 'closed';
+export type PlaceStatuses = "open" | "closed";

@@ -8,8 +8,18 @@ import { DEFAULT_CAMERA_DISTANCE } from "../map/constants";
 
 function PlacesList() {
     const { geolocation } = useGeolocation();
-    const { center, cameraDistance, topBarHeight, listOpen, setListOpen, listScrollTop, setListScrollTop } = useMapContext();
-    const { data: places } = useNearbyPlaces(center, { enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10 });
+    const {
+        center,
+        cameraDistance,
+        topBarHeight,
+        listOpen,
+        setListOpen,
+        listScrollTop,
+        setListScrollTop,
+    } = useMapContext();
+    const { data: places } = useNearbyPlaces(center, {
+        enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
+    });
 
     return (
         <SwipeUp
@@ -19,14 +29,22 @@ function PlacesList() {
             onOpenChange={setListOpen}
             onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
         >
-            <ul className='w-full gap-2 flex flex-col px-2 py-2'>
-                {places && places.map((place) => (
-                    <li key={`place-${place.id}`}>
-                        <PlaceItem place={place} distance={geolocation ? calculateDistance(geolocation, place.location) : ""} />
-                    </li>
-                ))}
+            <ul className="w-full gap-2 flex flex-col px-2 py-2">
+                {places &&
+                    places.map((place) => (
+                        <li key={`place-${place.id}`}>
+                            <PlaceItem
+                                place={place}
+                                distance={
+                                    geolocation
+                                        ? calculateDistance(geolocation, place.location)
+                                        : ""
+                                }
+                            />
+                        </li>
+                    ))}
             </ul>
         </SwipeUp>
-    )
+    );
 }
 export default PlacesList;

@@ -1,1 +1,1 @@
-export type PlaceTypes = 'bar' | 'cafe' | 'restaurant';
+export type PlaceTypes = "bar" | "cafe" | "restaurant";
