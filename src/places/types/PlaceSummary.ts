@@ -1,5 +1,6 @@
 import type { LatLng } from "../../types/LatLng";
 import type { PlaceTypes } from "./PlaceTypes";
+import type { BusinessStatus } from "./Place";
 
 export type PlaceSummary = {
     id: string,
@@ -10,5 +11,6 @@ export type PlaceSummary = {
     location: LatLng,
     hasOutdoorSeating: boolean,
     photoUrl: string,
-    openingHours: any
+    businessStatus?: BusinessStatus,
+    openingHours: any,
 }

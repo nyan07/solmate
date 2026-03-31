@@ -13,6 +13,7 @@ import {
 import { useNearbyPlaces } from "../../places/hooks/useNearbyPlaces";
 import { useMapContext } from "../MapContext";
 import { DEFAULT_CAMERA_DISTANCE } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 const PIN_COLOR = Color.fromCssColorString("#8591b5");
 
@@ -22,12 +23,24 @@ export const usePins = (
   offsetHeight: number = 20
 ) => {
   const { center, cameraDistance } = useMapContext();
+  const navigate = useNavigate();
   const { data: places } = useNearbyPlaces(center, {
     enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
   });
   const [heights, setHeights] = useState<Record<string, number>>({});
 
   // Sample terrain height for each place so pins sit on the ground
+  useEffect(() => {
+    if (!viewer) return;
+    const handler = (entity: { id?: string } | undefined) => {
+      if (!entity?.id) return;
+      const match = entity.id.match(/^place-billboard-(.+)$/);
+      if (match) navigate(`/places/${match[1]}`);
+    };
+    viewer.selectedEntityChanged.addEventListener(handler);
+    return () => { viewer.selectedEntityChanged.removeEventListener(handler); };
+  }, [viewer, navigate]);
+
   useEffect(() => {
     if (!viewer || !visible || !places?.length) return;
 

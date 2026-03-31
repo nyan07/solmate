@@ -56,25 +56,6 @@ const bars = [
   "wine_bar"
 ];
 
-const mapDay = (day) => {
-  const shifted = day + 1;
-  return shifted > 7 ? 1 : shifted;
-};
-
-const toHHMM = (hour, minute) =>
-  `${hour.toString().padStart(2, '0')}${minute
-    .toString()
-    .padStart(2, '0')}`;
-
-function parseOpeningHours(openingHours) {
-  if (!openingHours) return [];
-  const { periods } = openingHours
-  return periods.map(p => ({
-    day: mapDay(p.open.day),
-    from: toHHMM(p.open.hour, p.open.minute),
-    until: toHHMM(p.close.hour, p.close.minute)
-  }));
-}
 
 const parsePrimaryType = (type) => {
   if (restaurants.includes(type)) return "restaurant";
@@ -101,7 +82,8 @@ const parsePlace = (place) => {
     location: place.location,
     hasOutdoorSeating: place.outdoorSeating || false,
     photoUrl,
-    openingHours: parseOpeningHours(place.currentOpeningHours)
+    businessStatus: place.businessStatus,
+    openingHours: place.currentOpeningHours ?? null,
   }
   return result;
 }
@@ -127,6 +109,7 @@ export default async function POST(request) {
       "location",
       "photos",
       "currentOpeningHours",
+      "businessStatus",
       "formattedAddress",
       "outdoorSeating"
     ];

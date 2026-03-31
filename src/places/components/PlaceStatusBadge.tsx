@@ -11,15 +11,16 @@ const STATUS_STYLE: Record<string, string> = {
 
 type Props = {
     statusDetail: PlaceStatusDetail;
+    showDetail?: boolean;
     className?: string;
 };
 
-export const PlaceStatusBadge = ({ statusDetail, className }: Props) => (
+export const PlaceStatusBadge = ({ statusDetail, showDetail = true, className }: Props) => (
     <span className={`inline-flex items-center gap-2 ${className ?? ''}`}>
-        <span className={`rounded-full px-3 py-0.5 border text-xs font-medium ${STATUS_STYLE[statusDetail.status]}`}>
+        <span className={`rounded-full px-4 py-1 border text-sm font-medium ${STATUS_STYLE[statusDetail.status]}`}>
             {statusDetail.status}
         </span>
-        {statusDetail.detail && (
+        {showDetail && statusDetail.detail && (
             <span className="text-xs text-neutral-dark/50">{statusDetail.detail}</span>
         )}
     </span>

@@ -80,6 +80,7 @@ const Mappr: React.FC = () => {
         sceneModePicker: false,
         navigationHelpButton: false,
         fullscreenButton: false,
+        selectionIndicator: false,
         shadows: true,
       });
 

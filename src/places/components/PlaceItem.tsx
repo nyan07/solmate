@@ -3,7 +3,8 @@ import { Tag } from "../../components/Tag"
 import { PlaceStatusBadge } from "./PlaceStatusBadge"
 import { Link } from "react-router-dom"
 import type { PlaceSummary } from "../types/PlaceSummary"
-import { getOpeningHoursStatus } from "../../utils/openingHours"
+import { getPlaceStatusDetail } from "../../utils/openingHours"
+import type { PlaceStatusDetail } from "../../utils/openingHours"
 import { getText } from "../../utils/getText"
 
 const truncate = (text: string | undefined, maxWords: number) => {
@@ -18,8 +19,10 @@ type PlaceItemProps = {
 }
 
 export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
-    const openingHoursStatus = getOpeningHoursStatus(place.openingHours);
-    const statusDetail = openingHoursStatus ? { status: openingHoursStatus } : null;
+    const statusDetail: PlaceStatusDetail | null =
+        place.businessStatus === 'CLOSED_TEMPORARILY' ? { status: 'temporarily closed' } :
+        place.businessStatus === 'CLOSED_PERMANENTLY' ? { status: 'permanently closed' } :
+        getPlaceStatusDetail(place.openingHours);
 
     return (
         <Link to={`/places/${place.id}`}>
@@ -35,7 +38,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
                     <span className='text-sm text-neutral-dark/50 shrink-0 pt-1'>{distance}</span>
                 </div>
                 <div className='flex gap-2'>
-                    {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
+                    {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} showDetail={false} />}
                     {place.hasOutdoorSeating && <Tag name="Outdoor Seating" />}
                 </div>
                 <p className="text-neutral-dark/70">{truncate(getText(place.editorialSummary), 12)}</p>
