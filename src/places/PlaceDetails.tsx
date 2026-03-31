@@ -16,6 +16,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useMapContext } from "../map/MapContext";
 import { useState } from "react";
 import { PlaceStatusBadge } from "./components/PlaceStatusBadge";
+import { useSunnyHours } from "./hooks/useSunnyHours";
 
 function PlaceDetails() {
     const { geolocation } = useGeolocation();
@@ -25,6 +26,7 @@ function PlaceDetails() {
 
     const { topBarHeight } = useMapContext();
     const [scrolled, setScrolled] = useState(false);
+    const sunnyHours = useSunnyHours(new Date(), place?.location ?? null);
 
     if (!place) return null;
 
@@ -73,10 +75,12 @@ function PlaceDetails() {
                     </div>
                 )}
 
-                <div className="flex flex-col gap-2">
-                    <p>Best time to catch the sun here today:</p>
-                    <DaylightBar startTime="10:45" endTime="16:15" />
-                </div>
+                {sunnyHours && (
+                    <div className="flex flex-col gap-2">
+                        <p>Best time to catch the sun here today:</p>
+                        <DaylightBar startTime={sunnyHours.start} endTime={sunnyHours.end} />
+                    </div>
+                )}
 
 
 
@@ -101,8 +105,8 @@ function PlaceDetails() {
                 )}
 
                 <div className="flex w-full gap-2">
-                    <Button variant="outline" href={`https://www.google.com/maps/dir/@?api=1&query=${getText(place.displayName)}`} className="grow">Navigate</Button>
-                    <Button variant="outline" href={`https://www.google.com/maps/@?api=1&map_action=pano&query=${getText(place.displayName)}`} className="grow">Streetview</Button>
+                    <Button variant="outline" href={`https://www.google.com/maps/dir/?api=1&destination=${place.location.latitude},${place.location.longitude}&destination_place_id=${place.id}`} target="_blank" rel="noopener noreferrer" className="grow">Navigate</Button>
+                    <Button variant="outline" href={`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${place.location.latitude},${place.location.longitude}`} target="_blank" rel="noopener noreferrer" className="grow">Streetview</Button>
                     {place.reservable && (
                         <Button href={place.websiteUri} className="grow">Book a table</Button>
                     )}
