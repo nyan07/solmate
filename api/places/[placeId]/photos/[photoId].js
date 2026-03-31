@@ -2,17 +2,6 @@ export const config = {
   runtime: "edge",
 };
 
-const parseUrl = (url) => {
-    const parts = url.pathname.split("/");
-  
-    const placeId = parts[3];
-    const photoId = parts[5];
-  
-    if (placeId && photoId) {
-      return { placeId, photoId };
-    }
-}
-
 export async function GET(req) {
   const abortController = new AbortController();
 
@@ -21,21 +10,34 @@ export async function GET(req) {
   });
 
   try {
-    const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-    const {placeId, photoId} = parseUrl(requestUrl);
+    const requestUrl = new URL(req.url, `http://${req.headers.get("host")}`);
 
-    if (!placeId || !photoId) {
-      return error("PlaceId or PhotoId is not defined");
+    // URL is /api/places/{placeId}/photos/{photoId}
+    // photo.name from Google is already `places/{placeId}/photos/{photoId}`
+    const resourceName = requestUrl.pathname.replace(/^\/api\//, "");
+
+    if (!resourceName) {
+      return error(400, "Resource name is not defined");
     }
 
-    const { searchParams } = new URL(req.url);
-    const maxWidthPx = searchParams.get("w") || 400;
-    const maxHeightPx = searchParams.get("h") || 400;
+    const maxWidthPx = requestUrl.searchParams.get("w") || 400;
+    const maxHeightPx = requestUrl.searchParams.get("h") || 400;
 
-    const url = `https://places.googleapis.com/v1/places/${placeId}/photos/${photoId}/media?maxHeightPx=${maxHeightPx}&maxWidthPx=${maxWidthPx}&key=${process.env.GOOGLE_PLACES_KEY}`;
-    const response = await fetch(url, { signal: abortController.signal });
+    const origin = req.headers.get("origin") || "";
+    const host = req.headers.get("host") || "";
+
+    const url = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeightPx}&maxWidthPx=${maxWidthPx}`;
+    const response = await fetch(url, {
+      signal: abortController.signal,
+      headers: {
+        "X-Goog-Api-Key": process.env.GOOGLE_PLACES_KEY,
+        "Referer": origin || `https://${host}`,
+      },
+    });
 
     if (!response.ok) {
+      const body = await response.text();
+      console.error("Photo API error:", response.status, body, "\nURL:", url);
       return error(500, "Failed to fetch photo");
     }
 

@@ -138,11 +138,10 @@ const Mappr: React.FC = () => {
 
 
     const controller = viewer.scene.screenSpaceCameraController;
-    // Always allow zoom, disable rotate/tilt
     controller.enableZoom = true;
+    controller.enableRotate = true;
     controller.enableTilt = false;
     controller.enableLook = false;
-    controller.enableRotate = false;
 
 
     viewer.clock.currentTime = sunData.time;

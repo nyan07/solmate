@@ -5,6 +5,13 @@ import { Link } from "react-router-dom"
 import type { PlaceSummary } from "../types/PlaceSummary"
 import { getOpeningHoursStatus } from "../../utils/openingHours"
 
+const getText = (value: unknown): string | undefined => {
+    if (!value) return undefined;
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && "text" in value) return (value as { text: string }).text;
+    return undefined;
+};
+
 
 type PlaceItemProps = {
     place: PlaceSummary,
@@ -21,7 +28,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
                     <span className='absolute -top-2 right-0'>{distance}</span>
                     {/* {place.photoUrl && <img src={place.photoUrl} className='w-12 h-12 rounded-full bg-gray-300' />} */}
                     <h4 className='text-neutral-dark grow-1 text-lg inline'>
-                        <span className="pt-1">{place.displayName}</span>
+                        <span className="pt-1">{getText(place.displayName)}</span>
                         <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
                     </h4>
 
@@ -31,7 +38,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
                     {place.hasOutdoorSeating && <Tag name="Outdoor Seating" />}
                     {/* \{place.tags.map((tag: string) => (<Tag key={`place-${place.id}-tag-${tag}`} name={tag} />))} */}
                 </div>
-                <p className="text-neutral-dark/70">{place.editorialSummary}</p>
+                <p className="text-neutral-dark/70">{getText(place.editorialSummary)}</p>
             </div>
         </Link>
     )

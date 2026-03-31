@@ -90,7 +90,7 @@ export const usePins = (
           id: `place-billboard-${place.id}`,
           position: billboardPos,
           billboard: {
-            image: "pin.png", // caminho da sua imagem
+            image: "/pin.png",
             scale: 1, // ajuste fino do tamanho
             verticalOrigin: VerticalOrigin.BOTTOM, // ancora pela base
             disableDepthTestDistance: Number.POSITIVE_INFINITY, // sempre visível

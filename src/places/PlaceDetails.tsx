@@ -6,7 +6,14 @@ import { DaylightBar } from "./components/DaylightBar";
 import { calculateDistance } from "../utils/calculateDistance";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { usePlace } from "./hooks/usePlace";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
+const getText = (value: unknown): string | undefined => {
+    if (!value) return undefined;
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && "text" in value) return (value as { text: string }).text;
+    return undefined;
+};
 
 // const place: Place =
 // {
@@ -23,24 +30,28 @@ import { useParams } from "react-router-dom";
 function PlaceDetails() {
     const { geolocation } = useGeolocation();
     let { placeId } = useParams();
+    const navigate = useNavigate();
     const { data: place } = usePlace(placeId, { enabled: !!placeId });
 
     if (!place) return;
 
     return (
-        <SwipeUp>
+        <SwipeUp defaultOpen={true}>
             <div className='flex flex-col gap-4'>
+                <button onClick={() => navigate('/places')} className="self-start text-primary text-sm">← Back</button>
 
                 <h4 className='text-neutral-dark grow-1 text-2xl flex'>
-                    <span className="pt-1">{place.displayName}</span>
+                    <span className="pt-1">{getText(place.displayName)}</span>
                     <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
                 </h4>
 
-                {/* <div className='w-full h-48 rounded-2xl overflow-hidden'>
-                    <img src={place.imageUrl} className="object-cover w-full h-full" />
-                </div> */}
+                {place.photoUrl && (
+                    <div className='w-full h-48 rounded-2xl overflow-hidden'>
+                        <img src={place.photoUrl} className="object-cover w-full h-full" />
+                    </div>
+                )}
 
-                {place.editorialSummary && <p>{place.editorialSummary}</p>}
+                {place.editorialSummary && <p>{getText(place.editorialSummary)}</p>}
 
                 {/* <div className='flex gap-2'>
                     <PlaceStatus status={place.status} />

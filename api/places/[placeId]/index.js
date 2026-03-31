@@ -24,7 +24,7 @@ export const config = {
       const {placeId} = parseUrl(requestUrl);
   
       if (!placeId) {
-        return error("PlaceId is not defined");
+        return error(400, "PlaceId is not defined");
       }
 
       const fields = [
@@ -43,24 +43,56 @@ export const config = {
         "businessStatus",
         "accessibilityOptions",
         "goodForGroups",
-        "isGoodForChildren",
+        "goodForChildren",
         "priceLevel",
         "allowsDogs"
       ];
   
-      const url = `https://places.googleapis.com/v1/places/${placeId}/?key=${process.env.GOOGLE_PLACES_KEY}`;
-      const response = await fetch(url, { signal: abortController.signal });
-  
+      const origin = req.headers.get("origin") || "";
+      const host = req.headers.get("host") || "";
+
+      const url = `https://places.googleapis.com/v1/places/${placeId}`;
+      const response = await fetch(url, {
+        signal: abortController.signal,
+        headers: {
+          "X-Goog-Api-Key": process.env.GOOGLE_PLACES_KEY,
+          "X-Goog-FieldMask": fields.join(","),
+          "Referer": origin || `https://${host}`,
+        },
+      });
+
       if (!response.ok) {
-        return error(500, `Failed to fetch: ${response.error}`);
+        const body = await response.text();
+        console.error("Places API error:", response.status, body);
+        return error(500, `Failed to fetch: ${response.statusText}`);
       }
-  
-      return new Response(await response.arrayBuffer(), {
+
+      const place = await response.json();
+      const parsed = {
+        id: place.id,
+        displayName: place.displayName?.text,
+        primaryType: place.primaryType,
+        editorialSummary: place.editorialSummary?.text,
+        location: place.location,
+        photoUrl: place.photos?.[0] ? `/api/${place.photos[0].name}?w=400&h=400` : undefined,
+        openingHours: place.currentOpeningHours,
+        formattedAddress: place.formattedAddress,
+        hasOutdoorSeating: place.outdoorSeating || false,
+        businessStatus: place.businessStatus,
+        regularOpeningHours: place.regularOpeningHours,
+        rating: place.rating,
+        accessibilityOptions: place.accessibilityOptions,
+        goodForGroups: place.goodForGroups,
+        goodForChildren: place.goodForChildren,
+        priceLevel: place.priceLevel,
+        allowsDogs: place.allowsDogs,
+      };
+
+      return new Response(JSON.stringify(parsed), {
         status: 200,
         headers: {
-          "Content-Type": response.headers.get("Content-Type") || "image/jpeg",
-          "Cache-Control": "public, max-age=86400",
-          "X-Goog-FieldMask": fields.map((f) => `places.${f}`).join(","),
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
         },
       });
   
