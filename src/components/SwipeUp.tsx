@@ -26,8 +26,8 @@ export default function SwipeUp({
 }: SwipeUpProps) {
     const viewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
     const defaultHeight = Math.round(viewportHeight * openHeight);
-    const maxHeight = viewportHeight - BOTTOM_NAV_HEIGHT - topOffset;
-    const peekHeight = 74;
+    const maxHeight = viewportHeight - topOffset;
+    const peekHeight = 74 + BOTTOM_NAV_HEIGHT;
 
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const [expanded, setExpanded] = useState(false);
@@ -97,7 +97,7 @@ export default function SwipeUp({
             aria-modal="true"
             animate={controls}
             initial={{ y: defaultOpen ? 0 : defaultHeight - peekHeight, height: defaultHeight }}
-            className="fixed left-0 right-0 bottom-16 z-40 flex flex-col bg-neutral-lightest rounded-t-2xl w-full shadow-2xl"
+            className="fixed left-0 right-0 bottom-0 z-40 flex flex-col bg-neutral-lightest rounded-t-2xl w-full shadow-2xl"
         >
             <div
                 className="flex justify-center w-full py-2 shrink-0 cursor-grab active:cursor-grabbing"
@@ -111,7 +111,7 @@ export default function SwipeUp({
 
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto px-2 min-h-0"
+                className="flex-1 overflow-y-auto px-2 pb-16 min-h-0"
                 style={{ touchAction: "pan-y" }}
                 onScroll={handleScroll}
             >
