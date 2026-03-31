@@ -40,7 +40,6 @@ export const config = {
         "businessStatus",
         "regularOpeningHours",
         "rating",
-        "businessStatus",
         "accessibilityOptions",
         "goodForGroups",
         "goodForChildren",

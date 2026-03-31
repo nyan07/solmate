@@ -1,17 +1,13 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import type { LatLng } from "../../types/LatLng";
 import type { PlaceSummary } from "../types/PlaceSummary";
+import { CACHE_FIRST_OPTIONS } from "./cacheFirstOptions";
 
-export const fetchNearbyPlaces = async (
-    location: LatLng,
-    radius = 500
-): Promise<PlaceSummary[]> => {
+export const fetchNearbyPlaces = async (location: LatLng, radius = 500): Promise<PlaceSummary[]> => {
     try {
         const res = await fetch("/api/places/nearby", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ latitude: location.latitude, longitude: location.longitude, radius }),
         });
 
@@ -26,28 +22,18 @@ export const fetchNearbyPlaces = async (
 };
 
 type UseNearbyPlacesOptions = {
-    enabled: boolean,
-    cacheFirst?: boolean
-}
+    enabled: boolean;
+    cacheFirst?: boolean;
+};
 
-export const useNearbyPlaces = (location: LatLng | null, { enabled, cacheFirst }: UseNearbyPlacesOptions = { enabled: true, cacheFirst: false }): UseQueryResult<PlaceSummary[]> => {
-    const cacheOptions = cacheFirst ?
-        {
-            staleTime: Infinity,
-            cacheTime: Infinity,
-            refetchOnMount: false,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false,
-            refetchInterval: 0,
-        } : {};
-
+export const useNearbyPlaces = (
+    location: LatLng | null,
+    { enabled, cacheFirst }: UseNearbyPlacesOptions = { enabled: true, cacheFirst: false }
+): UseQueryResult<PlaceSummary[]> => {
     return useQuery({
-        ...cacheOptions,
+        ...(cacheFirst ? CACHE_FIRST_OPTIONS : {}),
         queryKey: ["nearbyPlaces", location],
-        queryFn: () =>
-            location
-                ? fetchNearbyPlaces(location)
-                : Promise.resolve([]),
+        queryFn: () => location ? fetchNearbyPlaces(location) : Promise.resolve([]),
         enabled: !!location && enabled,
     });
 };

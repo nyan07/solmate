@@ -4,8 +4,8 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { useNearbyPlaces } from "./hooks/useNearbyPlaces";
 import { calculateDistance } from "../utils/calculateDistance";
 import { useMapContext } from "../map/MapContext";
+import { DEFAULT_CAMERA_DISTANCE } from "../map/constants";
 
-const DEFAULT_CAMERA_DISTANCE = 700;
 function PlacesList() {
     const { geolocation } = useGeolocation();
     const { center, cameraDistance } = useMapContext();
@@ -14,7 +14,7 @@ function PlacesList() {
     return (
         <SwipeUp>
             <ul className='w-full gap-2 flex flex-col px-2 py-2'>
-                {places && location && places.map((place) => (
+                {places && places.map((place) => (
                     <li key={`place-${place.id}`}>
                         <PlaceItem place={place} distance={geolocation ? calculateDistance(geolocation, place.location) : ""} />
                     </li>

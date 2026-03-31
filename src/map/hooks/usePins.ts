@@ -12,8 +12,9 @@ import {
 } from "cesium";
 import { useNearbyPlaces } from "../../places/hooks/useNearbyPlaces";
 import { useMapContext } from "../MapContext";
+import { DEFAULT_CAMERA_DISTANCE } from "../constants";
 
-const DEFAULT_CAMERA_DISTANCE = 700;
+const PIN_COLOR = Color.fromCssColorString("#8591b5");
 
 export const usePins = (
   viewer: Viewer | null,
@@ -25,9 +26,8 @@ export const usePins = (
     enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
   });
   const [heights, setHeights] = useState<Record<string, number>>({});
-  const pinDarkColor = Color.fromCssColorString("#8591b5");
 
-  // Carrega altura do terreno para todos os places
+  // Sample terrain height for each place so pins sit on the ground
   useEffect(() => {
     if (!viewer || !visible || !places?.length) return;
 
@@ -55,35 +55,26 @@ export const usePins = (
   useEffect(() => {
     if (!viewer || !visible || !places?.length) return;
 
-    // cria billboards e linhas para cada place
     places.forEach((place) => {
       const terrainHeight = heights[place.id];
       if (terrainHeight == null) return;
 
       const { latitude, longitude } = place.location;
 
-      // posição da imagem
       const billboardPos = new CallbackPositionProperty(
         () => Cartesian3.fromDegrees(longitude, latitude, terrainHeight),
         false,
         ReferenceFrame.FIXED
       );
 
-      // posição da linha
       const linePos = new CallbackProperty(
-        () => {
-          const ground = Cartesian3.fromDegrees(
-            longitude,
-            latitude,
-            terrainHeight - offsetHeight
-          );
-          const top = Cartesian3.fromDegrees(longitude, latitude, terrainHeight);
-          return [ground, top];
-        },
+        () => [
+          Cartesian3.fromDegrees(longitude, latitude, terrainHeight - offsetHeight),
+          Cartesian3.fromDegrees(longitude, latitude, terrainHeight),
+        ],
         false
       );
 
-      // cria ou atualiza billboard
       let billboard = viewer.entities.getById(`place-billboard-${place.id}`);
       if (!billboard) {
         billboard = viewer.entities.add({
@@ -91,16 +82,15 @@ export const usePins = (
           position: billboardPos,
           billboard: {
             image: "/pin.png",
-            scale: 1, // ajuste fino do tamanho
-            verticalOrigin: VerticalOrigin.BOTTOM, // ancora pela base
-            disableDepthTestDistance: Number.POSITIVE_INFINITY, // sempre visível
+            scale: 1,
+            verticalOrigin: VerticalOrigin.BOTTOM,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
           },
         });
       } else {
         billboard.position = billboardPos;
       }
 
-      // cria ou atualiza linha
       let line = viewer.entities.getById(`place-line-${place.id}`);
       if (!line) {
         line = viewer.entities.add({
@@ -108,7 +98,7 @@ export const usePins = (
           polyline: {
             positions: linePos,
             width: 3,
-            material: pinDarkColor,
+            material: PIN_COLOR,
           },
         });
       } else {
@@ -116,7 +106,6 @@ export const usePins = (
       }
     });
 
-    // cleanup
     return () => {
       places.forEach((place) => {
         const billboard = viewer.entities.getById(`place-billboard-${place.id}`);

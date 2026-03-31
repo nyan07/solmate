@@ -11,6 +11,9 @@ import {
 } from "cesium";
 import type { LatLng } from "../../types/LatLng";
 
+const PIN_LIGHT_COLOR = Color.fromCssColorString("#F2EACF");
+const PIN_DARK_COLOR = Color.fromCssColorString("#dbd0ab");
+
 export const useUserLocationPos = (
   viewer: Viewer | null,
   geolocation: LatLng | null,
@@ -18,17 +21,15 @@ export const useUserLocationPos = (
   offsetHeight: number = 20
 ) => {
   const [terrainHeight, setTerrainHeight] = useState<number | null>(null);
-  const pinLightColor = Color.fromCssColorString("#F2EACF");
-  const pinDarkColor = Color.fromCssColorString("#dbd0ab");
 
-  // Carrega altura do terreno
+  // Sample terrain height at the user's location
   useEffect(() => {
     if (!viewer || !geolocation || !visible) return;
 
     const loadHeight = async () => {
       const cartographic = Cartographic.fromDegrees(geolocation.longitude, geolocation.latitude);
-      const [terrainSample] = await sampleTerrainMostDetailed(viewer.terrainProvider, [cartographic]);
-      setTerrainHeight((terrainSample.height ?? 0) + offsetHeight);
+      const [sample] = await sampleTerrainMostDetailed(viewer.terrainProvider, [cartographic]);
+      setTerrainHeight((sample.height ?? 0) + offsetHeight);
     };
 
     loadHeight();
@@ -37,24 +38,20 @@ export const useUserLocationPos = (
   useEffect(() => {
     if (!viewer || !geolocation || terrainHeight === null) return;
 
-    // Cria posição da esfera
     const spherePos = new CallbackPositionProperty(
       () => Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight),
       false,
       ReferenceFrame.FIXED
     );
 
-    // Cria posição da linha (do chão até a esfera)
     const linePos = new CallbackProperty(
-      () => {
-        const ground = Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight - offsetHeight);
-        const top = Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight);
-        return [ground, top];
-      },
+      () => [
+        Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight - offsetHeight),
+        Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight),
+      ],
       false
     );
 
-    // Cria ou atualiza a esfera
     let sphere = viewer.entities.getById("location-sphere");
     if (!sphere) {
       sphere = viewer.entities.add({
@@ -62,8 +59,8 @@ export const useUserLocationPos = (
         position: spherePos,
         point: {
           pixelSize: 14,
-          color: pinLightColor,
-          outlineColor: pinDarkColor,
+          color: PIN_LIGHT_COLOR,
+          outlineColor: PIN_DARK_COLOR,
           outlineWidth: 2,
         },
       });
@@ -71,7 +68,6 @@ export const useUserLocationPos = (
       sphere.position = spherePos;
     }
 
-    // Cria ou atualiza a linha
     let line = viewer.entities.getById("location-line");
     if (!line) {
       line = viewer.entities.add({
@@ -79,7 +75,7 @@ export const useUserLocationPos = (
         polyline: {
           positions: linePos,
           width: 2,
-          material: pinDarkColor,
+          material: PIN_DARK_COLOR,
         },
       });
     } else {

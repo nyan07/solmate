@@ -22,13 +22,13 @@ import { useUserLocationPos } from "./hooks/useUserLocationPos";
 import { useCameraDistance } from "./hooks/useCameraDistance";
 import type { LatLng } from "../types/LatLng";
 import { usePins } from "./hooks/usePins";
+import { DEFAULT_CAMERA_DISTANCE } from "./constants";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
-const Mappr: React.FC = () => {
-  const DEFAULT_CAMERA_DISTANCE = 700;
-  const FALLBACK_LOCATION: LatLng = { latitude: 52.5195605, longitude: 13.3988917 } // Berlin
+const FALLBACK_LOCATION: LatLng = { latitude: 52.5195605, longitude: 13.3988917 }; // Berlin
 
+const Mappr: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
 
@@ -52,7 +52,7 @@ const Mappr: React.FC = () => {
     }
   }, [cameraDistance]);
 
-  // Inicialização do Viewer
+  // Initialize Cesium viewer
   useEffect(() => {
     if (isGeolocationLoading && !viewerReady) return;
     let viewer: Viewer;
@@ -72,13 +72,10 @@ const Mappr: React.FC = () => {
         shadows: true,
       });
 
-      // https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png
-
       const osmLayer = new UrlTemplateImageryProvider({
         url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png?layers=V",
       });
       viewer.imageryLayers.addImageryProvider(osmLayer);
-
 
       const osmBuildings = await createOsmBuildingsAsync();
       osmBuildings.shadows = 2;
@@ -89,7 +86,6 @@ const Mappr: React.FC = () => {
       viewer.scene.shadowMap.softShadows = true;
       viewer.scene.globe.enableLighting = true;
 
-
       viewerRef.current = viewer;
       viewer.scene.preRender.addEventListener(preRenderHandler);
     };
@@ -97,7 +93,6 @@ const Mappr: React.FC = () => {
     const preRenderHandler = () => {
       const initialPos = geolocation || FALLBACK_LOCATION;
       if (!viewerReady) {
-
         viewer.camera.flyTo({
           destination: Cartesian3.fromDegrees(
             initialPos.longitude,
@@ -111,7 +106,6 @@ const Mappr: React.FC = () => {
       }
     };
 
-
     initViewer();
     if (!geolocationError) updateUserLocation();
 
@@ -120,9 +114,7 @@ const Mappr: React.FC = () => {
     };
   }, [geolocation, geolocationError, isGeolocationLoading]);
 
-  // Atualiza posição e luz do Sol
-
-
+  // Update sun direction and lighting
   useEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer || !viewerReady || !sunData) return;
@@ -136,27 +128,22 @@ const Mappr: React.FC = () => {
       (viewer.scene.light as DirectionalLight).direction = sunData.direction;
     }
 
-
     const controller = viewer.scene.screenSpaceCameraController;
     controller.enableZoom = true;
     controller.enableRotate = true;
     controller.enableTilt = false;
     controller.enableLook = false;
 
-
     viewer.clock.currentTime = sunData.time;
   }, [sunData, viewerReady]);
-
 
   const updateUserLocation = () => {
     const viewer = viewerRef.current;
     if (!viewer || !geolocation) return;
 
-    // remove marcador antigo
     const existing = viewer.entities.getById("user-location");
     if (existing) viewer.entities.remove(existing);
 
-    // adiciona novo marcador
     viewer.entities.add({
       id: "user-location",
       position: Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, 100),
@@ -167,14 +154,12 @@ const Mappr: React.FC = () => {
         outlineWidth: 2,
       }
     });
-  }
-
+  };
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <div
-        className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"
-          }`}
+        className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"}`}
       >
         <div className="p-6 bg-neutral-lightest shadow-md rounded-b-xl flex flex-col gap-4 items-center">
           <div className="flex gap-4 items-center w-full">
@@ -196,11 +181,9 @@ const Mappr: React.FC = () => {
         </div>
       </div>
 
-      {/* Container do mapa */}
       <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );
 };
 
 export default Mappr;
-
