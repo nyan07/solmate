@@ -16,6 +16,7 @@ import { FiSunset, FiSunrise } from "react-icons/fi";
 import { DatePicker } from "../components/DatePicker";
 import { Range } from "../components/Range";
 import { useMapCenter } from "./hooks/useMapCenter";
+import { useMapContext } from "./MapContext";
 import { useSunTimes } from "./hooks/useSunTimes";
 import { useSunDirection } from "./hooks/useSunDirection";
 import { useUserLocationPos } from "./hooks/useUserLocationPos";
@@ -31,11 +32,14 @@ const FALLBACK_LOCATION: LatLng = { latitude: 52.5195605, longitude: 13.3988917 
 const Mappr: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
+  const topBarRef = useRef<HTMLDivElement>(null);
 
   const [date, setDate] = useState<Date>(new Date());
   const [hour, setHour] = useState<number>(new Date().getHours());
   const [viewerReady, setViewerReady] = useState(false);
   const [showControls, setShowControls] = useState(false);
+
+  const { setTopBarHeight } = useMapContext();
 
   const { geolocation, error: geolocationError, loading: isGeolocationLoading } = useGeolocation();
   const mapCenter = useMapCenter(viewerRef.current);
@@ -51,6 +55,13 @@ const Mappr: React.FC = () => {
       setShowControls(cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10);
     }
   }, [cameraDistance]);
+
+  useEffect(() => {
+    if (!topBarRef.current) return;
+    const observer = new ResizeObserver(([entry]) => setTopBarHeight(entry.contentRect.height));
+    observer.observe(topBarRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Initialize Cesium viewer
   useEffect(() => {
@@ -159,6 +170,7 @@ const Mappr: React.FC = () => {
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <div
+        ref={topBarRef}
         className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"}`}
       >
         <div className="p-6 bg-neutral-lightest shadow-md rounded-b-xl flex flex-col gap-4 items-center">

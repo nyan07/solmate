@@ -1,13 +1,33 @@
-import type { PlaceStatuses } from "./PlaceStatuses";
 import type { PlaceSummary } from "./PlaceSummary";
-import type { PlaceTypes } from "./PlaceTypes";
+
+export type AccessibilityOptions = {
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+};
+
+export type BusinessStatus = 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY';
+
+export type PriceLevel =
+    | 'PRICE_LEVEL_FREE'
+    | 'PRICE_LEVEL_INEXPENSIVE'
+    | 'PRICE_LEVEL_MODERATE'
+    | 'PRICE_LEVEL_EXPENSIVE'
+    | 'PRICE_LEVEL_VERY_EXPENSIVE';
 
 export type Place = PlaceSummary & {
-    id: number,
-    name: string,
-    type: PlaceTypes,
-    tags: string[],
-    description: string,
-    status: PlaceStatuses,
-    rating: number,
-}
+    rating?: number;
+    formattedAddress?: string;
+    businessStatus?: BusinessStatus;
+    regularOpeningHours?: {
+        weekdayDescriptions?: string[];
+    };
+    accessibilityOptions?: AccessibilityOptions;
+    goodForGroups?: boolean;
+    goodForChildren?: boolean;
+    priceLevel?: PriceLevel;
+    allowsDogs?: boolean;
+    reservable?: boolean;
+    websiteUri?: string;
+};

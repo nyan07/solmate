@@ -8,11 +8,17 @@ import { DEFAULT_CAMERA_DISTANCE } from "../map/constants";
 
 function PlacesList() {
     const { geolocation } = useGeolocation();
-    const { center, cameraDistance } = useMapContext();
+    const { center, cameraDistance, topBarHeight, listOpen, setListOpen, listScrollTop, setListScrollTop } = useMapContext();
     const { data: places } = useNearbyPlaces(center, { enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10 });
 
     return (
-        <SwipeUp>
+        <SwipeUp
+            topOffset={topBarHeight}
+            open={listOpen || undefined}
+            initialScrollTop={listScrollTop}
+            onOpenChange={setListOpen}
+            onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
+        >
             <ul className='w-full gap-2 flex flex-col px-2 py-2'>
                 {places && places.map((place) => (
                     <li key={`place-${place.id}`}>

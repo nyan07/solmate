@@ -9,8 +9,16 @@ const PLACE_ICONS: { [key in PlaceTypes]: React.FC<React.SVGProps<SVGSVGElement>
     restaurant: RestaurantIcon,
 };
 
-export const PlaceTypeIcon = ({ type, className }: { type: PlaceTypes, className?: string }) => {
-    const Icon = PLACE_ICONS[type];
+function resolveIcon(type: string) {
+    if (PLACE_ICONS[type as PlaceTypes]) return PLACE_ICONS[type as PlaceTypes];
+    if (type.includes('restaurant')) return PLACE_ICONS.restaurant;
+    if (type.includes('bar') || type.includes('pub')) return PLACE_ICONS.bar;
+    if (type.includes('cafe') || type.includes('coffee')) return PLACE_ICONS.cafe;
+    return null;
+}
+
+export const PlaceTypeIcon = ({ type, className }: { type: string, className?: string }) => {
+    const Icon = resolveIcon(type);
     return (
         <span className={`w-4 h-4 ${className}`}>
             {Icon && <Icon className={className} />}

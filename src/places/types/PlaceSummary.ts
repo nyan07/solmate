@@ -5,6 +5,7 @@ export type PlaceSummary = {
     id: string,
     displayName: string,
     primaryType: PlaceTypes,
+    primaryTypeDisplayName?: string,
     editorialSummary: string,
     location: LatLng,
     hasOutdoorSeating: boolean,

@@ -1,35 +1,40 @@
 import React from "react";
 
-type ButtonProps = {
-  children: React.ReactNode;
-  onClick?: () => void;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
-  className?: string;
+type Variant = "filled" | "outline";
+
+const BASE = "p-2 rounded-full transition-colors duration-200 text-center";
+
+const VARIANT: Record<Variant, string> = {
+    filled:  "bg-primary text-neutral-lightest hover:bg-accent disabled:bg-primary-200",
+    outline: "border border-primary text-primary hover:border-accent hover:text-accent bg-transparent",
 };
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  onClick,
-  type = "button",
-  disabled = false,
-  className = "",
-}) => {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`
-        px-4 py-2 rounded-full text-neutral-lightest 
-        bg-primary hover:bg-accent disabled:bg-primary/50
-        transition-colors duration-200
-        ${className}
-      `}
-    >
-      {children}
-    </button>
-  );
+type BaseProps = {
+    children: React.ReactNode;
+    variant?: Variant;
+    className?: string;
+};
+
+type AsButton = BaseProps & React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    href?: never;
+};
+
+type AsLink = BaseProps & React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    href: string;
+};
+
+type Props = AsButton | AsLink;
+
+const Button = ({ children, variant = "filled", className = "", ...rest }: Props) => {
+    const cls = `${BASE} ${VARIANT[variant]} ${className}`;
+
+    if ("href" in rest && rest.href !== undefined) {
+        const { href, ...linkProps } = rest as AsLink;
+        return <a href={href} className={cls} {...linkProps}>{children}</a>;
+    }
+
+    const { ...buttonProps } = rest as AsButton;
+    return <button className={cls} {...buttonProps}>{children}</button>;
 };
 
 export default Button;

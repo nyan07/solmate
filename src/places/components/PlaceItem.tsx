@@ -1,10 +1,16 @@
-import { PlaceTypeIcon } from "./PlaceTypeIcon"
+import { PlaceName } from "./PlaceName"
 import { Tag } from "../../components/Tag"
-import { PlaceStatus } from "./PlaceStatus"
+import { PlaceStatusBadge } from "./PlaceStatusBadge"
 import { Link } from "react-router-dom"
 import type { PlaceSummary } from "../types/PlaceSummary"
 import { getOpeningHoursStatus } from "../../utils/openingHours"
 import { getText } from "../../utils/getText"
+
+const truncate = (text: string | undefined, maxWords: number) => {
+    if (!text) return text;
+    const words = text.split(' ');
+    return words.length <= maxWords ? text : words.slice(0, maxWords).join(' ') + '…';
+};
 
 type PlaceItemProps = {
     place: PlaceSummary;
@@ -13,22 +19,26 @@ type PlaceItemProps = {
 
 export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
     const openingHoursStatus = getOpeningHoursStatus(place.openingHours);
+    const statusDetail = openingHoursStatus ? { status: openingHoursStatus } : null;
 
     return (
         <Link to={`/places/${place.id}`}>
-            <div className='rounded-lg p-4 flex flex-col gap-2 bg-primary/20'>
-                <div className='flex gap-2 relative items-center -mt-1'>
-                    <span className='absolute -top-2 right-0'>{distance}</span>
-                    <h4 className='text-neutral-dark grow-1 text-lg inline'>
-                        <span className="pt-1">{getText(place.displayName)}</span>
-                        <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
-                    </h4>
+            <div className='rounded-lg p-4 flex flex-col gap-2 bg-primary-50'>
+                <div className='flex gap-3 items-start'>
+                    <PlaceName
+                        name={getText(place.displayName) ?? ''}
+                        type={place.primaryType}
+                        typeLabel={place.primaryTypeDisplayName}
+                        size="md"
+                        className="flex-1"
+                    />
+                    <span className='text-sm text-neutral-dark/50 shrink-0 pt-1'>{distance}</span>
                 </div>
                 <div className='flex gap-2'>
-                    {openingHoursStatus && <PlaceStatus status={openingHoursStatus} />}
+                    {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
                     {place.hasOutdoorSeating && <Tag name="Outdoor Seating" />}
                 </div>
-                <p className="text-neutral-dark/70">{getText(place.editorialSummary)}</p>
+                <p className="text-neutral-dark/70">{truncate(getText(place.editorialSummary), 12)}</p>
             </div>
         </Link>
     )

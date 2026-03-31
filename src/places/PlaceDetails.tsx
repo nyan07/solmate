@@ -1,13 +1,21 @@
-import { PlaceTypeIcon } from "./components/PlaceTypeIcon";
+import { PlaceName } from "./components/PlaceName";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import SwipeUp from "../components/SwipeUp";
 import Button from "../components/Button";
-import { StarIcon, MapPinIcon } from '@heroicons/react/24/solid'
+import { Tag } from "../components/Tag";
+import { PlaceMeta } from "./components/PlaceMeta";
 import { DaylightBar } from "./components/DaylightBar";
-import { calculateDistance } from "../utils/calculateDistance";
 import { getText } from "../utils/getText";
+import { getPlaceStatusDetail } from "../utils/openingHours";
+import type { PlaceStatusDetail } from "../utils/openingHours";
+import { PlaceOpeningHours } from "./components/PlaceOpeningHours";
+import { PlaceAccessibility } from "./components/PlaceAccessibility";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { usePlace } from "./hooks/usePlace";
 import { useParams, useNavigate } from "react-router-dom";
+import { useMapContext } from "../map/MapContext";
+import { useState } from "react";
+import { PlaceStatusBadge } from "./components/PlaceStatusBadge";
 
 function PlaceDetails() {
     const { geolocation } = useGeolocation();
@@ -15,46 +23,89 @@ function PlaceDetails() {
     const navigate = useNavigate();
     const { data: place } = usePlace(placeId, { enabled: !!placeId });
 
+    const { topBarHeight } = useMapContext();
+    const [scrolled, setScrolled] = useState(false);
+
     if (!place) return null;
 
-    return (
-        <SwipeUp defaultOpen={true}>
-            <div className='flex flex-col gap-4'>
-                <button onClick={() => navigate('/places')} className="self-start text-primary text-sm">← Back</button>
+    const tags: string[] = [
+        place.hasOutdoorSeating && "Outdoor seating",
+        place.goodForGroups && "Good for groups",
+        place.goodForChildren && "Good for children",
+        place.allowsDogs && "Dogs allowed",
+    ].filter((t): t is string => !!t);
 
-                <h4 className='text-neutral-dark grow-1 text-2xl flex'>
-                    <span className="pt-1">{getText(place.displayName)}</span>
-                    <span className="pl-2"><PlaceTypeIcon type={place.primaryType} className="w-4 h-4 inline" /></span>
-                </h4>
+    const statusDetail: PlaceStatusDetail | null =
+        place.businessStatus === 'CLOSED_TEMPORARILY' ? { status: 'temporarily closed' } :
+            place.businessStatus === 'CLOSED_PERMANENTLY' ? { status: 'permanently closed' } :
+                getPlaceStatusDetail(place.openingHours);
+
+    return (
+        <SwipeUp defaultOpen={true} topOffset={topBarHeight} onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}>
+            <div className="sticky top-0 z-10 bg-neutral-lightest">
+                <div className={`flex items-start gap-2 min-w-0 rounded-t-lg p-4 bg-primary-50 ${scrolled && 'shadow'}`}>
+                    <PlaceName
+                        name={getText(place.displayName) ?? ''}
+                        type={place.primaryType}
+                        typeLabel={place.primaryTypeDisplayName}
+                        size="lg"
+                        className={`flex-1 min-w-0${scrolled ? ' truncate' : ''}`}
+                    />
+                    <button onClick={() => navigate('/places')} className="text-neutral-dark/40 hover:text-neutral-dark shrink-0 mt-1.5 bg-primary-100 rounded-full p-1">
+                        <XMarkIcon className="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+            <div className='flex flex-col rounded-b-lg p-4 pt-0 gap-6 bg-primary-50'>
+
+                    {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
+
+                <PlaceMeta
+                    geolocation={geolocation}
+                    location={place.location}
+                    rating={place.rating}
+                    priceLevel={place.priceLevel}
+                />
 
                 {place.photoUrl && (
-                    <div className='w-full h-48 rounded-2xl overflow-hidden'>
+                    <div className='w-full h-48 rounded-xl overflow-hidden bg-primary-100'>
                         <img src={place.photoUrl} className="object-cover w-full h-full" />
                     </div>
                 )}
 
-                {place.editorialSummary && <p>{getText(place.editorialSummary)}</p>}
-
-                <div className="flex gap-4 items-center">
-                    {geolocation && (
-                        <span className="flex gap-1 my-4">
-                            <MapPinIcon className="w-6 h-6 text-accent" />
-                            {calculateDistance(geolocation, place.location)}
-                        </span>
-                    )}
-                    <span className="flex gap-1 my-4">
-                        <StarIcon className="w-6 h-6 text-amber-300" />
-                        {place.rating}
-                    </span>
+                <div className="flex flex-col gap-2">
+                    <p>Best time to catch the sun here today:</p>
+                    <DaylightBar startTime="10:45" endTime="16:15" />
                 </div>
 
-                <p>Best time to catch the sun here today:</p>
-                <DaylightBar startTime="10:45" endTime="16:15" />
 
-                <div className="flex w-full gap-2 mt-8">
-                    <a href={`https://www.google.com/maps/dir/@?api=1&query=${getText(place.displayName)}`} className="grow">Navigate</a>
-                    <a href={`https://www.google.com/maps/@?api=1&map_action=pano&query=${getText(place.displayName)}`} className="grow">Streetview</a>
-                    <Button className="grow">Book a table</Button>
+
+                {place.editorialSummary && <p className="text-neutral-dark/80">{getText(place.editorialSummary)}</p>}
+
+
+                <div className="flex flex-col gap-0.5">
+                    <PlaceOpeningHours
+                        statusDetail={statusDetail}
+                        weekdayDescriptions={place.regularOpeningHours?.weekdayDescriptions}
+                        position={place.accessibilityOptions && "first"}
+                    />
+
+                    <PlaceAccessibility options={place.accessibilityOptions} position="last" />
+                </div>
+
+
+                {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {tags.map((tag) => <Tag key={tag} name={tag} />)}
+                    </div>
+                )}
+
+                <div className="flex w-full gap-2">
+                    <Button variant="outline" href={`https://www.google.com/maps/dir/@?api=1&query=${getText(place.displayName)}`} className="grow">Navigate</Button>
+                    <Button variant="outline" href={`https://www.google.com/maps/@?api=1&map_action=pano&query=${getText(place.displayName)}`} className="grow">Streetview</Button>
+                    {place.reservable && (
+                        <Button href={place.websiteUri} className="grow">Book a table</Button>
+                    )}
                 </div>
             </div>
         </SwipeUp>

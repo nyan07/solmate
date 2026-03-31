@@ -31,6 +31,7 @@ export const config = {
         "id",
         "displayName",
         "primaryType",
+        "primaryTypeDisplayName",
         "editorialSummary",
         "location",
         "photos",
@@ -44,7 +45,9 @@ export const config = {
         "goodForGroups",
         "goodForChildren",
         "priceLevel",
-        "allowsDogs"
+        "allowsDogs",
+        "reservable",
+        "websiteUri"
       ];
   
       const origin = req.headers.get("origin") || "";
@@ -71,6 +74,7 @@ export const config = {
         id: place.id,
         displayName: place.displayName?.text,
         primaryType: place.primaryType,
+        primaryTypeDisplayName: place.primaryTypeDisplayName?.text,
         editorialSummary: place.editorialSummary?.text,
         location: place.location,
         photoUrl: place.photos?.[0] ? `/api/${place.photos[0].name}?w=400&h=400` : undefined,
@@ -85,6 +89,8 @@ export const config = {
         goodForChildren: place.goodForChildren,
         priceLevel: place.priceLevel,
         allowsDogs: place.allowsDogs,
+        reservable: place.reservable,
+        websiteUri: place.websiteUri,
       };
 
       return new Response(JSON.stringify(parsed), {
