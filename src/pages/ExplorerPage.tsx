@@ -9,7 +9,7 @@ export function ExplorerPage() {
                 <ExplorerView />
                 <Outlet />
             </div>
-            <div className="fixed bottom-0 h-16 p-2 bg-neutral-lightest w-full z-50">
+            <div className="fixed bottom-0 h-16 p-2 bg-neutral-50 w-full z-50">
                 <img src="/arkie.png" alt="Arkie" className="max-h-10 m-auto" />
             </div>
         </MapProvider>

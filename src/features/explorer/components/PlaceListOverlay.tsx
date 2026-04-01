@@ -23,7 +23,7 @@ function PlaceListOverlay() {
             onOpenChange={setListOpen}
             onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
         >
-            <ul className="w-full gap-2 flex flex-col px-2 py-2">
+            <ul className="w-full gap-2 flex flex-col py-2">
                 {places &&
                     places.map((place) => (
                         <li key={`place-${place.id}`}>

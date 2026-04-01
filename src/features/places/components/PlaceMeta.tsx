@@ -28,7 +28,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
             key: "distance",
             content: (
                 <>
-                    <MapPinIcon className="w-4 h-4 text-accent" />
+                    <MapPinIcon className="w-4 h-4 text-accent-500" />
                     {calculateDistance(geolocation, location)}
                 </>
             ),
@@ -38,7 +38,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
             key: "rating",
             content: (
                 <>
-                    <StarIcon className="w-4 h-4 text-amber-300" />
+                    <StarIcon className="w-4 h-4 text-warning-400" />
                     {rating}
                 </>
             ),
@@ -48,7 +48,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
             key: "price",
             content: (
                 <>
-                    <WalletIcon className="w-4 h-4 text-amber-900" />
+                    <WalletIcon className="w-4 h-4 text-warning-900" />
                     {PRICE_LEVEL_LABEL[priceLevel]}
                 </>
             ),
@@ -57,7 +57,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
     if (!items.length) return null;
 
     return (
-        <div className="flex items-center align-middle text-neutral-dark/50 font-normal text-sm border-y border-primary-100 py-2">
+        <div className="flex items-center align-middle text-neutral-500 font-normal text-sm border-y border-primary-200 py-2">
             {items.map(({ key, content }, i) => (
                 <span key={key} className="flex items-center gap-1">
                     {i > 0 && <Dot />}

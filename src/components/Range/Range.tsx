@@ -14,7 +14,7 @@ const Range: React.FC<{
             max={max}
             step={step}
             value={value}
-            className="flex-1 h-2 bg-neutral-light rounded-lg appearance-none cursor-pointer accent-primary
+            className="flex-1 h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary
         [&::-webkit-slider-thumb]:appearance-none
         [&::-webkit-slider-thumb]:w-4
         [&::-webkit-slider-thumb]:h-4

@@ -23,7 +23,7 @@ export const DaylightBar: React.FC<DaylightBarProps> = ({ startTime, endTime }) 
             <div className="relative h-2 bg-primary rounded-full">
                 {/* Sunlight bar */}
                 <div
-                    className="absolute h-2 bg-neutral-light rounded-full"
+                    className="absolute h-2 bg-neutral-200 rounded-full"
                     style={{
                         left: `${leftPercent}%`,
                         width: `${widthPercent}%`,

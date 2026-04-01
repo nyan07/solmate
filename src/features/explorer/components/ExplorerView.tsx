@@ -176,7 +176,7 @@ const ExplorerView: React.FC = () => {
                 ref={topBarRef}
                 className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"}`}
             >
-                <div className="p-6 bg-neutral-lightest shadow-md rounded-b-xl flex flex-col gap-4 items-center">
+                <div className="p-6 bg-neutral-50 shadow-md rounded-b-xl flex flex-col gap-4 items-center">
                     <div className="flex gap-4 items-center w-full">
                         <DatePicker value={date} onChange={setDate} />
                         <FiSunrise className="text-primary" />

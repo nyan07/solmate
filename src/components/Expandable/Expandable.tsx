@@ -11,28 +11,28 @@ type Props = {
 
 const buttonClass: Record<string, Record<string, string>> = {
     standalone: {
-        collapsed: "border border-primary-100 bg-primary-100 rounded-md",
-        expanded: "border border-primary-100 bg-primary-100 rounded-t-md",
+        collapsed: "border border-primary-200 bg-primary-50/30 rounded-md",
+        expanded: "border border-primary-200 bg-primary-50/30 rounded-t-md",
     },
     first: {
-        collapsed: "border border-primary-100 bg-primary-100 rounded-t-md",
-        expanded: "border-t border-x border-primary-100 bg-primary-100 rounded-t-md",
+        collapsed: "border border-primary-200 bg-primary-50/30 rounded-t-md",
+        expanded: "border-t border-x border-primary-200 bg-primary-50/30 rounded-t-md",
     },
     middle: {
-        collapsed: "border-x border-b border-primary-100 bg-primary-100",
-        expanded: "border-x border-primary-100 bg-primary-100",
+        collapsed: "border-x border-b border-primary-200 bg-primary-50/30",
+        expanded: "border-x border-primary-200 bg-primary-50/30",
     },
     last: {
-        collapsed: "border-x border-b border-primary-100 bg-primary-100 rounded-b-md",
-        expanded: "border-x border-primary-100 bg-primary-100",
+        collapsed: "border-x border-b border-primary-200 bg-primary-50/30 rounded-b-md",
+        expanded: "border-x border-primary-200 bg-primary-50/30",
     },
 };
 
 const contentClass: Record<string, string> = {
-    standalone: "border border-t-0 border-primary-100 bg-primary-100 rounded-b-md",
-    first: "border-x border-b border-primary-100 bg-primary-100",
-    middle: "border-x border-b border-primary-100 bg-primary-100",
-    last: "border-x border-b border-primary-100 bg-primary-100 rounded-b-md",
+    standalone: "border border-t-0 border-primary-200 bg-primary-50/30 rounded-b-md",
+    first: "border-x border-b border-primary-200 bg-primary-50/30",
+    middle: "border-x border-b border-primary-200 bg-primary-50/30",
+    last: "border-x border-b border-primary-200 bg-primary-50/30 rounded-b-md",
 };
 
 export const Expandable = ({ icon, title, children, position = "standalone" }: Props) => {
@@ -47,7 +47,7 @@ export const Expandable = ({ icon, title, children, position = "standalone" }: P
                 {icon}
                 <span className="flex-1 text-sm">{title}</span>
                 <ChevronDownIcon
-                    className={`w-4 h-4 text-neutral-dark/40 transition-transform ${expanded ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 text-neutral-500 transition-transform ${expanded ? "rotate-180" : ""}`}
                 />
             </button>
             {expanded && <div className={`pl-6 py-4 ${contentClass[position]}`}>{children}</div>}

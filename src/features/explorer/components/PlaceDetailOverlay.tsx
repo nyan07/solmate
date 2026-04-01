@@ -1,11 +1,11 @@
 import { PlaceName } from "@/features/places/components/PlaceName";
+import { Paragraph } from "@/components/Paragraph";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import SwipeUp from "@/components/SwipeUp";
 import StickyHeader from "@/components/StickyHeader";
 import Button from "@/components/Button";
 import { Tag } from "@/components/Tag";
 import { PlaceMeta } from "@/features/places/components/PlaceMeta";
-import { DaylightBar } from "@/features/places/components/DaylightBar";
 import { getText } from "@/utils/getText";
 import { getPlaceStatusDetail } from "@/utils/openingHours";
 import type { PlaceStatusDetail } from "@/utils/openingHours";
@@ -17,7 +17,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useLayout } from "./MapContext";
 import { useState } from "react";
 import { PlaceStatusBadge } from "@/features/places/components/PlaceStatusBadge";
-import { useSunnyHours } from "@/features/places/hooks/useSunnyHours";
 
 function PlaceDetailOverlay() {
     const { geolocation } = useGeolocation();
@@ -27,8 +26,6 @@ function PlaceDetailOverlay() {
 
     const { topBarHeight } = useLayout();
     const [scrolled, setScrolled] = useState(false);
-    const sunnyHours = useSunnyHours(new Date(), place?.location ?? null);
-
     if (!place) return null;
 
     const tags: string[] = [
@@ -65,13 +62,13 @@ function PlaceDetailOverlay() {
                 actions={
                     <button
                         onClick={() => navigate("/places")}
-                        className="text-neutral-dark/40 hover:text-neutral-dark mt-1.5 bg-primary-100 rounded-full p-1"
+                        className="text-primary-500 hover:text-primary-700 mt-1.5 bg-primary-200 rounded-full p-1"
                     >
                         <XMarkIcon className="w-5 h-5" />
                     </button>
                 }
             />
-            <div className="flex flex-col rounded-b-lg p-4 pt-0 gap-6 bg-primary-50">
+            <div className="flex flex-col rounded-b-lg p-4 pt-0 gap-6 bg-primary-100">
                 {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
 
                 <PlaceMeta
@@ -91,18 +88,16 @@ function PlaceDetailOverlay() {
                     </div>
                 )}
 
-                {sunnyHours && (
-                    <div className="flex flex-col gap-2">
+                {place.editorialSummary && <Paragraph>{getText(place.editorialSummary)}</Paragraph>}
+
+                {/* {sunnyHours && (
+                    <div className="flex flex-col gap-2 ">
                         <p>Best time to catch the sun here today:</p>
                         <DaylightBar startTime={sunnyHours.start} endTime={sunnyHours.end} />
                     </div>
-                )}
+                )} */}
 
-                {place.editorialSummary && (
-                    <p className="text-neutral-dark/80">{getText(place.editorialSummary)}</p>
-                )}
-
-                <div className="flex flex-col gap-0.5">
+                <div className="flex flex-col">
                     <PlaceOpeningHours
                         statusDetail={statusDetail}
                         weekdayDescriptions={place.regularOpeningHours?.weekdayDescriptions}

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Paragraph } from "@/components/Paragraph";
 
 export function WaitlistPage() {
     useEffect(() => {
@@ -22,7 +23,7 @@ export function WaitlistPage() {
                     <img src="/arkie.png" alt="Arkie" className="mx-12 my-2 max-h-24" />
                 </h1>
                 <h2 className="text-2xl lg:text-3xl">Coming soon.</h2>
-                <p className="lg:text-lg">Sign up for our waitlist & be among the first to join.</p>
+                <Paragraph>Sign up for our waitlist & be among the first to join.</Paragraph>
                 <iframe
                     data-tally-src="https://tally.so/embed/WONZjP?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
                     loading="lazy"

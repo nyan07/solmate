@@ -121,7 +121,7 @@ export default function SwipeUp({
             aria-modal="true"
             animate={controls}
             initial={{ y: defaultOpen ? 0 : defaultHeight - peekHeight, height: defaultHeight }}
-            className="fixed left-0 right-0 bottom-0 z-40 flex flex-col bg-neutral-lightest rounded-t-2xl w-full shadow-2xl"
+            className="fixed left-0 right-0 bottom-0 z-40 flex flex-col bg-neutral-50 rounded-t-2xl w-full shadow-2xl"
         >
             <div
                 className="flex justify-center w-full py-2 shrink-0 cursor-grab active:cursor-grabbing"
@@ -135,7 +135,7 @@ export default function SwipeUp({
 
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto px-2 pb-16 min-h-0"
+                className="flex-1 overflow-y-auto px-4 pb-16 min-h-0"
                 style={{ touchAction: "pan-y" }}
                 onScroll={handleScroll}
             >

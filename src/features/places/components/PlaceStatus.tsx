@@ -1,14 +1,12 @@
 import { Tag } from "@/components/Tag";
+import type { TagTone } from "@/components/Tag/types";
 import type { PlaceStatuses } from "@/features/places/types";
 
-const PLACE_STATUS_CSS = {
+const TONE: Record<PlaceStatuses, TagTone> = {
     open: "success",
     closed: "neutral",
 };
 
-export const PlaceStatus = ({ status }: { status: PlaceStatuses }) => {
-    const classNameSuffix = PLACE_STATUS_CSS[status];
-    const className = `text-${classNameSuffix} border-${classNameSuffix}`;
-
-    return <Tag className={className} name={status} />;
-};
+export const PlaceStatus = ({ status }: { status: PlaceStatuses }) => (
+    <Tag name={status} tone={TONE[status]} />
+);

@@ -24,12 +24,12 @@ export const PlaceOpeningHours = ({ statusDetail, weekdayDescriptions, position 
 
     return (
         <Expandable
-            icon={<ClockIcon className="w-4 h-4 text-neutral-dark/50 shrink-0" />}
+            icon={<ClockIcon className="w-4 h-4 text-neutral-500 shrink-0" />}
             title={statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
             position={position}
         >
             {weekdayDescriptions?.length && (
-                <table className="text-sm text-neutral-dark/70 w-full">
+                <table className="text-sm text-neutral-500 w-full">
                     <tbody>
                         {weekdayDescriptions.map((line) => {
                             const [day, time] = line.split(": ");

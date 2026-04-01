@@ -1,5 +1,6 @@
 import { PlaceName } from "./PlaceName";
 import { Tag } from "@/components/Tag";
+import { Paragraph } from "@/components/Paragraph";
 import { PlaceStatusBadge } from "./PlaceStatusBadge";
 import { Link } from "react-router-dom";
 import type { PlaceSummary } from "@/features/places/types";
@@ -28,7 +29,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
 
     return (
         <Link to={`/places/${place.id}`}>
-            <div className="rounded-lg p-4 flex flex-col gap-2 bg-primary-50">
+            <div className="rounded-lg p-4 flex flex-col gap-2 bg-primary-100">
                 <div className="flex gap-3 items-start">
                     <PlaceName
                         name={getText(place.displayName) ?? ""}
@@ -37,7 +38,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
                         size="md"
                         className="flex-1"
                     />
-                    <span className="text-sm text-neutral-dark/50 shrink-0 pt-1">{distance}</span>
+                    <span className="text-sm text-neutral-500 shrink-0 pt-1">{distance}</span>
                 </div>
                 <div className="flex gap-2">
                     {statusDetail && (
@@ -45,9 +46,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
                     )}
                     {place.hasOutdoorSeating && <Tag name="Outdoor Seating" />}
                 </div>
-                <p className="text-neutral-dark/70">
-                    {truncate(getText(place.editorialSummary), 12)}
-                </p>
+                <Paragraph>{truncate(getText(place.editorialSummary), 12)}</Paragraph>
             </div>
         </Link>
     );

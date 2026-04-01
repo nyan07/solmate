@@ -21,7 +21,7 @@ export const PlaceName = ({ name, type, typeLabel, size = "md", className = "" }
 
     if (isTruncated) {
         return (
-            <h4 className={`text-neutral-dark ${SIZE_CLASS[size]} overflow-hidden ${className}`}>
+            <h4 className={`text-neutral-900 ${SIZE_CLASS[size]} overflow-hidden ${className}`}>
                 <span className="truncate">{name}</span>
             </h4>
         );
@@ -31,7 +31,7 @@ export const PlaceName = ({ name, type, typeLabel, size = "md", className = "" }
     const last = words.pop() ?? "";
 
     return (
-        <h4 className={`text-neutral-dark ${SIZE_CLASS[size]} ${className}`}>
+        <h4 className={`text-neutral-900 ${SIZE_CLASS[size]} ${className}`}>
             {words.join(" ")}
             {words.length > 0 ? " " : ""}
             <span className="whitespace-nowrap inline-flex items-center gap-1">

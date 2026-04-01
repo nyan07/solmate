@@ -8,8 +8,8 @@ describe("<Tag />", () => {
         expect(screen.getByText("typescript")).toBeInTheDocument();
     });
 
-    // neutral uses different color tokens per variant so it's tested explicitly
-    const CHROMATIC_TONES: [TagTone, string][] = [
+    const TONES: [TagTone, string][] = [
+        ["neutral", "primary"],
         ["success", "success"],
         ["danger", "danger"],
         ["warning", "warning"],
@@ -17,32 +17,24 @@ describe("<Tag />", () => {
     ];
 
     describe("filled variant", () => {
-        it("neutral tone applies correct classes", () => {
-            render(<Tag name="test" tone="neutral" variant="filled" />);
-            expect(screen.getByText("test")).toHaveClass("bg-neutral-400", "text-white");
-        });
-
-        it.each(CHROMATIC_TONES)("tone=%s applies correct classes", (tone, color) => {
-            const classes = `bg-${color}-400 text-white border-0`;
+        it.each(TONES)("tone=%s applies correct classes", (tone, color) => {
             render(<Tag name="test" tone={tone} variant="filled" />);
-            expect(screen.getByText("test")).toHaveClass(...classes.split(" "));
+            expect(screen.getByText("test")).toHaveClass(
+                `bg-${color}`,
+                "text-white",
+                `border-${color}`
+            );
         });
     });
 
     describe("outline variant", () => {
-        it("neutral tone applies correct classes", () => {
-            render(<Tag name="test" tone="neutral" variant="outline" />);
+        it.each(TONES)("tone=%s applies correct classes", (tone, color) => {
+            render(<Tag name="test" tone={tone} variant="outline" />);
             expect(screen.getByText("test")).toHaveClass(
                 "bg-transparent",
-                "text-primary-500",
-                "border-primary-500"
+                `text-${color}`,
+                `border-${color}`
             );
-        });
-
-        it.each(CHROMATIC_TONES)("tone=%s applies correct classes", (tone, color) => {
-            const classes = `bg-transparent text-${color}-500 border-${color}-500`;
-            render(<Tag name="test" tone={tone} variant="outline" />);
-            expect(screen.getByText("test")).toHaveClass(...classes.split(" "));
         });
     });
 });

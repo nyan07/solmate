@@ -1,12 +1,14 @@
+import { Tag } from "@/components/Tag";
+import type { TagTone } from "@/components/Tag/types";
 import type { PlaceStatusDetail } from "@/utils/openingHours";
 
-const STATUS_STYLE: Record<string, string> = {
-    open: "text-green-600 border-green-600",
-    "closing soon": "text-amber-500 border-amber-500",
-    "opening soon": "text-amber-500 border-amber-500",
-    closed: "text-red-500 border-red-500",
-    "temporarily closed": "text-red-500 border-red-500",
-    "permanently closed": "text-red-500 border-red-500",
+const TONE: Record<string, TagTone> = {
+    open: "success",
+    "opening soon": "warning",
+    "closing soon": "warning",
+    closed: "neutral",
+    "temporarily closed": "neutral",
+    "permanently closed": "neutral",
 };
 
 type Props = {
@@ -17,13 +19,9 @@ type Props = {
 
 export const PlaceStatusBadge = ({ statusDetail, showDetail = true, className }: Props) => (
     <span className={`inline-flex items-center gap-2 ${className ?? ""}`}>
-        <span
-            className={`rounded-full px-4 py-1 border text-sm font-medium ${STATUS_STYLE[statusDetail.status]}`}
-        >
-            {statusDetail.status}
-        </span>
+        <Tag name={statusDetail.status} tone={TONE[statusDetail.status]} variant="outline" />
         {showDetail && statusDetail.detail && (
-            <span className="text-xs text-neutral-dark/50">{statusDetail.detail}</span>
+            <span className="text-sm text-neutral-500">{statusDetail.detail}</span>
         )}
     </span>
 );
