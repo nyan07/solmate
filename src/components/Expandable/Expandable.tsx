@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-
-export type ExpandablePosition = "standalone" | "first" | "middle" | "last";
+import type { ExpandablePosition } from "./types";
 
 type Props = {
     icon: React.ReactNode;

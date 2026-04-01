@@ -1,6 +1,5 @@
 import React from "react";
-
-type Variant = "filled" | "outline";
+import type { Variant } from "./types";
 
 const BASE = "p-2 rounded-full transition-colors duration-200 text-center";
 
