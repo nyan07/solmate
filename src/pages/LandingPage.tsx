@@ -17,18 +17,24 @@ export default function LandingPage() {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6">
-            <img src="/arkie.png" alt="Arkie" className="max-h-12 mb-8 absolute top-6" />
-            <iframe
-                data-tally-src="https://tally.so/embed/WONZjP?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-                loading="lazy"
-                width="100%"
-                height="216"
-                frameBorder="0"
-                marginHeight={0}
-                marginWidth={0}
-                title="Feedback form"
-                sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation-by-user-activation"
-            />
+            <div className="flex flex-col lg:max-w-1/2 items-center justify-center gap-4 text-center">
+                <h1>
+                    <img src="/arkie.png" alt="Arkie" className="mx-12 my-2 max-h-24" />
+                </h1>
+                <h2 className="text-2xl lg:text-3xl">Coming soon.</h2>
+                <p className="lg:text-lg">Sign up for our waitlist & be among the first to join.</p>
+                <iframe
+                    data-tally-src="https://tally.so/embed/WONZjP?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+                    loading="lazy"
+                    width="100%"
+                    height="216"
+                    frameBorder="0"
+                    marginHeight={0}
+                    marginWidth={0}
+                    title="Feedback form"
+                    sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation-by-user-activation"
+                />
+            </div>
         </div>
     );
 }
