@@ -23,7 +23,7 @@ import { useUserLocationPos } from "./hooks/useUserLocationPos";
 import { useCameraDistance } from "./hooks/useCameraDistance";
 import type { LatLng } from "../types/LatLng";
 import { usePins } from "./hooks/usePins";
-import { DEFAULT_CAMERA_DISTANCE } from "./constants";
+import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "./constants";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
@@ -107,7 +107,7 @@ const Mappr: React.FC = () => {
 
             if (!geolocationError && geolocation) {
                 viewer.entities.add({
-                    id: "user-location",
+                    id: ENTITY_IDS.userLocation,
                     position: Cartesian3.fromDegrees(
                         geolocation.longitude,
                         geolocation.latitude,

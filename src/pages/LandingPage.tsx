@@ -6,6 +6,7 @@ export default function LandingPage() {
         if (document.querySelector(`script[src="${w}"]`)) return;
         const s = document.createElement("script");
         s.src = w;
+        s.crossOrigin = "anonymous"; // required if an integrity hash is later pinned
         s.onload = () => window.Tally?.loadEmbeds();
         s.onerror = () =>
             document
@@ -26,6 +27,7 @@ export default function LandingPage() {
                 marginHeight={0}
                 marginWidth={0}
                 title="Feedback form"
+                sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation-by-user-activation"
             />
         </div>
     );

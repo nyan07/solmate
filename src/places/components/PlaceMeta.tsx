@@ -1,3 +1,4 @@
+import React from "react";
 import { StarIcon, MapPinIcon, WalletIcon } from "@heroicons/react/24/solid";
 import { Dot } from "../../components/Dot";
 import { calculateDistance } from "../../utils/calculateDistance";
@@ -20,35 +21,47 @@ type Props = {
 };
 
 export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) => {
-    const items = [
-        geolocation && (
-            <span key="distance" className="flex gap-1 items-center">
-                <MapPinIcon className="w-4 h-4 text-accent" />
-                {calculateDistance(geolocation, location)}
-            </span>
-        ),
-        rating && (
-            <span key="rating" className="flex gap-1 items-center">
-                <StarIcon className="w-4 h-4 text-amber-300" />
-                {rating}
-            </span>
-        ),
-        priceLevel && (
-            <span key="price" className="flex gap-1 items-center">
-                <WalletIcon className="w-4 h-4 text-amber-900" />
-                {PRICE_LEVEL_LABEL[priceLevel]}
-            </span>
-        ),
-    ].filter(Boolean);
+    const items: { key: string; content: React.ReactNode }[] = [];
+
+    if (geolocation)
+        items.push({
+            key: "distance",
+            content: (
+                <>
+                    <MapPinIcon className="w-4 h-4 text-accent" />
+                    {calculateDistance(geolocation, location)}
+                </>
+            ),
+        });
+    if (rating)
+        items.push({
+            key: "rating",
+            content: (
+                <>
+                    <StarIcon className="w-4 h-4 text-amber-300" />
+                    {rating}
+                </>
+            ),
+        });
+    if (priceLevel)
+        items.push({
+            key: "price",
+            content: (
+                <>
+                    <WalletIcon className="w-4 h-4 text-amber-900" />
+                    {PRICE_LEVEL_LABEL[priceLevel]}
+                </>
+            ),
+        });
 
     if (!items.length) return null;
 
     return (
         <div className="flex items-center align-middle text-neutral-dark/50 font-normal text-sm border-y border-primary-100 py-2">
-            {items.map((item, i) => (
-                <span key={i} className="flex items-center">
+            {items.map(({ key, content }, i) => (
+                <span key={key} className="flex items-center gap-1">
                     {i > 0 && <Dot />}
-                    {item}
+                    {content}
                 </span>
             ))}
         </div>

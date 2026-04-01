@@ -10,6 +10,7 @@ import {
     CallbackProperty,
 } from "cesium";
 import type { LatLng } from "../../types/LatLng";
+import { ENTITY_IDS } from "../constants";
 
 const PIN_LIGHT_COLOR = Color.fromCssColorString("#F2EACF");
 const PIN_DARK_COLOR = Color.fromCssColorString("#dbd0ab");
@@ -67,10 +68,10 @@ export const useUserLocationPos = (
             false
         );
 
-        let sphere = viewer.entities.getById("location-sphere");
+        let sphere = viewer.entities.getById(ENTITY_IDS.locationSphere);
         if (!sphere) {
             sphere = viewer.entities.add({
-                id: "location-sphere",
+                id: ENTITY_IDS.locationSphere,
                 position: spherePos,
                 point: {
                     pixelSize: 14,
@@ -83,10 +84,10 @@ export const useUserLocationPos = (
             sphere.position = spherePos;
         }
 
-        let line = viewer.entities.getById("location-line");
+        let line = viewer.entities.getById(ENTITY_IDS.locationLine);
         if (!line) {
             line = viewer.entities.add({
-                id: "location-line",
+                id: ENTITY_IDS.locationLine,
                 polyline: {
                     positions: linePos,
                     width: 2,

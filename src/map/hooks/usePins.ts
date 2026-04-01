@@ -12,7 +12,7 @@ import {
 } from "cesium";
 import { useNearbyPlaces } from "../../places/hooks/useNearbyPlaces";
 import { useMapState } from "../MapContext";
-import { DEFAULT_CAMERA_DISTANCE } from "../constants";
+import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "../constants";
 import { useNavigate } from "react-router-dom";
 
 const PIN_COLOR = Color.fromCssColorString("#8591b5");
@@ -30,8 +30,8 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
         if (!viewer) return;
         const handler = (entity: { id?: string } | undefined) => {
             if (!entity?.id) return;
-            const match = entity.id.match(/^place-billboard-(.+)$/);
-            if (match) navigate(`/places/${match[1]}`);
+            const prefix = ENTITY_IDS.placeBillboard("");
+            if (entity.id.startsWith(prefix)) navigate(`/places/${entity.id.slice(prefix.length)}`);
         };
         viewer.selectedEntityChanged.addEventListener(handler);
         return () => {
@@ -90,10 +90,10 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
                 false
             );
 
-            let billboard = viewer.entities.getById(`place-billboard-${place.id}`);
+            let billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
                 billboard = viewer.entities.add({
-                    id: `place-billboard-${place.id}`,
+                    id: ENTITY_IDS.placeBillboard(place.id),
                     position: billboardPos,
                     billboard: {
                         image: "/pin.png",
@@ -106,10 +106,10 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
                 billboard.position = billboardPos;
             }
 
-            let line = viewer.entities.getById(`place-line-${place.id}`);
+            let line = viewer.entities.getById(ENTITY_IDS.placeLine(place.id));
             if (!line) {
                 line = viewer.entities.add({
-                    id: `place-line-${place.id}`,
+                    id: ENTITY_IDS.placeLine(place.id),
                     polyline: {
                         positions: linePos,
                         width: 3,
@@ -123,8 +123,8 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
 
         return () => {
             places.forEach((place) => {
-                const billboard = viewer.entities.getById(`place-billboard-${place.id}`);
-                const line = viewer.entities.getById(`place-line-${place.id}`);
+                const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
+                const line = viewer.entities.getById(ENTITY_IDS.placeLine(place.id));
                 if (billboard) viewer.entities.remove(billboard);
                 if (line) viewer.entities.remove(line);
             });
