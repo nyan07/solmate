@@ -1,4 +1,8 @@
 /// <reference types="vite/client" />
+
+interface Window {
+    Tally?: { loadEmbeds: () => void };
+}
 /// <reference types="vite-plugin-svgr/client" />
 
 interface ImportMetaEnv {

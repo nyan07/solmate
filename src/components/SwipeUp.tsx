@@ -56,29 +56,46 @@ export default function SwipeUp({
         onOpenChange?.(isOpen);
     }, [isOpen]);
 
+    const TRANSITION = { type: "tween", duration: 0.2, ease: "easeOut" } as const;
+
     const handlePointerDown = (e: React.PointerEvent) => {
-        if (expanded) return;
         dragStartY.current = e.clientY;
         dragStartOpen.current = isOpen;
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
-        if (expanded || !(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
+        if (!(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
         const delta = e.clientY - dragStartY.current;
+        if (expanded) {
+            controls.set({ y: Math.max(0, delta) });
+            return;
+        }
         const base = dragStartOpen.current ? 0 : defaultHeight - peekHeight;
         const y = Math.max(0, Math.min(defaultHeight - peekHeight, base + delta));
         controls.set({ y });
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
-        if (expanded || !(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
+        if (!(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
         const delta = e.clientY - dragStartY.current;
+        if (expanded) {
+            if (delta > 40) {
+                if (scrollRef.current) scrollRef.current.scrollTop = 0;
+                setExpanded(false);
+                setIsOpen(false);
+                controls.start({
+                    y: defaultHeight - peekHeight,
+                    height: defaultHeight,
+                    transition: TRANSITION,
+                });
+            } else {
+                controls.start({ y: 0, transition: TRANSITION });
+            }
+            return;
+        }
         const open = dragStartOpen.current ? delta < 40 : delta < -40;
-        controls.start({
-            y: open ? 0 : defaultHeight - peekHeight,
-            transition: { type: "spring", stiffness: 300, damping: 30 },
-        });
+        controls.start({ y: open ? 0 : defaultHeight - peekHeight, transition: TRANSITION });
         setIsOpen(open);
     };
 
@@ -88,7 +105,7 @@ export default function SwipeUp({
             setExpanded(scrolled);
             controls.start({
                 height: scrolled ? maxHeight : defaultHeight,
-                transition: { type: "spring", stiffness: 300, damping: 30 },
+                transition: { type: "tween", duration: 0.2, ease: "easeOut" },
             });
         }
         onScroll?.(e);
