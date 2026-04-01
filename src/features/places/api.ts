@@ -1,4 +1,4 @@
-import type { LatLng } from "../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 import type { Place, PlaceSummary } from "./types";
 
 export const fetchPlace = async (id: string): Promise<Place> => {

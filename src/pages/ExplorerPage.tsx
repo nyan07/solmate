@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import ExplorerView from "../features/explorer/components/ExplorerView";
-import { MapProvider } from "../features/explorer/components/MapContext";
+import ExplorerView from "@/features/explorer/components/ExplorerView";
+import { MapProvider } from "@/features/explorer/components/MapContext";
 
 export function ExplorerPage() {
     return (

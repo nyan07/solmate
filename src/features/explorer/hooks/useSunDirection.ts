@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Cartesian3, JulianDate } from "cesium";
 import SunCalc from "suncalc";
-import type { LatLng } from "../../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 export function useSunDirection(date: Date, hour: number, position?: LatLng | null) {
     return useMemo(() => {

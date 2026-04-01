@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import type { LatLng } from "../../../types/LatLng";
-import { getBoundingBox } from "../../../utils/geo/getBoundingBox";
-import type { Building } from "../types";
+import type { LatLng } from "@/types/LatLng";
+import { getBoundingBox } from "@/utils/geo/getBoundingBox";
+import type { Building } from "@/features/explorer/types";
 
 const fetchBuildings = async (location: LatLng): Promise<Building[]> => {
     const bbox = getBoundingBox(location, 500);

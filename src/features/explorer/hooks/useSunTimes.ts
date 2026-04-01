@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import SunCalc from "suncalc";
-import type { LatLng } from "../../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 const Mode = {
     UP: "up",

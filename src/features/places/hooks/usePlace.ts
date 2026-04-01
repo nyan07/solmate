@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import type { Place } from "../types";
+import type { Place } from "@/features/places/types";
 import { CACHE_FIRST_OPTIONS } from "./cacheFirstOptions";
-import { fetchPlace } from "../api";
+import { fetchPlace } from "@/features/places/api";
 
 type UsePlaceOptions = {
     enabled: boolean;

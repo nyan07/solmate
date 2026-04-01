@@ -1,11 +1,11 @@
 import { PlaceName } from "./PlaceName";
-import { Tag } from "../../../components/Tag";
+import { Tag } from "@/components/Tag";
 import { PlaceStatusBadge } from "./PlaceStatusBadge";
 import { Link } from "react-router-dom";
-import type { PlaceSummary } from "../types";
-import { getPlaceStatusDetail } from "../../../utils/openingHours";
-import type { PlaceStatusDetail } from "../../../utils/openingHours";
-import { getText } from "../../../utils/getText";
+import type { PlaceSummary } from "@/features/places/types";
+import { getPlaceStatusDetail } from "@/utils/openingHours";
+import type { PlaceStatusDetail } from "@/utils/openingHours";
+import { getText } from "@/utils/getText";
 
 const truncate = (text: string | undefined, maxWords: number) => {
     if (!text) return text;

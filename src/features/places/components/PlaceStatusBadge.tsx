@@ -1,4 +1,4 @@
-import type { PlaceStatusDetail } from "../../../utils/openingHours";
+import type { PlaceStatusDetail } from "@/utils/openingHours";
 
 const STATUS_STYLE: Record<string, string> = {
     open: "text-green-600 border-green-600",

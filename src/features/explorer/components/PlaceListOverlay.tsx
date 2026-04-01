@@ -1,10 +1,10 @@
-import { PlaceItem } from "../../places/components/PlaceItem";
-import SwipeUp from "../../../components/SwipeUp";
-import { useGeolocation } from "../../../hooks/useGeolocation";
-import { useNearbyPlaces } from "../hooks/useNearbyPlaces";
-import { calculateDistance } from "../../../utils/geo/calculateDistance";
+import { PlaceItem } from "@/features/places/components/PlaceItem";
+import SwipeUp from "@/components/SwipeUp";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useNearbyPlaces } from "@/features/explorer/hooks/useNearbyPlaces";
+import { calculateDistance } from "@/utils/geo/calculateDistance";
 import { useMapState, useLayout, useListUI } from "./MapContext";
-import { DEFAULT_CAMERA_DISTANCE } from "../constants";
+import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
 
 function PlaceListOverlay() {
     const { geolocation } = useGeolocation();

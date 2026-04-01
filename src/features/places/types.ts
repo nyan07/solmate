@@ -1,5 +1,5 @@
-import type { LatLng } from "../../types/LatLng";
-import type { RawOpeningHours, PlaceStatuses } from "../../utils/openingHours";
+import type { LatLng } from "@/types/LatLng";
+import type { RawOpeningHours, PlaceStatuses } from "@/utils/openingHours";
 
 export type { PlaceStatuses };
 

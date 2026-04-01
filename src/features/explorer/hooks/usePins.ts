@@ -11,8 +11,8 @@ import {
     VerticalOrigin,
 } from "cesium";
 import { useNearbyPlaces } from "./useNearbyPlaces";
-import { useMapState } from "../components/MapContext";
-import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "../constants";
+import { useMapState } from "@/features/explorer/components/MapContext";
+import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useNavigate } from "react-router-dom";
 
 const PIN_COLOR = Color.fromCssColorString("#8591b5");

@@ -1,8 +1,8 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import type { LatLng } from "../../../types/LatLng";
-import type { PlaceSummary } from "../../places/types";
-import { CACHE_FIRST_OPTIONS } from "../../places/hooks/cacheFirstOptions";
-import { fetchNearbyPlaces } from "../../places/api";
+import type { LatLng } from "@/types/LatLng";
+import type { PlaceSummary } from "@/features/places/types";
+import { CACHE_FIRST_OPTIONS } from "@/features/places/hooks/cacheFirstOptions";
+import { fetchNearbyPlaces } from "@/features/places/api";
 
 type UseNearbyPlacesOptions = {
     enabled: boolean;

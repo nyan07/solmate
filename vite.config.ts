@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import svgr from "vite-plugin-svgr";
 import fs from "node:fs";
+import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,13 +27,18 @@ export default defineConfig({
             },
         },
     ],
+    resolve: {
+        alias: {
+            "@": fileURLToPath(new URL("./src", import.meta.url)),
+        },
+    },
     define: {
         CESIUM_BASE_URL: JSON.stringify("/Cesium"),
     },
     test: {
         environment: "jsdom",
         globals: true,
-        setupFiles: ["./src/test/setup.ts"],
+        setupFiles: ["./src/testUtils/setup.ts"],
     },
     server: {
         port: 5173,

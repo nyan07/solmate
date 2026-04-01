@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { WaitlistPage } from "./pages/WaitlistPage";
-import { ExplorerPage } from "./pages/ExplorerPage";
-import PlaceListOverlay from "./features/explorer/components/PlaceListOverlay";
-import PlaceDetailOverlay from "./features/explorer/components/PlaceDetailOverlay";
+import { WaitlistPage } from "@/pages/WaitlistPage";
+import { ExplorerPage } from "@/pages/ExplorerPage";
+import PlaceListOverlay from "@/features/explorer/components/PlaceListOverlay";
+import PlaceDetailOverlay from "@/features/explorer/components/PlaceDetailOverlay";
 
 function App() {
     return (

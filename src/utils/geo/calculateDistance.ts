@@ -1,4 +1,4 @@
-import type { LatLng } from "../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 export function calculateDistance(from: LatLng, to: LatLng): string {
     const toRadians = (degrees: number) => (degrees * Math.PI) / 180;

@@ -1,6 +1,6 @@
 import { Viewer } from "cesium";
 import { useEffect } from "react";
-import { useMapState } from "../components/MapContext";
+import { useMapState } from "@/features/explorer/components/MapContext";
 
 const useCameraDistance = (viewer: Viewer | null) => {
     const { cameraDistance, setCameraDistance } = useMapState();

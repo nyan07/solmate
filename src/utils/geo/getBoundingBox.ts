@@ -1,4 +1,4 @@
-import type { LatLng } from "../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 export type BoundingBox = {
     south: number;

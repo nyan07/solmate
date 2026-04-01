@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { LatLng } from "../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 export const useGeolocation = ({ active = true }: { active?: boolean } = {}) => {
     const [geolocation, setGeoLocation] = useState<LatLng | null>(null);

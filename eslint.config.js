@@ -21,5 +21,22 @@ export default tseslint.config([
             ecmaVersion: 2020,
             globals: globals.browser,
         },
+        rules: {
+            "no-restricted-imports": [
+                "error",
+                {
+                    patterns: [
+                        {
+                            regex: "^\\.\\.",
+                            message: "Use @/ alias instead of relative parent imports.",
+                        },
+                        {
+                            regex: "^\\.\\/" + "[^/]+/",
+                            message: "Use @/ alias for imports into subdirectories.",
+                        },
+                    ],
+                },
+            ],
+        },
     },
 ]);

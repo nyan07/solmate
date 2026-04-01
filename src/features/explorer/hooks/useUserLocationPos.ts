@@ -9,8 +9,8 @@ import {
     Cartographic,
     CallbackProperty,
 } from "cesium";
-import type { LatLng } from "../../../types/LatLng";
-import { ENTITY_IDS } from "../constants";
+import type { LatLng } from "@/types/LatLng";
+import { ENTITY_IDS } from "@/features/explorer/constants";
 
 const PIN_LIGHT_COLOR = Color.fromCssColorString("#F2EACF");
 const PIN_DARK_COLOR = Color.fromCssColorString("#dbd0ab");

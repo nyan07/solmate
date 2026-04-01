@@ -11,19 +11,19 @@ import {
 } from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
-import { useGeolocation } from "../../../hooks/useGeolocation";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { FiSunset, FiSunrise } from "react-icons/fi";
-import { DatePicker } from "../../../components/DatePicker";
-import { Range } from "../../../components/Range";
-import { useMapCenter } from "../hooks/useMapCenter";
+import { DatePicker } from "@/components/DatePicker";
+import { Range } from "@/components/Range";
+import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
 import { useLayout, useMapState } from "./MapContext";
-import { useSunTimes } from "../hooks/useSunTimes";
-import { useSunDirection } from "../hooks/useSunDirection";
-import { useUserLocationPos } from "../hooks/useUserLocationPos";
-import { useCameraDistance } from "../hooks/useCameraDistance";
-import type { LatLng } from "../../../types/LatLng";
-import { usePins } from "../hooks/usePins";
-import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "../constants";
+import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
+import { useSunDirection } from "@/features/explorer/hooks/useSunDirection";
+import { useUserLocationPos } from "@/features/explorer/hooks/useUserLocationPos";
+import { useCameraDistance } from "@/features/explorer/hooks/useCameraDistance";
+import type { LatLng } from "@/types/LatLng";
+import { usePins } from "@/features/explorer/hooks/usePins";
+import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { LatLng } from "../../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 // ─── Map State ────────────────────────────────────────────────────────────────
 

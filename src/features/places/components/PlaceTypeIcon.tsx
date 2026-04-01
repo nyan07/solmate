@@ -1,7 +1,7 @@
-import BarIcon from "../../../assets/bar.svg?react";
-import CafeIcon from "../../../assets/cafe.svg?react";
-import RestaurantIcon from "../../../assets/restaurant.svg?react";
-import type { PlaceTypes } from "../types";
+import BarIcon from "@/assets/bar.svg?react";
+import CafeIcon from "@/assets/cafe.svg?react";
+import RestaurantIcon from "@/assets/restaurant.svg?react";
+import type { PlaceTypes } from "@/features/places/types";
 
 const PLACE_ICONS: { [key in PlaceTypes]: React.FC<React.SVGProps<SVGSVGElement>> } = {
     bar: BarIcon,

@@ -1,8 +1,8 @@
 import { ClockIcon } from "@heroicons/react/24/outline";
-import { Expandable } from "../../../components/Expandable";
-import type { ExpandablePosition } from "../../../components/Expandable";
+import { Expandable } from "@/components/Expandable";
+import type { ExpandablePosition } from "@/components/Expandable";
 import { PlaceStatusBadge } from "./PlaceStatusBadge";
-import type { PlaceStatusDetail } from "../../../utils/openingHours";
+import type { PlaceStatusDetail } from "@/utils/openingHours";
 
 type Props = {
     statusDetail: PlaceStatusDetail | null;

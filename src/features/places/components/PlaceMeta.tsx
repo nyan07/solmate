@@ -1,9 +1,9 @@
 import React from "react";
 import { StarIcon, MapPinIcon, WalletIcon } from "@heroicons/react/24/solid";
-import { Dot } from "../../../components/Dot";
-import { calculateDistance } from "../../../utils/geo/calculateDistance";
-import type { LatLng } from "../../../types/LatLng";
-import type { PriceLevel } from "../types";
+import { Dot } from "@/components/Dot";
+import { calculateDistance } from "@/utils/geo/calculateDistance";
+import type { LatLng } from "@/types/LatLng";
+import type { PriceLevel } from "@/features/places/types";
 
 const PRICE_LEVEL_LABEL: Record<PriceLevel, string> = {
     PRICE_LEVEL_FREE: "Free",

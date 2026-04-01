@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import SunCalc from "suncalc";
-import type { LatLng } from "../../../types/LatLng";
+import type { LatLng } from "@/types/LatLng";
 
 // Sun must be at least this high to clear typical urban buildings
 const MIN_ALTITUDE_RAD = (15 * Math.PI) / 180;

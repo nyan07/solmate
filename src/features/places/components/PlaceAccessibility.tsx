@@ -1,7 +1,7 @@
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { Expandable } from "../../../components/Expandable";
-import type { ExpandablePosition } from "../../../components/Expandable";
-import type { AccessibilityOptions } from "../types";
+import { Expandable } from "@/components/Expandable";
+import type { ExpandablePosition } from "@/components/Expandable";
+import type { AccessibilityOptions } from "@/features/places/types";
 
 const ACCESSIBILITY_LABELS: { key: keyof AccessibilityOptions; label: string }[] = [
     { key: "wheelchairAccessibleEntrance", label: "Wheelchair accessible entrance" },

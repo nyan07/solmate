@@ -1,5 +1,5 @@
-import { Tag } from "../../../components/Tag";
-import type { PlaceStatuses } from "../types";
+import { Tag } from "@/components/Tag";
+import type { PlaceStatuses } from "@/features/places/types";
 
 const PLACE_STATUS_CSS = {
     open: "success",
