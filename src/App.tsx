@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import PlacesList from "./places/PlacesList";
 import PlaceDetails from "./places/PlaceDetails";
 import Mappr from "./map/Mappr";
@@ -12,6 +12,7 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/beta" element={<Navigate to="/places" replace />} />
                 <Route
                     path="/*"
                     element={
