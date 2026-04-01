@@ -104,6 +104,23 @@ const Mappr: React.FC = () => {
 
             viewerRef.current = viewer;
             viewer.scene.preRender.addEventListener(preRenderHandler);
+
+            if (!geolocationError && geolocation) {
+                viewer.entities.add({
+                    id: "user-location",
+                    position: Cartesian3.fromDegrees(
+                        geolocation.longitude,
+                        geolocation.latitude,
+                        100
+                    ),
+                    point: {
+                        pixelSize: 12,
+                        color: Color.BLUE.withAlpha(0.8),
+                        outlineColor: Color.WHITE,
+                        outlineWidth: 2,
+                    },
+                });
+            }
         };
 
         const preRenderHandler = () => {
@@ -123,7 +140,6 @@ const Mappr: React.FC = () => {
         };
 
         initViewer();
-        if (!geolocationError) updateUserLocation();
 
         return () => {
             viewer?.scene?.preRender.removeEventListener(preRenderHandler);
@@ -152,25 +168,6 @@ const Mappr: React.FC = () => {
 
         viewer.clock.currentTime = sunData.time;
     }, [sunData, viewerReady]);
-
-    const updateUserLocation = () => {
-        const viewer = viewerRef.current;
-        if (!viewer || !geolocation) return;
-
-        const existing = viewer.entities.getById("user-location");
-        if (existing) viewer.entities.remove(existing);
-
-        viewer.entities.add({
-            id: "user-location",
-            position: Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, 100),
-            point: {
-                pixelSize: 12,
-                color: Color.BLUE.withAlpha(0.8),
-                outlineColor: Color.WHITE,
-                outlineWidth: 2,
-            },
-        });
-    };
 
     return (
         <div style={{ width: "100%", height: "100vh" }}>

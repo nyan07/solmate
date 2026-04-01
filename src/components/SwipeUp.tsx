@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 
 const BOTTOM_NAV_HEIGHT = 64;
@@ -36,6 +36,10 @@ export default function SwipeUp({
     const dragStartY = useRef(0);
     const dragStartOpen = useRef(isOpen);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const onOpenChangeRef = useRef(onOpenChange);
+    useLayoutEffect(() => {
+        onOpenChangeRef.current = onOpenChange;
+    });
 
     useEffect(() => {
         controls.start({ y: isOpen ? 0 : defaultHeight - peekHeight });
@@ -53,7 +57,7 @@ export default function SwipeUp({
     }, [open]);
 
     useEffect(() => {
-        onOpenChange?.(isOpen);
+        onOpenChangeRef.current?.(isOpen);
     }, [isOpen]);
 
     const TRANSITION = { type: "tween", duration: 0.2, ease: "easeOut" } as const;

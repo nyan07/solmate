@@ -65,7 +65,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
         return () => {
             cancelled = true;
         };
-    }, [viewer, places, visible, offsetHeight]);
+    }, [viewer, places, offsetHeight]);
 
     useEffect(() => {
         if (!viewer || !visible || !places?.length) return;

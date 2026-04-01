@@ -1,6 +1,7 @@
 import type { LatLng } from "../../types/LatLng";
 import type { PlaceTypes } from "./PlaceTypes";
 import type { BusinessStatus } from "./Place";
+import type { RawOpeningHours } from "../../utils/openingHours";
 
 export type PlaceSummary = {
     id: string;
@@ -12,6 +13,5 @@ export type PlaceSummary = {
     hasOutdoorSeating: boolean;
     photoUrl: string;
     businessStatus?: BusinessStatus;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    openingHours: any;
+    openingHours: RawOpeningHours | null;
 };

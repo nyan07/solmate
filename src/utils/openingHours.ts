@@ -27,9 +27,10 @@ type Period = {
     close: { day: number; hour: number; minute: number };
 };
 
-type RawOpeningHours = {
+export type RawOpeningHours = {
     openNow?: boolean;
     periods?: Period[];
+    weekdayDescriptions?: string[];
 };
 
 export type PlaceStatusDetail = {

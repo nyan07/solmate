@@ -1,9 +1,8 @@
-/** React Query options for treating cached data as always fresh (read-heavy resources). */
+/** React Query options for read-heavy resources that change infrequently. */
 export const CACHE_FIRST_OPTIONS = {
-    staleTime: Infinity,
-    cacheTime: Infinity,
+    staleTime: 5 * 60 * 1000, // treat data as fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // keep in cache for 30 minutes
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchInterval: 0,
 } as const;
