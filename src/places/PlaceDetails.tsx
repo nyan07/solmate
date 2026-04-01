@@ -13,7 +13,7 @@ import { PlaceAccessibility } from "./components/PlaceAccessibility";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { usePlace } from "./hooks/usePlace";
 import { useParams, useNavigate } from "react-router-dom";
-import { useMapContext } from "../map/MapContext";
+import { useLayout } from "../map/MapContext";
 import { useState } from "react";
 import { PlaceStatusBadge } from "./components/PlaceStatusBadge";
 import { useSunnyHours } from "./hooks/useSunnyHours";
@@ -24,7 +24,7 @@ function PlaceDetails() {
     const navigate = useNavigate();
     const { data: place } = usePlace(placeId, { enabled: !!placeId });
 
-    const { topBarHeight } = useMapContext();
+    const { topBarHeight } = useLayout();
     const [scrolled, setScrolled] = useState(false);
     const sunnyHours = useSunnyHours(new Date(), place?.location ?? null);
 

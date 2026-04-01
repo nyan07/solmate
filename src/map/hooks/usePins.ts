@@ -11,14 +11,14 @@ import {
     VerticalOrigin,
 } from "cesium";
 import { useNearbyPlaces } from "../../places/hooks/useNearbyPlaces";
-import { useMapContext } from "../MapContext";
+import { useMapState } from "../MapContext";
 import { DEFAULT_CAMERA_DISTANCE } from "../constants";
 import { useNavigate } from "react-router-dom";
 
 const PIN_COLOR = Color.fromCssColorString("#8591b5");
 
 export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: number = 20) => {
-    const { center, cameraDistance } = useMapContext();
+    const { center, cameraDistance } = useMapState();
     const navigate = useNavigate();
     const { data: places } = useNearbyPlaces(center, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,

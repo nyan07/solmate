@@ -16,7 +16,7 @@ import { FiSunset, FiSunrise } from "react-icons/fi";
 import { DatePicker } from "../components/DatePicker";
 import { Range } from "../components/Range";
 import { useMapCenter } from "./hooks/useMapCenter";
-import { useMapContext } from "./MapContext";
+import { useLayout } from "./MapContext";
 import { useSunTimes } from "./hooks/useSunTimes";
 import { useSunDirection } from "./hooks/useSunDirection";
 import { useUserLocationPos } from "./hooks/useUserLocationPos";
@@ -39,7 +39,7 @@ const Mappr: React.FC = () => {
     const [viewerReady, setViewerReady] = useState(false);
     const [showControls, setShowControls] = useState(false);
 
-    const { setTopBarHeight } = useMapContext();
+    const { setTopBarHeight } = useLayout();
 
     const {
         geolocation,

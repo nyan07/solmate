@@ -1,6 +1,6 @@
 import { Cartesian2, Cartographic, Math as CesiumMath, Viewer } from "cesium";
 import { useEffect } from "react";
-import { useMapContext } from "../MapContext";
+import { useMapState } from "../MapContext";
 
 function getMapCenter(viewer: Viewer) {
     const scene = viewer.scene;
@@ -23,7 +23,7 @@ function getMapCenter(viewer: Viewer) {
 }
 
 const useMapCenter = (viewer: Viewer | null) => {
-    const { center, setCenter } = useMapContext();
+    const { center, setCenter } = useMapState();
 
     useEffect(() => {
         if (!viewer) return;

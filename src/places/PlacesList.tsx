@@ -3,20 +3,14 @@ import SwipeUp from "../components/SwipeUp";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useNearbyPlaces } from "./hooks/useNearbyPlaces";
 import { calculateDistance } from "../utils/calculateDistance";
-import { useMapContext } from "../map/MapContext";
+import { useMapState, useLayout, useListUI } from "../map/MapContext";
 import { DEFAULT_CAMERA_DISTANCE } from "../map/constants";
 
 function PlacesList() {
     const { geolocation } = useGeolocation();
-    const {
-        center,
-        cameraDistance,
-        topBarHeight,
-        listOpen,
-        setListOpen,
-        listScrollTop,
-        setListScrollTop,
-    } = useMapContext();
+    const { center, cameraDistance } = useMapState();
+    const { topBarHeight } = useLayout();
+    const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
     const { data: places } = useNearbyPlaces(center, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
     });
