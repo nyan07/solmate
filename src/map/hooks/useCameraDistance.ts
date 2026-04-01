@@ -9,7 +9,6 @@ const useCameraDistance = (viewer: Viewer | null) => {
         if (!viewer) return;
 
         const cameraDistanceHandler = () => {
-            if (!viewer) return;
             const carto = viewer.camera.positionCartographic;
             setCameraDistance(carto.height);
         };

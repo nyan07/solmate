@@ -23,7 +23,7 @@ function getMapCenter(viewer: Viewer) {
 }
 
 const useMapCenter = (viewer: Viewer | null) => {
-    const { center, setCenter } = useMapState();
+    const { setCenter } = useMapState();
 
     useEffect(() => {
         if (!viewer) return;
@@ -35,8 +35,6 @@ const useMapCenter = (viewer: Viewer | null) => {
 
         return () => removeListener();
     }, [viewer, setCenter]);
-
-    return center;
 };
 
 export { useMapCenter };

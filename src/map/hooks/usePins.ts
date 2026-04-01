@@ -61,7 +61,9 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
             setHeights(mapped);
         };
 
-        loadHeights().catch((err) => console.error("Terrain sampling failed:", err));
+        loadHeights().catch((err) =>
+            console.error("Terrain sampling failed for places", { count: places.length }, err)
+        );
         return () => {
             cancelled = true;
         };

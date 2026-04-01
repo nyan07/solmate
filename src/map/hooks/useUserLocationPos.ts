@@ -40,7 +40,13 @@ export const useUserLocationPos = (
             if (!cancelled) setTerrainHeight((sample.height ?? 0) + offsetHeight);
         };
 
-        loadHeight().catch((err) => console.error("Terrain sampling failed:", err));
+        loadHeight().catch((err) =>
+            console.error(
+                "Terrain sampling failed for user location",
+                { lat: geolocation.latitude, lng: geolocation.longitude },
+                err
+            )
+        );
         return () => {
             cancelled = true;
         };
