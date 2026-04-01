@@ -1,5 +1,5 @@
 /** Maximum camera altitude (meters) at which place pins and controls are shown. */
-export const DEFAULT_CAMERA_DISTANCE = 700;
+export const DEFAULT_CAMERA_DISTANCE = 1000;
 
 /** Cesium entity ID constants — centralised to avoid scattered magic strings. */
 export const ENTITY_IDS = {

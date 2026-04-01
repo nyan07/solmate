@@ -23,7 +23,7 @@ import { useUserLocationPos } from "@/features/explorer/hooks/useUserLocationPos
 import { useCameraDistance } from "@/features/explorer/hooks/useCameraDistance";
 import type { LatLng } from "@/types/LatLng";
 import { usePins } from "@/features/explorer/hooks/usePins";
-import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
+import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
@@ -105,23 +105,6 @@ const ExplorerView: React.FC = () => {
 
             viewerRef.current = viewer;
             viewer.scene.preRender.addEventListener(preRenderHandler);
-
-            if (!geolocationError && geolocation) {
-                viewer.entities.add({
-                    id: ENTITY_IDS.userLocation,
-                    position: Cartesian3.fromDegrees(
-                        geolocation.longitude,
-                        geolocation.latitude,
-                        100
-                    ),
-                    point: {
-                        pixelSize: 12,
-                        color: Color.BLUE.withAlpha(0.8),
-                        outlineColor: Color.WHITE,
-                        outlineWidth: 2,
-                    },
-                });
-            }
         };
 
         const preRenderHandler = () => {

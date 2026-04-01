@@ -12,18 +12,18 @@ import {
 import type { LatLng } from "@/types/LatLng";
 import { ENTITY_IDS } from "@/features/explorer/constants";
 
-const PIN_LIGHT_COLOR = Color.fromCssColorString("#F2EACF");
-const PIN_DARK_COLOR = Color.fromCssColorString("#dbd0ab");
+const DOT_COLOR = Color.fromCssColorString("#4285F4");
+const DOT_OUTLINE = Color.WHITE;
+const ACCURACY_COLOR = Color.fromCssColorString("#4285F4").withAlpha(0.15);
+const ACCURACY_BORDER = Color.fromCssColorString("#4285F4").withAlpha(0.4);
 
 export const useUserLocationPos = (
     viewer: Viewer | null,
     geolocation: LatLng | null,
-    visible: boolean,
-    offsetHeight: number = 20
+    visible: boolean
 ) => {
     const [terrainHeight, setTerrainHeight] = useState<number | null>(null);
 
-    // Sample terrain height at the user's location
     useEffect(() => {
         if (!viewer || !geolocation || !visible) return;
 
@@ -37,7 +37,7 @@ export const useUserLocationPos = (
             const [sample] = await sampleTerrainMostDetailed(viewer.terrainProvider, [
                 cartographic,
             ]);
-            if (!cancelled) setTerrainHeight((sample.height ?? 0) + offsetHeight);
+            if (!cancelled) setTerrainHeight(sample.height ?? 0);
         };
 
         loadHeight().catch((err) =>
@@ -50,63 +50,71 @@ export const useUserLocationPos = (
         return () => {
             cancelled = true;
         };
-    }, [viewer, geolocation, visible, offsetHeight]);
+    }, [viewer, geolocation, visible]);
 
     useEffect(() => {
         if (!viewer || !geolocation || terrainHeight === null) return;
 
-        const spherePos = new CallbackPositionProperty(
+        const groundPos = new CallbackPositionProperty(
             () =>
-                Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight),
+                Cartesian3.fromDegrees(
+                    geolocation.longitude,
+                    geolocation.latitude,
+                    terrainHeight + 1
+                ),
             false,
             ReferenceFrame.FIXED
         );
 
-        const linePos = new CallbackProperty(
-            () => [
+        const ellipseCenter = new CallbackProperty(
+            () =>
                 Cartesian3.fromDegrees(
                     geolocation.longitude,
                     geolocation.latitude,
-                    terrainHeight - offsetHeight
+                    terrainHeight + 0.5
                 ),
-                Cartesian3.fromDegrees(geolocation.longitude, geolocation.latitude, terrainHeight),
-            ],
             false
         );
 
-        let sphere = viewer.entities.getById(ENTITY_IDS.locationSphere);
-        if (!sphere) {
-            sphere = viewer.entities.add({
+        let dot = viewer.entities.getById(ENTITY_IDS.locationSphere);
+        if (!dot) {
+            dot = viewer.entities.add({
                 id: ENTITY_IDS.locationSphere,
-                position: spherePos,
+                position: groundPos,
                 point: {
-                    pixelSize: 14,
-                    color: PIN_LIGHT_COLOR,
-                    outlineColor: PIN_DARK_COLOR,
-                    outlineWidth: 2,
+                    pixelSize: 16,
+                    color: DOT_COLOR,
+                    outlineColor: DOT_OUTLINE,
+                    outlineWidth: 3,
+                    disableDepthTestDistance: Number.POSITIVE_INFINITY,
                 },
             });
         } else {
-            sphere.position = spherePos;
+            dot.position = groundPos;
         }
 
-        let line = viewer.entities.getById(ENTITY_IDS.locationLine);
-        if (!line) {
-            line = viewer.entities.add({
+        let accuracy = viewer.entities.getById(ENTITY_IDS.locationLine);
+        if (!accuracy) {
+            accuracy = viewer.entities.add({
                 id: ENTITY_IDS.locationLine,
-                polyline: {
-                    positions: linePos,
-                    width: 2,
-                    material: PIN_DARK_COLOR,
+                position: ellipseCenter,
+                ellipse: {
+                    semiMajorAxis: new CallbackProperty(() => 20, false),
+                    semiMinorAxis: new CallbackProperty(() => 20, false),
+                    material: ACCURACY_COLOR,
+                    outline: true,
+                    outlineColor: ACCURACY_BORDER,
+                    outlineWidth: 1,
+                    height: terrainHeight + 0.5,
                 },
             });
         } else {
-            line.polyline!.positions = linePos;
+            accuracy.position = ellipseCenter;
         }
 
         return () => {
-            if (sphere) viewer.entities.remove(sphere);
-            if (line) viewer.entities.remove(line);
+            if (dot) viewer.entities.remove(dot);
+            if (accuracy) viewer.entities.remove(accuracy);
         };
-    }, [viewer, geolocation, terrainHeight, offsetHeight]);
+    }, [viewer, geolocation, terrainHeight]);
 };

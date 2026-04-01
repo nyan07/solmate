@@ -40,7 +40,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
     }, [viewer, navigate]);
 
     useEffect(() => {
-        if (!viewer || !visible || !places?.length) return;
+        if (!viewer || !places?.length) return;
 
         let cancelled = false;
 
@@ -69,8 +69,9 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
         };
     }, [viewer, places, offsetHeight]);
 
+    // Create/update entities (not gated on visible — avoids destroy/recreate on zoom)
     useEffect(() => {
-        if (!viewer || !visible || !places?.length) return;
+        if (!viewer || !places?.length) return;
 
         places.forEach((place) => {
             const terrainHeight = heights[place.id];
@@ -96,6 +97,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
             if (!billboard) {
                 billboard = viewer.entities.add({
                     id: ENTITY_IDS.placeBillboard(place.id),
+                    show: visible,
                     position: billboardPos,
                     billboard: {
                         image: "/pin.png",
@@ -112,6 +114,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
             if (!line) {
                 line = viewer.entities.add({
                     id: ENTITY_IDS.placeLine(place.id),
+                    show: visible,
                     polyline: {
                         positions: linePos,
                         width: 3,
@@ -131,5 +134,16 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
                 if (line) viewer.entities.remove(line);
             });
         };
-    }, [viewer, places, heights, offsetHeight, visible]);
+    }, [viewer, places, heights, offsetHeight]);
+
+    // Toggle visibility without destroying entities
+    useEffect(() => {
+        if (!viewer || !places?.length) return;
+        places.forEach((place) => {
+            const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
+            const line = viewer.entities.getById(ENTITY_IDS.placeLine(place.id));
+            if (billboard) billboard.show = visible;
+            if (line) line.show = visible;
+        });
+    }, [viewer, places, visible]);
 };
