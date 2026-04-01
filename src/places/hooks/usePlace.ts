@@ -19,7 +19,7 @@ type UsePlaceOptions = {
 export const usePlace = (
     id: string | undefined,
     { enabled, cacheFirst }: UsePlaceOptions = { enabled: true, cacheFirst: false }
-): UseQueryResult<Place | null> => {
+): UseQueryResult<Place> => {
     return useQuery({
         ...(cacheFirst ? CACHE_FIRST_OPTIONS : {}),
         queryKey: ["place", id],
