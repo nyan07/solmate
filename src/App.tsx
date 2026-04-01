@@ -10,8 +10,9 @@ function App() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
-                <Route path="/" element={<WaitlistPage />} />
+                <Route path="/" element={<Navigate to="/waitlist" replace />} />
                 <Route path="/beta" element={<Navigate to="/places" replace />} />
+                <Route path="/waitlist" element={<WaitlistPage />} />
                 <Route path="/*" element={<ExplorerPage />}>
                     <Route path="places" element={<PlaceListOverlay />} />
                     <Route path="places/:placeId" element={<PlaceDetailOverlay />} />
