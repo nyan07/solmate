@@ -1,6 +1,7 @@
 import { PlaceName } from "./components/PlaceName";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import SwipeUp from "../components/SwipeUp";
+import StickyHeader from "../components/StickyHeader";
 import Button from "../components/Button";
 import { Tag } from "../components/Tag";
 import { PlaceMeta } from "./components/PlaceMeta";
@@ -50,25 +51,26 @@ function PlaceDetails() {
             topOffset={topBarHeight}
             onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}
         >
-            <div className="sticky top-0 z-10 bg-neutral-lightest">
-                <div
-                    className={`flex items-start gap-2 min-w-0 rounded-t-lg p-4 bg-primary-50 ${scrolled && "shadow"}`}
-                >
+            <StickyHeader
+                scrolled={scrolled}
+                title={
                     <PlaceName
                         name={getText(place.displayName) ?? ""}
                         type={place.primaryType}
                         typeLabel={place.primaryTypeDisplayName}
                         size="lg"
-                        className={`flex-1 min-w-0${scrolled ? " truncate" : ""}`}
+                        className={scrolled ? "truncate" : undefined}
                     />
+                }
+                actions={
                     <button
                         onClick={() => navigate("/places")}
-                        className="text-neutral-dark/40 hover:text-neutral-dark shrink-0 mt-1.5 bg-primary-100 rounded-full p-1"
+                        className="text-neutral-dark/40 hover:text-neutral-dark mt-1.5 bg-primary-100 rounded-full p-1"
                     >
                         <XMarkIcon className="w-5 h-5" />
                     </button>
-                </div>
-            </div>
+                }
+            />
             <div className="flex flex-col rounded-b-lg p-4 pt-0 gap-6 bg-primary-50">
                 {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
 
