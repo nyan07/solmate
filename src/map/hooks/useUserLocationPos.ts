@@ -26,6 +26,8 @@ export const useUserLocationPos = (
     useEffect(() => {
         if (!viewer || !geolocation || !visible) return;
 
+        let cancelled = false;
+
         const loadHeight = async () => {
             const cartographic = Cartographic.fromDegrees(
                 geolocation.longitude,
@@ -34,10 +36,13 @@ export const useUserLocationPos = (
             const [sample] = await sampleTerrainMostDetailed(viewer.terrainProvider, [
                 cartographic,
             ]);
-            setTerrainHeight((sample.height ?? 0) + offsetHeight);
+            if (!cancelled) setTerrainHeight((sample.height ?? 0) + offsetHeight);
         };
 
-        loadHeight();
+        loadHeight().catch((err) => console.error("Terrain sampling failed:", err));
+        return () => {
+            cancelled = true;
+        };
     }, [viewer, geolocation, visible, offsetHeight]);
 
     useEffect(() => {

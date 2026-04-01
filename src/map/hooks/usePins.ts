@@ -42,12 +42,16 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
     useEffect(() => {
         if (!viewer || !visible || !places?.length) return;
 
+        let cancelled = false;
+
         const loadHeights = async () => {
             const cartographics = places.map((p) =>
                 Cartographic.fromDegrees(p.location.longitude, p.location.latitude)
             );
 
             const samples = await sampleTerrainMostDetailed(viewer.terrainProvider, cartographics);
+
+            if (cancelled) return;
 
             const mapped: Record<string, number> = {};
             places.forEach((p, i) => {
@@ -57,7 +61,10 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
             setHeights(mapped);
         };
 
-        loadHeights();
+        loadHeights().catch((err) => console.error("Terrain sampling failed:", err));
+        return () => {
+            cancelled = true;
+        };
     }, [viewer, places, visible, offsetHeight]);
 
     useEffect(() => {

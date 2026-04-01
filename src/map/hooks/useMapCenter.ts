@@ -28,17 +28,13 @@ const useMapCenter = (viewer: Viewer | null) => {
     useEffect(() => {
         if (!viewer) return;
 
-        const handler = viewer.camera.changed.addEventListener(() => {
+        const removeListener = viewer.camera.changed.addEventListener(() => {
             const center = getMapCenter(viewer);
-            if (center) {
-                setCenter(center);
-            }
+            if (center) setCenter(center);
         });
 
-        return () => {
-            handler();
-        };
-    }, [viewer]);
+        return () => removeListener();
+    }, [viewer, setCenter]);
 
     return center;
 };
