@@ -52,7 +52,9 @@ function formatTime(hour: number, minute: number): string {
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-export function getPlaceStatusDetail(openingHours: RawOpeningHours): PlaceStatusDetail | null {
+export function getPlaceStatusDetail(
+    openingHours: RawOpeningHours | undefined = {}
+): PlaceStatusDetail | null {
     const periods = openingHours?.periods;
     if (!periods?.length) return null;
 

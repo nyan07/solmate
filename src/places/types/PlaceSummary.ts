@@ -13,5 +13,5 @@ export type PlaceSummary = {
     hasOutdoorSeating: boolean;
     photoUrl: string;
     businessStatus?: BusinessStatus;
-    openingHours: RawOpeningHours | null;
+    openingHours?: RawOpeningHours;
 };
