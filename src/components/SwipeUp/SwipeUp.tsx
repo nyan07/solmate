@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 
 const BOTTOM_NAV_HEIGHT = 64;
+const HANDLE_HEIGHT = 22; // py-2 (16px) + h-1.5 (6px)
 
 type SwipeUpProps = {
     children: React.ReactNode;
@@ -27,22 +28,25 @@ export default function SwipeUp({
     const viewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
     const defaultHeight = Math.round(viewportHeight * openHeight);
     const maxHeight = viewportHeight - topOffset;
-    const peekHeight = 74 + BOTTOM_NAV_HEIGHT;
+    const peekHeight = HANDLE_HEIGHT + BOTTOM_NAV_HEIGHT;
 
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const [expanded, setExpanded] = useState(false);
     const controls = useAnimation();
 
+    const TRANSITION = { type: "tween", duration: 0.2, ease: "easeOut" } as const;
+
     const dragStartY = useRef(0);
     const dragStartOpen = useRef(isOpen);
     const scrollRef = useRef<HTMLDivElement>(null);
     const onOpenChangeRef = useRef(onOpenChange);
+
     useLayoutEffect(() => {
         onOpenChangeRef.current = onOpenChange;
     });
 
     useEffect(() => {
-        controls.start({ y: isOpen ? 0 : defaultHeight - peekHeight });
+        controls.start({ y: isOpen ? 0 : defaultHeight - peekHeight, transition: TRANSITION });
         if (initialScrollTop > 0 && scrollRef.current) {
             scrollRef.current.scrollTop = initialScrollTop;
         }
@@ -51,7 +55,7 @@ export default function SwipeUp({
     useEffect(() => {
         if (open !== undefined) {
             const target = open ? 0 : defaultHeight - peekHeight;
-            controls.start({ y: target });
+            controls.start({ y: target, transition: TRANSITION });
             setIsOpen(open);
         }
     }, [open]);
@@ -59,8 +63,6 @@ export default function SwipeUp({
     useEffect(() => {
         onOpenChangeRef.current?.(isOpen);
     }, [isOpen]);
-
-    const TRANSITION = { type: "tween", duration: 0.2, ease: "easeOut" } as const;
 
     const handlePointerDown = (e: React.PointerEvent) => {
         dragStartY.current = e.clientY;
@@ -104,13 +106,15 @@ export default function SwipeUp({
     };
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-        const scrolled = e.currentTarget.scrollTop > 0;
-        if (scrolled !== expanded) {
-            setExpanded(scrolled);
-            controls.start({
-                height: scrolled ? maxHeight : defaultHeight,
-                transition: { type: "tween", duration: 0.2, ease: "easeOut" },
-            });
+        const el = e.currentTarget;
+        const scrolled = el.scrollTop > 0;
+        if (scrolled && !expanded) {
+            setExpanded(true);
+            controls.start({ height: maxHeight, transition: TRANSITION });
+        } else if (!scrolled && expanded && el.scrollHeight > maxHeight) {
+            // Only collapse if content actually overflows maxHeight (real scrollable content)
+            setExpanded(false);
+            controls.start({ height: defaultHeight, transition: TRANSITION });
         }
         onScroll?.(e);
     };
@@ -130,7 +134,7 @@ export default function SwipeUp({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
             >
-                <div className="w-12 h-1.5 rounded-full bg-primary/50" />
+                <div className="w-12 h-1.5 rounded-full bg-primary-300" />
             </div>
 
             <div

@@ -90,6 +90,16 @@ function PlaceDetailOverlay() {
 
                 {place.editorialSummary && <Paragraph>{getText(place.editorialSummary)}</Paragraph>}
 
+                {tags.length > 0 && (
+                    <ul className="flex flex-wrap gap-2">
+                        {tags.map((tag) => (
+                            <li>
+                                <Tag key={tag} name={tag} />
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
                 {/* {sunnyHours && (
                     <div className="flex flex-col gap-2 ">
                         <p>Best time to catch the sun here today:</p>
@@ -106,14 +116,6 @@ function PlaceDetailOverlay() {
 
                     <PlaceAccessibility options={place.accessibilityOptions} position="last" />
                 </div>
-
-                {tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                        {tags.map((tag) => (
-                            <Tag key={tag} name={tag} />
-                        ))}
-                    </div>
-                )}
 
                 <div className="flex w-full gap-2">
                     <Button
