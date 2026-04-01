@@ -29,6 +29,7 @@ npx vercel dev
 ```
 
 This starts:
+
 - The frontend (Vite) at `http://localhost:3000`
 - The API Edge Functions at `http://localhost:3000/api/*`
 
@@ -38,11 +39,69 @@ This starts:
 
 The `api/` folder contains Vercel Edge Functions:
 
-| Route | Method | Description |
-|---|---|---|
-| `/api/places/nearby` | POST | Find nearby restaurants, cafes, and bars given `{ latitude, longitude, radius? }` |
-| `/api/places/[placeId]` | GET | Get details for a specific place |
-| `/api/places/[placeId]/photos` | GET | Get photos for a specific place |
+| Route                          | Method | Description                                                                       |
+| ------------------------------ | ------ | --------------------------------------------------------------------------------- |
+| `/api/places/nearby`           | POST   | Find nearby restaurants, cafes, and bars given `{ latitude, longitude, radius? }` |
+| `/api/places/[placeId]`        | GET    | Get details for a specific place                                                  |
+| `/api/places/[placeId]/photos` | GET    | Get photos for a specific place                                                   |
+
+## Project Structure
+
+```
+src/
+├── pages/                        # Thin routing layer — one file per route, no business logic
+│   ├── ExplorerPage.tsx          # Mounts ExplorerView + nested overlay routes
+│   └── WaitlistPage.tsx
+│
+├── features/                     # Self-contained product domains
+│   ├── explorer/                 # 3D map, nearby discovery, search, filters, weather
+│   │   ├── components/           # ExplorerView, MapContext, PlaceListOverlay, PlaceDetailOverlay
+│   │   ├── hooks/                # useBuildings, usePins, useSunDirection, useSunTimes, useNearbyPlaces, …
+│   │   ├── testing/              # MSW handlers + mock factories (test-only)
+│   │   ├── types.ts              # Building
+│   │   └── constants.ts
+│   ├── places/                   # Place detail, check-in, rating, sharing, verified status
+│   │   ├── components/           # PlaceItem, PlaceMeta, PlaceStatus, DaylightBar, …
+│   │   ├── hooks/                # usePlace, useSunnyHours, cacheFirstOptions
+│   │   ├── testing/
+│   │   ├── types.ts              # Place, PlaceSummary, PlaceTypes, PlaceStatuses, …
+│   │   └── api.ts
+│   ├── waitlist/                 # Pre-launch landing page
+│   │   └── components/
+│   ├── auth/                     # Login, register, sessions (future)
+│   ├── profile/                  # Favourites, notifications, settings (future)
+│   ├── business/                 # Business portal, verified place management (future)
+│   └── legal/                    # T&C, privacy policy (future)
+│
+├── components/                   # Generic, reusable UI — no business logic
+│   └── <Component>/index.tsx
+│
+├── hooks/                        # Shared hooks used across features
+│   └── useGeolocation.ts
+│
+├── utils/
+│   ├── geo/                      # Shared geo primitives (calculateDistance, getBoundingBox, …)
+│   ├── openingHours.ts
+│   ├── getText.ts
+│   └── addPins.ts
+│
+├── types/
+│   └── LatLng.ts                 # Shared coordinate type
+│
+└── testUtils/
+    └── setup.ts
+```
+
+### Route structure
+
+```
+/                         → WaitlistPage
+/explore                  → ExplorerPage (map always mounted)
+/explore/places           → ExplorerPage + PlaceListOverlay
+/explore/places/:id       → ExplorerPage + PlaceDetailOverlay
+```
+
+Overlay routes (`/explore/*`) use React Router nested routes with `<Outlet />` so the Cesium map never unmounts during navigation.
 
 ## Build
 

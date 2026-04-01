@@ -1,5 +1,6 @@
 import { OpeningHours, OpenState, WeekDays } from "@phoenix344/opening-hours";
-import type { PlaceStatuses } from "../places/types/PlaceStatuses";
+
+export type PlaceStatuses = "open" | "closed";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getOpeningHoursStatus = (openingHours: any): PlaceStatuses | undefined => {

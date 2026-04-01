@@ -1,5 +1,5 @@
 import { Cartesian2, Cartesian3, Color, Viewer } from "cesium";
-import type { PlaceSummary } from "../places/types/PlaceSummary";
+import type { PlaceSummary } from "../features/places/types";
 
 export const addEstablishmentPins = (
     viewer: Viewer,

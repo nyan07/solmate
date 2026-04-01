@@ -1,1 +1,0 @@
-export type PlaceStatuses = "open" | "closed";
