@@ -8,6 +8,7 @@ import {
     DirectionalLight,
     Ion,
     UrlTemplateImageryProvider,
+    CameraEventType,
 } from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
@@ -169,7 +170,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         const viewer = viewerRef.current;
         if (!viewer || !viewerReady) return;
 
-        viewer.scene.screenSpaceCameraController.zoomEventTypes = [];
+        viewer.scene.screenSpaceCameraController.zoomEventTypes = [CameraEventType.PINCH];
 
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
