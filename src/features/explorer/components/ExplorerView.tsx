@@ -161,15 +161,15 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         controller.enableTilt = false;
         controller.enableLook = false;
 
-        controller.zoomEventTypes = [];
-
         viewer.clock.currentTime = sunData.time;
     }, [sunData, viewerReady]);
 
-    // Center-based wheel zoom
+    // Center-based wheel zoom — disable Cesium's default wheel zoom here so it's always off
     useEffect(() => {
         const viewer = viewerRef.current;
         if (!viewer || !viewerReady) return;
+
+        viewer.scene.screenSpaceCameraController.zoomEventTypes = [];
 
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
