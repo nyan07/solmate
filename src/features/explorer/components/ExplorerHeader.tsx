@@ -30,7 +30,7 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
                     <div className="flex gap-4 items-start w-full">
                         <DatePicker value={date} onChange={onDateChange} />
                         <BsSunrise className="text-primary w-4 h-4 shrink-0" />
-                        <div className="flex flex-col items-center flex-1 gap-1 mt-2">
+                        <div className="flex flex-col items-center flex-1 gap-1.5 mt-2">
                             <Range
                                 min={sunTimes.sunrise}
                                 max={sunTimes.sunset}

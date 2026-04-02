@@ -110,13 +110,12 @@ const ExplorerView: React.FC = () => {
         const preRenderHandler = () => {
             const initialPos = geolocation || FALLBACK_LOCATION;
             if (!viewerReady) {
-                viewer.camera.flyTo({
+                viewer.camera.setView({
                     destination: Cartesian3.fromDegrees(
                         initialPos.longitude,
                         initialPos.latitude,
                         DEFAULT_CAMERA_DISTANCE
                     ),
-                    duration: 2,
                 });
                 setViewerReady(true);
                 viewer.scene.preRender.removeEventListener(preRenderHandler);
