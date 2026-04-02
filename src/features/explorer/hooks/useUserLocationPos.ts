@@ -97,7 +97,7 @@ export const useUserLocationPos = (
         if (!accuracy) {
             accuracy = viewer.entities.add({
                 id: ENTITY_IDS.locationLine,
-                position: ellipseCenter,
+                position: ellipseCenter as never,
                 ellipse: {
                     semiMajorAxis: new CallbackProperty(() => 20, false),
                     semiMinorAxis: new CallbackProperty(() => 20, false),
@@ -109,7 +109,7 @@ export const useUserLocationPos = (
                 },
             });
         } else {
-            accuracy.position = ellipseCenter;
+            accuracy.position = ellipseCenter as never;
         }
 
         return () => {

@@ -20,7 +20,7 @@ export const fetchNearbyPlaces = async (bounds: Bounds): Promise<PlaceSummary[]>
         body: JSON.stringify(bounds),
     });
     if (!res.ok) {
-        console.error("fetchNearbyPlaces failed", { location, radius, status: res.status });
+        console.error("fetchNearbyPlaces failed", { status: res.status });
         throw new Error(`fetchNearbyPlaces ${res.status}`);
     }
     return (res.json() as Promise<PlaceSummary[]>) ?? [];
