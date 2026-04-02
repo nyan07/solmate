@@ -9,7 +9,8 @@ import {
 import { useFilteredPlaces } from "./useFilteredPlaces";
 import { useLayout, useMapState } from "@/features/explorer/components/MapContext";
 import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
-import { useNavigate } from "react-router-dom";
+import { useLangNavigate } from "@/hooks/useLangNavigate";
+import { useTranslation } from "react-i18next";
 
 const PIN_FILL = "#5363a2"; // primary-600
 const SELECTED_FILL = "#ff5a59"; // accent
@@ -55,9 +56,11 @@ export const usePins = (
 ) => {
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
-    const navigate = useNavigate();
+    const navigate = useLangNavigate();
+    const { i18n } = useTranslation();
     const { data: places } = useFilteredPlaces(bounds, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
+        lang: i18n.language,
     });
     const [heights, setHeights] = useState<Record<string, number>>({});
 

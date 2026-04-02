@@ -128,7 +128,7 @@ export default function SwipeUp({
             role="dialog"
             aria-modal="true"
             animate={controls}
-            initial={{ y: defaultOpen ? 0 : defaultHeight - peekHeight, height: defaultHeight }}
+            initial={{ y: defaultHeight - peekHeight, height: defaultHeight }}
             className="absolute left-0 right-0 bottom-0 z-40 flex flex-col bg-white rounded-t-2xl w-full shadow-2xl"
         >
             <div
