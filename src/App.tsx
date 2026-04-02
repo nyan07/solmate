@@ -1,6 +1,6 @@
 import { Suspense, useEffect } from "react";
 import "./App.css";
-import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { WaitlistPage } from "@/pages/WaitlistPage";
 import { ExplorerPage } from "@/pages/ExplorerPage";
@@ -31,13 +31,22 @@ function BetaRedirect() {
 function LangRoute() {
     const { lang } = useParams<{ lang: string }>();
     const { i18n } = useTranslation();
+    const location = useLocation();
+
+    const resolved = resolveLang(lang ?? "en");
+    const needsRedirect = lang !== resolved;
 
     useEffect(() => {
-        const resolved = resolveLang(lang ?? "en");
-        if (resolved !== i18n.language) {
+        if (!needsRedirect && resolved !== i18n.language) {
             void i18n.changeLanguage(resolved);
         }
-    }, [lang, i18n]);
+    }, [needsRedirect, resolved, i18n]);
+
+    // lang segment is not a recognised language code (e.g. /places) —
+    // prepend the detected language and redirect, preserving the full path.
+    if (needsRedirect) {
+        return <Navigate to={`/${resolved}${location.pathname}`} replace />;
+    }
 
     return <Outlet />;
 }

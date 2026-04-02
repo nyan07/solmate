@@ -21,6 +21,11 @@ const STATUS_KEY = {
     "permanently closed": "status.permanentlyClosed",
 } as const;
 
+const DETAIL_KEY = {
+    closesAt: "status.closesAt",
+    opensAt: "status.opensAt",
+} as const;
+
 type Props = {
     statusDetail: PlaceStatusDetail;
     showDetail?: boolean;
@@ -37,7 +42,9 @@ export const PlaceStatusBadge = ({ statusDetail, showDetail = true, className }:
                 variant="outline"
             />
             {showDetail && statusDetail.detail && (
-                <span className="text-sm text-neutral-500">{statusDetail.detail}</span>
+                <span className="text-sm text-neutral-500">
+                    {t(DETAIL_KEY[statusDetail.detail.key], { time: statusDetail.detail.time })}
+                </span>
             )}
         </span>
     );

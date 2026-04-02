@@ -22,6 +22,7 @@ export async function GET(req) {
     try {
         const requestUrl = new URL(req.url, `http://${req.headers.host}`);
         const { placeId } = parseUrl(requestUrl);
+        const lang = requestUrl.searchParams.get("lang") ?? "en";
 
         if (!placeId) {
             return error(400, "PlaceId is not defined");
@@ -53,7 +54,7 @@ export async function GET(req) {
         const origin = req.headers.get("origin") || "";
         const host = req.headers.get("host") || "";
 
-        const url = `https://places.googleapis.com/v1/places/${placeId}`;
+        const url = `https://places.googleapis.com/v1/places/${placeId}?languageCode=${lang}`;
         const response = await fetch(url, {
             signal: abortController.signal,
             headers: {

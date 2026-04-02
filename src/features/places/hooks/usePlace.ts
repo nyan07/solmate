@@ -6,16 +6,17 @@ import { fetchPlace } from "@/features/places/api";
 type UsePlaceOptions = {
     enabled: boolean;
     cacheFirst?: boolean;
+    lang?: string;
 };
 
 export const usePlace = (
     id: string | undefined,
-    { enabled, cacheFirst }: UsePlaceOptions = { enabled: true, cacheFirst: false }
+    { enabled, cacheFirst, lang = "en" }: UsePlaceOptions = { enabled: true, cacheFirst: false }
 ): UseQueryResult<Place> => {
     return useQuery({
         ...(cacheFirst ? CACHE_FIRST_OPTIONS : {}),
-        queryKey: ["place", id],
-        queryFn: () => fetchPlace(id!),
+        queryKey: ["place", id, lang],
+        queryFn: () => fetchPlace(id!, lang),
         enabled: !!id && enabled,
     });
 };

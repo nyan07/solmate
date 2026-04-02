@@ -34,6 +34,11 @@ export type RawOpeningHours = {
     weekdayDescriptions?: string[];
 };
 
+export type PlaceStatusDetailInfo = {
+    key: "closesAt" | "opensAt";
+    time: string;
+};
+
 export type PlaceStatusDetail = {
     status:
         | "open"
@@ -42,7 +47,7 @@ export type PlaceStatusDetail = {
         | "opening soon"
         | "temporarily closed"
         | "permanently closed";
-    detail?: string;
+    detail?: PlaceStatusDetailInfo;
 };
 
 function toMinutes(hour: number, minute: number) {
@@ -82,11 +87,14 @@ export function getPlaceStatusDetail(
                 ? closeMin - currentMin
                 : closeMin + (24 * 60 - currentMin); // closes next day
 
-        const closeLabel = `closes at ${formatTime(active.close.hour, active.close.minute)}`;
+        const closeDetail = {
+            key: "closesAt" as const,
+            time: formatTime(active.close.hour, active.close.minute),
+        };
 
         return minutesLeft <= SOON_MINUTES
-            ? { status: "closing soon", detail: closeLabel }
-            : { status: "open", detail: closeLabel };
+            ? { status: "closing soon", detail: closeDetail }
+            : { status: "open", detail: closeDetail };
     }
 
     // Closed — find the next opening
@@ -100,11 +108,14 @@ export function getPlaceStatusDetail(
 
         const openMin = toMinutes(upcoming.open.hour, upcoming.open.minute);
         const minutesAway = i === 0 ? openMin - currentMin : i * 24 * 60 - currentMin + openMin;
-        const openLabel = `opens at ${formatTime(upcoming.open.hour, upcoming.open.minute)}`;
+        const openDetail = {
+            key: "opensAt" as const,
+            time: formatTime(upcoming.open.hour, upcoming.open.minute),
+        };
 
         return minutesAway <= SOON_MINUTES
-            ? { status: "opening soon", detail: openLabel }
-            : { status: "closed", detail: openLabel };
+            ? { status: "opening soon", detail: openDetail }
+            : { status: "closed", detail: openDetail };
     }
 
     return { status: "closed" };

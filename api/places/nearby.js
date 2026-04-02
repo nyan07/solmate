@@ -81,7 +81,7 @@ const parsePlace = (place) => {
 export default async function POST(request) {
     try {
         const body = await request.json();
-        const { north, south, east, west } = body;
+        const { north, south, east, west, lang } = body;
 
         if (north == null || south == null || east == null || west == null) {
             return new Response(
@@ -134,7 +134,7 @@ export default async function POST(request) {
         const requestBody = {
             includedPrimaryTypes: restaurants.concat(bars).concat(cafes),
             maxResultCount: 20,
-            languageCode: "en",
+            languageCode: lang ?? "en",
             rankPreference: "DISTANCE",
             locationRestriction: {
                 circle: {

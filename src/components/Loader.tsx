@@ -3,9 +3,15 @@
  * Combines a continuous rotation with a breathe-in/out scale pulse.
  * Uses SVG-native animateTransform — no CSS keyframes needed.
  */
-export function Loader() {
+export function Loader({ inline = false }: { inline?: boolean }) {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-100">
+        <div
+            className={
+                inline
+                    ? "flex items-center justify-center py-16"
+                    : "fixed inset-0 z-50 flex items-center justify-center bg-primary-100"
+            }
+        >
             <svg
                 width="72"
                 height="72"

@@ -13,8 +13,10 @@ function PlaceListOverlay() {
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
+    const { i18n } = useTranslation();
     const { data: places, isPending } = useFilteredPlaces(bounds, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
+        lang: i18n.language,
     });
     const { filters } = useFilters();
     const hasActiveFilters = filters.openOnly || filters.outdoorSeatingOnly;
@@ -29,7 +31,7 @@ function PlaceListOverlay() {
             onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
         >
             {isPending ? (
-                <Loader />
+                <Loader inline />
             ) : !places?.length ? (
                 <div className="flex flex-col items-center justify-center gap-1 py-10 px-6 text-center">
                     <span className="text-primary-800 font-medium">

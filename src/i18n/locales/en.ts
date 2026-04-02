@@ -30,6 +30,8 @@ const en = {
         closed: "closed",
         temporarilyClosed: "temporarily closed",
         permanentlyClosed: "permanently closed",
+        closesAt: "closes at {{time}}",
+        opensAt: "opens at {{time}}",
     },
     place: {
         tags: {
