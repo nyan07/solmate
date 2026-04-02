@@ -61,7 +61,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const sunData = useSunDirection(date, hour, geolocation);
     useUserLocationPos(viewerRef.current, geolocation, true);
     const placeMatch = useMatch("/:lang/places/:placeId");
-    usePins(viewerRef.current, true, placeMatch?.params?.placeId);
+    usePins(viewerRef.current, true, placeMatch?.params?.placeId, sunData?.time ?? null);
 
     useEffect(() => {
         if (!topBarRef.current) return;

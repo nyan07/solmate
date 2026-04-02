@@ -5,7 +5,8 @@
             "Bash(pnpm remove:*)",
             "Bash(pnpm add:*)",
             "Bash(pnpm tsc:*)",
-            "Bash(pnpm test:*)"
+            "Bash(pnpm test:*)",
+            "Bash(node -e \"const C = require\\('cesium'\\); console.log\\(Object.keys\\(C\\).filter\\(k => k.includes\\('Sun'\\) || k.includes\\('Planetary'\\) || k.includes\\('Simon'\\)\\).join\\('\\\\n'\\)\\)\")"
         ]
     }
 }
