@@ -19,12 +19,41 @@ import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
 
-const PIN_IMAGE = "/shadow-pin.png";
-const PIN_SUNLIT_IMAGE = "/sun-pin.png";
-const SELECTED_PIN_IMAGE = "/selected-pin.png";
+const PIN_HEAD_OFFSET = 3; // meters above surface (terrain or building roof)
 const PIN_WIDTH = 18;
 const PIN_HEIGHT = 38;
-const PIN_HEAD_OFFSET = 3; // meters above surface (terrain or building roof)
+
+function createPinCanvas(fillColor: string): HTMLCanvasElement {
+    const r = 8,
+        lineW = 2,
+        lineH = 20,
+        pad = 1;
+    const w = r * 2 + pad * 2;
+    const h = r * 2 + lineH + pad * 2;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    const cx = w / 2,
+        cy = r + pad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx - lineW / 2, cy + r);
+    ctx.lineTo(cx - lineW / 2, h - pad);
+    ctx.lineTo(cx + lineW / 2, h - pad);
+    ctx.lineTo(cx + lineW / 2, cy + r);
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    return canvas;
+}
+
+const PIN_IMAGE = createPinCanvas("#5363a2");
+const PIN_SUNLIT_IMAGE = createPinCanvas("#F2EBCF");
+const SELECTED_PIN_IMAGE = createPinCanvas("#ff5a59");
 
 const PIN_COLOR = Color.fromCssColorString("#5363a2");
 const PIN_SUNLIT_COLOR = Color.fromCssColorString("#F2EBCF");
