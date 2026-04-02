@@ -18,12 +18,6 @@ function resolveLang(lang: string): Lang {
     return (SUPPORTED_LANGS as readonly string[]).includes(lang) ? (lang as Lang) : "en";
 }
 
-/** Redirects / to /:detectedLang based on browser / i18n state. */
-function RootRedirect() {
-    const { i18n } = useTranslation();
-    return <Navigate to={`/${resolveLang(i18n.language)}`} replace />;
-}
-
 /** Redirects /beta to /:detectedLang/places (legacy URL support). */
 function BetaRedirect() {
     const { i18n } = useTranslation();
@@ -53,10 +47,9 @@ function App() {
         <div className="p-2">
             <Suspense fallback={<Loader />}>
                 <Routes>
-                    <Route path="/" element={<RootRedirect />} />
+                    <Route path="/" element={<WaitlistPage />} />
                     <Route path="/beta" element={<BetaRedirect />} />
                     <Route path="/:lang" element={<LangRoute />}>
-                        <Route index element={<WaitlistPage />} />
                         <Route path="about" element={<AboutPage />} />
                         <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
                         <Route path="terms-of-use" element={<TermsOfUsePage />} />

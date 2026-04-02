@@ -1,9 +1,4 @@
 const de = {
-    waitlist: {
-        title: "Bald verfügbar.",
-        subtitle: "Trag dich in unsere Warteliste ein & sei dabei von Anfang an.",
-        feedbackFormTitle: "Feedback-Formular",
-    },
     about: {
         back: "Zurück",
         sections: {

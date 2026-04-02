@@ -1,9 +1,4 @@
 const en = {
-    waitlist: {
-        title: "Coming soon.",
-        subtitle: "Sign up for our waitlist & be among the first to join.",
-        feedbackFormTitle: "Feedback form",
-    },
     about: {
         back: "Back",
         sections: {
