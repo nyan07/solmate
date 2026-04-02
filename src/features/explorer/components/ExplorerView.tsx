@@ -11,6 +11,7 @@ import {
 } from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
+import { BsCrosshair } from "react-icons/bs";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
 import ExplorerHeader from "./ExplorerHeader";
@@ -165,6 +166,24 @@ const ExplorerView: React.FC = () => {
             />
 
             <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+
+            {geolocation && (
+                <button
+                    onClick={() =>
+                        viewerRef.current?.camera.flyTo({
+                            destination: Cartesian3.fromDegrees(
+                                geolocation.longitude,
+                                geolocation.latitude,
+                                DEFAULT_CAMERA_DISTANCE
+                            ),
+                            duration: 1,
+                        })
+                    }
+                    className="absolute bottom-10 right-4 z-30 bg-white rounded-full p-2.5 shadow-md text-primary hover:text-accent transition-colors"
+                >
+                    <BsCrosshair className="w-5 h-5" />
+                </button>
+            )}
         </div>
     );
 };
