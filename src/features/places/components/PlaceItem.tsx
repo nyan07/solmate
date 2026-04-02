@@ -2,7 +2,7 @@ import { PlaceName } from "./PlaceName";
 import { Tag } from "@/components/Tag";
 import { Paragraph } from "@/components/Paragraph";
 import { PlaceStatusBadge } from "./PlaceStatusBadge";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import type { PlaceSummary } from "@/features/places/types";
 import { getPlaceStatusDetail } from "@/utils/openingHours";
 import type { PlaceStatusDetail } from "@/utils/openingHours";
@@ -20,6 +20,7 @@ type PlaceItemProps = {
 };
 
 export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
+    const { lang = "en" } = useParams<{ lang: string }>();
     const statusDetail: PlaceStatusDetail | null =
         place.businessStatus === "CLOSED_TEMPORARILY"
             ? { status: "temporarily closed" }
@@ -28,7 +29,7 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
               : getPlaceStatusDetail(place.openingHours);
 
     return (
-        <Link to={`/places/${place.id}`}>
+        <Link to={`/${lang}/places/${place.id}`}>
             <div className="rounded-lg p-4 flex flex-col gap-2 bg-primary-100">
                 <div className="flex gap-3 items-start">
                     <PlaceName

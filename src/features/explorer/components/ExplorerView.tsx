@@ -53,7 +53,7 @@ const ExplorerView: React.FC = () => {
 
     const sunData = useSunDirection(date, hour, geolocation);
     useUserLocationPos(viewerRef.current, geolocation, showControls);
-    const placeMatch = useMatch("/places/:placeId");
+    const placeMatch = useMatch("/:lang/places/:placeId");
     usePins(viewerRef.current, showControls, placeMatch?.params?.placeId);
 
     useEffect(() => {
