@@ -1,7 +1,7 @@
-import { FiCalendar } from "react-icons/fi";
+import { BsCalendar3 } from "react-icons/bs";
 import React, { useState } from "react";
 import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
+import "react-day-picker/style.css";
 
 const DatePicker: React.FC<{
     value: Date;
@@ -15,11 +15,11 @@ const DatePicker: React.FC<{
                 onClick={() => setOpen(!open)}
                 className="p-2 rounded-full bg-none hover:bg-primary/50"
             >
-                <FiCalendar className="text-primary" size={20} />
+                <BsCalendar3 className="text-primary w-5 h-5" />
             </button>
 
             {open && (
-                <div className="absolute top-10 left-0 bg-white border rounded-lg shadow-lg z-50">
+                <div className="absolute top-10 left-0 bg-primary rounded-lg shadow-lg z-50 text-primary-50 text-xs p-3">
                     <DayPicker
                         mode="single"
                         selected={value}
@@ -29,6 +29,17 @@ const DatePicker: React.FC<{
                                 setOpen(false);
                             }
                         }}
+                        style={
+                            {
+                                "--rdp-accent-color": "#bac2de",
+                                "--rdp-accent-background-color": "#bac2de33",
+                                "--rdp-day-height": "32px",
+                                "--rdp-day-width": "32px",
+                                "--rdp-day_button-height": "26px",
+                                "--rdp-day_button-width": "26px",
+                                color: "#f7f8fc",
+                            } as React.CSSProperties
+                        }
                     />
                 </div>
             )}

@@ -1,4 +1,4 @@
-import { UserCircleIcon } from "@heroicons/react/24/outline";
+import { BsPerson } from "react-icons/bs";
 import { Expandable } from "@/components/Expandable";
 import type { ExpandablePosition } from "@/components/Expandable";
 import type { AccessibilityOptions } from "@/features/places/types";
@@ -23,7 +23,7 @@ export const PlaceAccessibility = ({ options, position }: Props) => {
 
     return (
         <Expandable
-            icon={<UserCircleIcon className="w-4 h-4 text-neutral-500 shrink-0" />}
+            icon={<BsPerson className="w-4 h-4 text-neutral-500 shrink-0" />}
             title={<span className="font-medium text-neutral-500">Accessibility options</span>}
             position={position}
         >

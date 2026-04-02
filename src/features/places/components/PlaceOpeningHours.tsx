@@ -1,4 +1,4 @@
-import { ClockIcon } from "@heroicons/react/24/outline";
+import { BsClock } from "react-icons/bs";
 import { Expandable } from "@/components/Expandable";
 import type { ExpandablePosition } from "@/components/Expandable";
 import { PlaceStatusBadge } from "./PlaceStatusBadge";
@@ -24,7 +24,7 @@ export const PlaceOpeningHours = ({ statusDetail, weekdayDescriptions, position 
 
     return (
         <Expandable
-            icon={<ClockIcon className="w-4 h-4 text-neutral-500 shrink-0" />}
+            icon={<BsClock className="w-4 h-4 text-neutral-500 shrink-0" />}
             title={statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
             position={position}
         >

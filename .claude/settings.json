@@ -1,0 +1,8 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(find /Users/dani/Projects/arkie/node_modules/react-day-picker -name \"style.css\" -exec head -60 {} \\\\;)",
+            "Bash(pnpm remove:*)"
+        ]
+    }
+}

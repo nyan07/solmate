@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { FiSunrise, FiSunset } from "react-icons/fi";
+import { BsSunset, BsSunrise } from "react-icons/bs";
 import { DatePicker } from "@/components/DatePicker";
 import { Range } from "@/components/Range";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
@@ -22,8 +22,8 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
             <div className="p-4 bg-neutral-50 shadow-md rounded-b-xl flex flex-col gap-4 items-center">
                 <div className="flex gap-4 items-start w-full">
                     <DatePicker value={date} onChange={onDateChange} />
-                    <FiSunrise className="text-primary-800 mt-2" />
-                    <div className="flex flex-col items-center flex-1 gap-1 mt-4">
+                    <BsSunrise className="text-primary-800 mt-3 w-4 h-4 shrink-0" />
+                    <div className="flex flex-col items-center flex-1 gap-1 mt-5">
                         <Range
                             min={sunTimes.sunrise}
                             max={sunTimes.sunset}
@@ -36,7 +36,7 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
                             {hour % 1 === 0 ? "00" : "30"}
                         </span>
                     </div>
-                    <FiSunset className="text-primary-800 mt-2" />
+                    <BsSunset className="text-primary-800 mt-3 w-4 h-4 shrink-0" />
                 </div>
             </div>
         </div>

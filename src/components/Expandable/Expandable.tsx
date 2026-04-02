@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { BsChevronDown } from "react-icons/bs";
 import type { ExpandablePosition } from "./types";
 
 type Props = {
@@ -46,7 +46,7 @@ export const Expandable = ({ icon, title, children, position = "standalone" }: P
             >
                 {icon}
                 <span className="flex-1 text-sm">{title}</span>
-                <ChevronDownIcon
+                <BsChevronDown
                     className={`w-4 h-4 text-neutral-500 transition-transform ${expanded ? "rotate-180" : ""}`}
                 />
             </button>

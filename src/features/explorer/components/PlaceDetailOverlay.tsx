@@ -1,6 +1,6 @@
 import { PlaceName } from "@/features/places/components/PlaceName";
 import { Paragraph } from "@/components/Paragraph";
-import { XMarkIcon } from "@heroicons/react/24/solid";
+import { BsX } from "react-icons/bs";
 import SwipeUp from "@/components/SwipeUp";
 import StickyHeader from "@/components/StickyHeader";
 import Button from "@/components/Button";
@@ -64,7 +64,7 @@ function PlaceDetailOverlay() {
                         onClick={() => navigate("/places")}
                         className="text-primary-500 hover:text-primary-700 mt-1.5 bg-primary-200 rounded-full p-1"
                     >
-                        <XMarkIcon className="w-5 h-5" />
+                        <BsX className="w-5 h-5" />
                     </button>
                 }
             />
