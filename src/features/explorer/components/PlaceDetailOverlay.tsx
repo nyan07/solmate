@@ -93,8 +93,8 @@ function PlaceDetailOverlay() {
                 {tags.length > 0 && (
                     <ul className="flex flex-wrap gap-2">
                         {tags.map((tag) => (
-                            <li>
-                                <Tag key={tag} name={tag} />
+                            <li key={tag}>
+                                <Tag name={tag} />
                             </li>
                         ))}
                     </ul>
