@@ -12,6 +12,7 @@ import {
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import { BsCrosshair } from "react-icons/bs";
+import { useMatch } from "react-router-dom";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
 import ExplorerHeader from "./ExplorerHeader";
@@ -52,7 +53,8 @@ const ExplorerView: React.FC = () => {
 
     const sunData = useSunDirection(date, hour, geolocation);
     useUserLocationPos(viewerRef.current, geolocation, showControls);
-    usePins(viewerRef.current, showControls);
+    const placeMatch = useMatch("/places/:placeId");
+    usePins(viewerRef.current, showControls, placeMatch?.params?.placeId);
 
     useEffect(() => {
         if (cameraDistance) {

@@ -1,21 +1,60 @@
 import { useEffect, useRef, useState } from "react";
 import {
     Cartesian3,
-    Color,
     Viewer,
     sampleTerrainMostDetailed,
     Cartographic,
     VerticalOrigin,
 } from "cesium";
 import { useFilteredPlaces } from "./useFilteredPlaces";
-import { useMapState } from "@/features/explorer/components/MapContext";
+import { useLayout, useMapState } from "@/features/explorer/components/MapContext";
 import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useNavigate } from "react-router-dom";
 
-const PIN_COLOR = Color.fromCssColorString("#8591b5");
+const PIN_FILL = "#5363a2"; // primary-600
+const SELECTED_FILL = "#ff5a59"; // accent
 
-export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: number = 20) => {
+function createPinImage(fillColor: string): HTMLCanvasElement {
+    const r = 8;
+    const lineW = 2;
+    const lineH = 20;
+    const pad = 1;
+    const w = r * 2 + pad * 2;
+    const h = r * 2 + lineH + pad * 2;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    const cx = w / 2;
+    const cy = r + pad;
+    // filled circle
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    // line below circle
+    ctx.beginPath();
+    ctx.moveTo(cx - lineW / 2, cy + r);
+    ctx.lineTo(cx - lineW / 2, h - pad);
+    ctx.lineTo(cx + lineW / 2, h - pad);
+    ctx.lineTo(cx + lineW / 2, cy + r);
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    return canvas;
+}
+
+const PIN_IMAGE = createPinImage(PIN_FILL);
+const SELECTED_PIN_IMAGE = createPinImage(SELECTED_FILL);
+
+export const usePins = (
+    viewer: Viewer | null,
+    visible: boolean,
+    selectedPlaceId: string | null | undefined = null,
+    offsetHeight: number = 20
+) => {
     const { bounds, cameraDistance } = useMapState();
+    const { topBarHeight } = useLayout();
     const navigate = useNavigate();
     const { data: places } = useFilteredPlaces(bounds, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
@@ -38,6 +77,34 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
             viewer.selectedEntityChanged.removeEventListener(handler);
         };
     }, [viewer, navigate]);
+
+    // Fly to selected place, centering it in the visible area (between header and bottom nav)
+    useEffect(() => {
+        if (!viewer || !selectedPlaceId || !places?.length) return;
+
+        const place = places.find((p) => p.id === selectedPlaceId);
+        if (!place) return;
+
+        const canvas = viewer.scene.canvas;
+        const altitude = viewer.camera.positionCartographic.height;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const fovY: number = (viewer.camera.frustum as any).fovy ?? Math.PI / 3;
+        const metersPerPixel = (2 * altitude * Math.tan(fovY / 2)) / canvas.clientHeight;
+
+        // Visual center is offset from screen center by half the difference of top/bottom UI
+        const swipeOpenHeight = Math.round(canvas.clientHeight * 0.7);
+        const dyPx = (topBarHeight - swipeOpenHeight) / 2 + topBarHeight;
+        const latOffsetDeg = (dyPx * metersPerPixel) / 111111;
+
+        viewer.camera.flyTo({
+            destination: Cartesian3.fromDegrees(
+                place.location.longitude,
+                place.location.latitude + latOffsetDeg,
+                altitude
+            ),
+            duration: 0.6,
+        });
+    }, [viewer, selectedPlaceId]);
 
     // Sample terrain heights only for places we haven't sampled yet
     useEffect(() => {
@@ -78,9 +145,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
         managedIds.current.forEach((id) => {
             if (!currentIds.has(id)) {
                 const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
-                const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
                 if (billboard) viewer.entities.remove(billboard);
-                if (line) viewer.entities.remove(line);
                 managedIds.current.delete(id);
                 delete appliedHeights.current[id];
             }
@@ -99,10 +164,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
             const alreadyApplied = appliedHeights.current[place.id] === terrainHeight;
 
             const pinPos = Cartesian3.fromDegrees(longitude, latitude, terrainHeight);
-            const linePositions = [
-                Cartesian3.fromDegrees(longitude, latitude, terrainHeight - offsetHeight),
-                Cartesian3.fromDegrees(longitude, latitude, terrainHeight),
-            ];
+            const image = place.id === selectedPlaceId ? SELECTED_PIN_IMAGE : PIN_IMAGE;
 
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
@@ -111,8 +173,7 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
                     show: visible,
                     position: pinPos,
                     billboard: {
-                        image: "/pin.png",
-                        scale: 1,
+                        image,
                         verticalOrigin: VerticalOrigin.BOTTOM,
                         disableDepthTestDistance: Number.POSITIVE_INFINITY,
                     },
@@ -121,34 +182,27 @@ export const usePins = (viewer: Viewer | null, visible: boolean, offsetHeight: n
                 billboard.position = pinPos as never;
             }
 
-            const line = viewer.entities.getById(ENTITY_IDS.placeLine(place.id));
-            if (!line) {
-                viewer.entities.add({
-                    id: ENTITY_IDS.placeLine(place.id),
-                    show: visible,
-                    polyline: {
-                        positions: linePositions,
-                        width: 3,
-                        material: PIN_COLOR,
-                    },
-                });
-            } else if (!alreadyApplied) {
-                line.polyline!.positions = linePositions as never;
-            }
-
             managedIds.current.add(place.id);
             appliedHeights.current[place.id] = terrainHeight;
         });
     }, [viewer, places, heights, offsetHeight, visible]);
+
+    // Update pin image when selection changes
+    useEffect(() => {
+        if (!viewer) return;
+        managedIds.current.forEach((id) => {
+            const image = id === selectedPlaceId ? SELECTED_PIN_IMAGE : PIN_IMAGE;
+            const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
+            if (billboard?.billboard) billboard.billboard.image = image as never;
+        });
+    }, [viewer, selectedPlaceId]);
 
     // Toggle visibility without touching positions
     useEffect(() => {
         if (!viewer) return;
         managedIds.current.forEach((id) => {
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
-            const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
             if (billboard) billboard.show = visible;
-            if (line) line.show = visible;
         });
     }, [viewer, visible]);
 };

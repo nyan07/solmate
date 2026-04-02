@@ -27,7 +27,7 @@ const DatePicker: React.FC<{
                 </button>
 
                 {open && (
-                    <div className="absolute top-full mt-6 left-0 bg-primary rounded-lg shadow-lg z-50 text-primary-50 text-xs p-3">
+                    <div className="absolute top-full mt-7 bg-primary rounded-lg shadow-lg z-50 text-primary-50 text-xs p-3">
                         <DayPicker
                             mode="single"
                             selected={value}

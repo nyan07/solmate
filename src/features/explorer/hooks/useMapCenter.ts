@@ -64,16 +64,20 @@ const useMapCenter = (viewer: Viewer | null) => {
             if (bounds) setBounds(bounds);
         };
 
-        // Fire immediately so bounds are set before the user moves the camera
-        const removeOnce = viewer.scene.postRender.addEventListener(() => {
-            update();
-            removeOnce();
+        // Keep retrying on each frame until globe tiles are loaded and pick() succeeds
+        const removeInitial = viewer.scene.postRender.addEventListener(() => {
+            const { center, bounds } = getVisibleArea(viewer, topBarHeight, 64);
+            if (bounds) {
+                if (center) setCenter(center);
+                setBounds(bounds);
+                removeInitial();
+            }
         });
 
         const removeListener = viewer.camera.changed.addEventListener(update);
 
         return () => {
-            removeOnce();
+            removeInitial();
             removeListener();
         };
     }, [viewer, setCenter, setBounds, topBarHeight]);
