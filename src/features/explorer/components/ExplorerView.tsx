@@ -12,10 +12,8 @@ import {
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { FiSunset, FiSunrise } from "react-icons/fi";
-import { DatePicker } from "@/components/DatePicker";
-import { Range } from "@/components/Range";
 import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
+import ExplorerHeader from "./ExplorerHeader";
 import { useLayout, useMapState } from "./MapContext";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
 import { useSunDirection } from "@/features/explorer/hooks/useSunDirection";
@@ -155,29 +153,15 @@ const ExplorerView: React.FC = () => {
 
     return (
         <div style={{ width: "100%", height: "100vh" }}>
-            <div
+            <ExplorerHeader
                 ref={topBarRef}
-                className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${showControls ? "translate-y-0" : "-translate-y-full"}`}
-            >
-                <div className="p-6 bg-neutral-50 shadow-md rounded-b-xl flex flex-col gap-4 items-center">
-                    <div className="flex gap-4 items-center w-full">
-                        <DatePicker value={date} onChange={setDate} />
-                        <FiSunrise className="text-primary" />
-                        <Range
-                            min={sunTimes.sunrise}
-                            max={sunTimes.sunset}
-                            step={0.5}
-                            value={hour}
-                            onChange={(value) => setHour(value)}
-                        />
-                        <FiSunset className="text-primary" />
-                        <span className="w-16 text-center py-2 rounded-xl bg-primary/20">
-                            {String(Math.floor(hour)).padStart(2, "0")}:
-                            {hour % 1 === 0 ? "00" : "30"}
-                        </span>
-                    </div>
-                </div>
-            </div>
+                visible={showControls}
+                date={date}
+                onDateChange={setDate}
+                hour={hour}
+                onHourChange={setHour}
+                sunTimes={sunTimes}
+            />
 
             <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
         </div>
