@@ -19,16 +19,18 @@ import { useLayout } from "./MapContext";
 import { useState } from "react";
 import { PlaceStatusBadge } from "@/features/places/components/PlaceStatusBadge";
 import { useTranslation } from "react-i18next";
+import { Loader } from "@/components/Loader";
 
 function PlaceDetailOverlay() {
     const { geolocation } = useGeolocation();
     const { placeId } = useParams();
     const navigate = useLangNavigate();
-    const { data: place } = usePlace(placeId, { enabled: !!placeId });
+    const { data: place, isPending } = usePlace(placeId, { enabled: !!placeId });
 
     const { topBarHeight } = useLayout();
     const [scrolled, setScrolled] = useState(false);
     const { t } = useTranslation();
+    if (isPending) return <Loader />;
     if (!place) return null;
 
     const tags = [

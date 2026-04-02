@@ -29,7 +29,11 @@ Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
 const FALLBACK_LOCATION: LatLng = { latitude: 52.5195605, longitude: 13.3988917 }; // Berlin
 
-const ExplorerView: React.FC = () => {
+type ExplorerViewProps = {
+    onReady?: () => void;
+};
+
+const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const viewerRef = useRef<Viewer | null>(null);
     const topBarRef = useRef<HTMLDivElement>(null);
@@ -121,6 +125,12 @@ const ExplorerView: React.FC = () => {
                 });
                 setViewerReady(true);
                 viewer.scene.preRender.removeEventListener(preRenderHandler);
+                // Wait for the first frame at the correct position to be fully drawn
+                const onFirstFrame = () => {
+                    viewer.scene.postRender.removeEventListener(onFirstFrame);
+                    onReady?.();
+                };
+                viewer.scene.postRender.addEventListener(onFirstFrame);
             }
         };
 

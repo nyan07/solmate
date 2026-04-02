@@ -6,13 +6,14 @@ import { calculateDistance } from "@/utils/geo/calculateDistance";
 import { useMapState, useLayout, useListUI, useFilters } from "./MapContext";
 import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
 import { useTranslation } from "react-i18next";
+import { Loader } from "@/components/Loader";
 
 function PlaceListOverlay() {
     const { geolocation } = useGeolocation();
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
-    const { data: places } = useFilteredPlaces(bounds, {
+    const { data: places, isPending } = useFilteredPlaces(bounds, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
     });
     const { filters } = useFilters();
@@ -27,7 +28,9 @@ function PlaceListOverlay() {
             onOpenChange={setListOpen}
             onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
         >
-            {!places?.length ? (
+            {isPending ? (
+                <Loader />
+            ) : !places?.length ? (
                 <div className="flex flex-col items-center justify-center gap-1 py-10 px-6 text-center">
                     <span className="text-primary-800 font-medium">
                         {t("placeList.empty.title")}

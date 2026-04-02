@@ -9,6 +9,7 @@ import PlaceDetailOverlay from "@/features/explorer/components/PlaceDetailOverla
 import { AboutPage } from "@/pages/AboutPage";
 import { PrivacyPolicyPage } from "@/pages/PrivacyPolicyPage";
 import { TermsOfUsePage } from "@/pages/TermsOfUsePage";
+import { Loader } from "@/components/Loader";
 
 const SUPPORTED_LANGS = ["en", "de"] as const;
 type Lang = (typeof SUPPORTED_LANGS)[number];
@@ -50,7 +51,7 @@ function LangRoute() {
 function App() {
     return (
         <div className="p-2">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loader />}>
                 <Routes>
                     <Route path="/" element={<RootRedirect />} />
                     <Route path="/beta" element={<BetaRedirect />} />
