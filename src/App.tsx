@@ -6,6 +6,8 @@ import { ExplorerPage } from "@/pages/ExplorerPage";
 import PlaceListOverlay from "@/features/explorer/components/PlaceListOverlay";
 import PlaceDetailOverlay from "@/features/explorer/components/PlaceDetailOverlay";
 import { AboutPage } from "@/pages/AboutPage";
+import { PrivacyPolicyPage } from "@/pages/PrivacyPolicyPage";
+import { TermsOfUsePage } from "@/pages/TermsOfUsePage";
 
 function App() {
     return (
@@ -16,6 +18,8 @@ function App() {
                     <Route path="/beta" element={<Navigate to="/places" replace />} />
                     <Route path="/waitlist" element={<WaitlistPage />} />
                     <Route path="/about" element={<AboutPage />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                    <Route path="/terms-of-use" element={<TermsOfUsePage />} />
                     <Route path="/*" element={<ExplorerPage />}>
                         <Route path="places" element={<PlaceListOverlay />} />
                         <Route path="places/:placeId" element={<PlaceDetailOverlay />} />
