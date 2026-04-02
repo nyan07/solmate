@@ -38,6 +38,27 @@ export const useLayout = () => {
     return ctx;
 };
 
+// ─── Filters ──────────────────────────────────────────────────────────────────
+
+export type PlaceFilters = {
+    openOnly: boolean;
+    outdoorSeatingOnly: boolean;
+};
+
+type FiltersContextType = {
+    filters: PlaceFilters;
+    setFilters: (filters: PlaceFilters) => void;
+};
+
+const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useFilters = () => {
+    const ctx = useContext(FiltersContext);
+    if (!ctx) throw new Error("useFilters must be used within MapProvider");
+    return ctx;
+};
+
 // ─── List UI ──────────────────────────────────────────────────────────────────
 
 type ListUIContextType = {
@@ -65,17 +86,23 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
     const [topBarHeight, setTopBarHeight] = useState(0);
     const [listOpen, setListOpen] = useState(false);
     const [listScrollTop, setListScrollTop] = useState(0);
+    const [filters, setFilters] = useState<PlaceFilters>({
+        openOnly: false,
+        outdoorSeatingOnly: false,
+    });
 
     return (
         <MapStateContext.Provider
             value={{ center, setCenter, bounds, setBounds, cameraDistance, setCameraDistance }}
         >
             <LayoutContext.Provider value={{ topBarHeight, setTopBarHeight }}>
-                <ListUIContext.Provider
-                    value={{ listOpen, setListOpen, listScrollTop, setListScrollTop }}
-                >
-                    {children}
-                </ListUIContext.Provider>
+                <FiltersContext.Provider value={{ filters, setFilters }}>
+                    <ListUIContext.Provider
+                        value={{ listOpen, setListOpen, listScrollTop, setListScrollTop }}
+                    >
+                        {children}
+                    </ListUIContext.Provider>
+                </FiltersContext.Provider>
             </LayoutContext.Provider>
         </MapStateContext.Provider>
     );
