@@ -1,5 +1,5 @@
 import React from "react";
-import { BsStar, BsGeoAlt, BsCreditCard } from "react-icons/bs";
+import { BsGeoAltFill, BsStarFill, BsCreditCardFill } from "react-icons/bs";
 import { Dot } from "@/components/Dot";
 import { calculateDistance } from "@/utils/geo/calculateDistance";
 import type { LatLng } from "@/types/LatLng";
@@ -28,7 +28,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
             key: "distance",
             content: (
                 <>
-                    <BsGeoAlt className="w-4 h-4 text-accent-500" />
+                    <BsGeoAltFill className="w-4 h-4 text-accent-500" />
                     {calculateDistance(geolocation, location)}
                 </>
             ),
@@ -38,7 +38,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
             key: "rating",
             content: (
                 <>
-                    <BsStar className="w-4 h-4 text-warning-400" />
+                    <BsStarFill className="w-4 h-4 text-warning-400" />
                     {rating}
                 </>
             ),
@@ -48,7 +48,7 @@ export const PlaceMeta = ({ geolocation, location, rating, priceLevel }: Props) 
             key: "price",
             content: (
                 <>
-                    <BsCreditCard className="w-4 h-4 text-warning-900" />
+                    <BsCreditCardFill className="w-4 h-4 text-warning-900" />
                     {PRICE_LEVEL_LABEL[priceLevel]}
                 </>
             ),

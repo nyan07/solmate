@@ -84,6 +84,7 @@ const ExplorerView: React.FC = () => {
                 navigationHelpButton: false,
                 fullscreenButton: false,
                 selectionIndicator: false,
+                infoBox: false,
                 shadows: true,
             });
 
@@ -152,7 +153,7 @@ const ExplorerView: React.FC = () => {
     }, [sunData, viewerReady]);
 
     return (
-        <div style={{ width: "100%", height: "100vh" }}>
+        <div style={{ width: "100%", height: "100%" }}>
             <ExplorerHeader
                 ref={topBarRef}
                 visible={showControls}

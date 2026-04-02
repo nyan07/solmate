@@ -8,4 +8,5 @@
 html,
 body {
     overscroll-behavior: none;
+    background-color: #eceff8;
 }

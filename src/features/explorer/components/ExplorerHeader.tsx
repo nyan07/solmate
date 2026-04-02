@@ -26,7 +26,7 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
                 ref={ref}
                 className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${visible ? "translate-y-0" : "-translate-y-full"}`}
             >
-                <div className="p-4 pb-2 bg-neutral-50 shadow-md rounded-b-xl flex flex-col gap-4 items-center">
+                <div className="p-4 pb-2 bg-white shadow-sm flex flex-col gap-4 items-center">
                     <div className="flex gap-4 items-start w-full">
                         <DatePicker value={date} onChange={onDateChange} />
                         <BsSunrise className="text-primary w-4 h-4 shrink-0" />
