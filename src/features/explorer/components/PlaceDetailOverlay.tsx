@@ -13,27 +13,30 @@ import { PlaceOpeningHours } from "@/features/places/components/PlaceOpeningHour
 import { PlaceAccessibility } from "@/features/places/components/PlaceAccessibility";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { usePlace } from "@/features/places/hooks/usePlace";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useLayout } from "./MapContext";
 import { useState } from "react";
 import { PlaceStatusBadge } from "@/features/places/components/PlaceStatusBadge";
+import { useTranslation } from "react-i18next";
 
 function PlaceDetailOverlay() {
     const { geolocation } = useGeolocation();
     const { placeId } = useParams();
-    const navigate = useNavigate();
+    const navigate = useLangNavigate();
     const { data: place } = usePlace(placeId, { enabled: !!placeId });
 
     const { topBarHeight } = useLayout();
     const [scrolled, setScrolled] = useState(false);
+    const { t } = useTranslation();
     if (!place) return null;
 
-    const tags: string[] = [
-        place.hasOutdoorSeating && "Outdoor seating",
-        place.goodForGroups && "Good for groups",
-        place.goodForChildren && "Good for children",
-        place.allowsDogs && "Dogs allowed",
-    ].filter((t): t is string => !!t);
+    const tags = [
+        place.hasOutdoorSeating && t("place.tags.outdoorSeating"),
+        place.goodForGroups && t("place.tags.goodForGroups"),
+        place.goodForChildren && t("place.tags.goodForChildren"),
+        place.allowsDogs && t("place.tags.allowsDogs"),
+    ].filter(Boolean) as string[];
 
     const statusDetail: PlaceStatusDetail | null =
         place.businessStatus === "CLOSED_TEMPORARILY"
@@ -125,7 +128,7 @@ function PlaceDetailOverlay() {
                         rel="noopener noreferrer"
                         className="grow"
                     >
-                        Navigate
+                        {t("place.actions.navigate")}
                     </Button>
                     <Button
                         variant="outline"
@@ -134,11 +137,11 @@ function PlaceDetailOverlay() {
                         rel="noopener noreferrer"
                         className="grow"
                     >
-                        Streetview
+                        {t("place.actions.streetview")}
                     </Button>
                     {place.reservable && (
                         <Button href={place.websiteUri} className="grow">
-                            Book a table
+                            {t("place.actions.bookTable")}
                         </Button>
                     )}
                 </div>

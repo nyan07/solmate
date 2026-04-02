@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Paragraph } from "@/components/Paragraph";
+import { useTranslation } from "react-i18next";
 
 export function WaitlistPage() {
+    const { t } = useTranslation();
     useEffect(() => {
         const w = "https://tally.so/widgets/embed.js";
         if (document.querySelector(`script[src="${w}"]`)) return;
@@ -22,17 +24,14 @@ export function WaitlistPage() {
                 <h1>
                     <img src="/arkie.png" alt="Arkie" className="mx-12 my-2 max-h-24" />
                 </h1>
-                <h2 className="text-2xl lg:text-3xl">Coming soon.</h2>
-                <Paragraph>Sign up for our waitlist & be among the first to join.</Paragraph>
+                <h2 className="text-2xl lg:text-3xl">{t("waitlist.title")}</h2>
+                <Paragraph>{t("waitlist.subtitle")}</Paragraph>
                 <iframe
                     data-tally-src="https://tally.so/embed/WONZjP?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
                     loading="lazy"
                     width="100%"
                     height="216"
-                    frameBorder="0"
-                    marginHeight={0}
-                    marginWidth={0}
-                    title="Feedback form"
+                    title={t("waitlist.feedbackFormTitle")}
                     sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation-by-user-activation"
                 />
             </div>

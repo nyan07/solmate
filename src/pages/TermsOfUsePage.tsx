@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { BsArrowLeft } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
@@ -10,7 +11,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     );
 }
 
-function BulletList({ items }: { items: string[] }) {
+function BulletList({ items }: { items: readonly string[] }) {
     return (
         <ul className="list-disc list-outside pl-4 flex flex-col gap-1 mt-1">
             {items.map((item, i) => (
@@ -22,6 +23,12 @@ function BulletList({ items }: { items: string[] }) {
 
 export function TermsOfUsePage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
+    const tRaw = t as unknown as (key: string, opts: object) => unknown;
+    const arr = (key: string): readonly string[] =>
+        tRaw(key, { returnObjects: true }) as readonly string[];
+
+    const tu = "termsOfUse";
 
     return (
         <div className="fixed rounded-xl inset-2 bg-white overflow-hidden flex flex-col">
@@ -37,171 +44,101 @@ export function TermsOfUsePage() {
             <div className="flex-1 overflow-y-auto">
                 <div className="flex flex-col gap-8 p-6 pt-2 max-w-lg mx-auto w-full">
                     <div className="flex flex-col gap-1">
-                        <h1 className="font-bold text-primary-900 text-2xl">Terms of Use</h1>
-                        <p className="text-xs text-primary-500">Last updated: April 2, 2026</p>
+                        <h1 className="font-bold text-primary-900 text-2xl">
+                            {t("termsOfUse.title")}
+                        </h1>
+                        <p className="text-xs text-primary-500">{t("termsOfUse.lastUpdated")}</p>
                     </div>
 
-                    <Section title="1. Acceptance of Terms">
-                        By accessing or using Arkie.app ("Service"), you agree to be bound by these
-                        Terms of Use ("Terms"). If you do not agree, you may not use the Service.
+                    <Section title={t("termsOfUse.section1.title")}>
+                        {t("termsOfUse.section1.body")}
                     </Section>
 
-                    <Section title="2. Description of the Service">
-                        The Service is a browser-based platform that helps users identify cafés and
-                        restaurants ("Places") with sunny outdoor seating based on real-time or
-                        forecasted sunlight conditions. Users may optionally create an account using
-                        an email address and password.
+                    <Section title={t("termsOfUse.section2.title")}>
+                        {t("termsOfUse.section2.body1")}
                         <br />
                         <br />
-                        The Service is provided for informational purposes only. We do not guarantee
-                        the accuracy of sunlight conditions, weather data, or business information.
+                        {t("termsOfUse.section2.body2")}
                     </Section>
 
-                    <Section title="3. Eligibility">
-                        To use the Service, you must:
-                        <BulletList
-                            items={[
-                                "Be at least 16 years old, or the minimum age required in your country.",
-                                "Have the legal capacity to enter into a binding agreement.",
-                                "Provide accurate and complete information when creating an account.",
-                            ]}
-                        />
+                    <Section title={t("termsOfUse.section3.title")}>
+                        {t("termsOfUse.section3.intro")}
+                        <BulletList items={arr(`${tu}.section3.items`)} />
                     </Section>
 
-                    <Section title="4. User Accounts">
-                        When creating an account, you agree to:
-                        <BulletList
-                            items={[
-                                "Provide a valid email address and secure password.",
-                                "Keep your login credentials confidential.",
-                                "Notify us immediately if you suspect unauthorized access.",
-                            ]}
-                        />
-                        <p className="mt-2">
-                            You are responsible for all activity under your account.
-                        </p>
-                        <p className="mt-1">
-                            We may suspend or terminate accounts that violate these Terms or pose
-                            security risks.
-                        </p>
+                    <Section title={t("termsOfUse.section4.title")}>
+                        {t("termsOfUse.section4.intro")}
+                        <BulletList items={arr(`${tu}.section4.items`)} />
+                        <p className="mt-2">{t("termsOfUse.section4.body1")}</p>
+                        <p className="mt-1">{t("termsOfUse.section4.body2")}</p>
                     </Section>
 
-                    <Section title="5. Permitted Use">
-                        You may use the Service only for lawful purposes and in accordance with
-                        these Terms. You agree not to:
-                        <BulletList
-                            items={[
-                                "Access or use the Service in a way that violates any law or regulation.",
-                                "Attempt to reverse engineer, decompile, or modify the Service.",
-                                "Interfere with the Service's operation or security.",
-                                "Use automated tools (bots, scrapers) without permission.",
-                                "Upload harmful, offensive, or unlawful content.",
-                            ]}
-                        />
-                        <p className="mt-2">
-                            We reserve the right to restrict or block access for misuse.
-                        </p>
+                    <Section title={t("termsOfUse.section5.title")}>
+                        {t("termsOfUse.section5.intro")}
+                        <BulletList items={arr(`${tu}.section5.items`)} />
+                        <p className="mt-2">{t("termsOfUse.section5.outro")}</p>
                     </Section>
 
-                    <Section title="6. Location Data">
-                        The Service may request access to your device's location to show nearby
-                        places. Granting access is optional, but certain features may not function
-                        without it.
+                    <Section title={t("termsOfUse.section6.title")}>
+                        {t("termsOfUse.section6.body1")}
                         <br />
                         <br />
-                        You can disable location access at any time through your browser settings.
+                        {t("termsOfUse.section6.body2")}
                     </Section>
 
-                    <Section title="7. Third-Party Services">
-                        The Service may integrate with third-party providers such as:
-                        <BulletList
-                            items={[
-                                "Map services",
-                                "Weather and sunlight data providers",
-                                "Analytics tools",
-                            ]}
-                        />
-                        <p className="mt-2">
-                            We are not responsible for the content, accuracy, or policies of
-                            third-party services.
-                        </p>
+                    <Section title={t("termsOfUse.section7.title")}>
+                        {t("termsOfUse.section7.intro")}
+                        <BulletList items={arr(`${tu}.section7.items`)} />
+                        <p className="mt-2">{t("termsOfUse.section7.outro")}</p>
                     </Section>
 
-                    <Section title="8. Intellectual Property">
-                        All content, features, and functionality of the Service — including design,
-                        text, graphics, logos, and software — are owned by us or our licensors and
-                        are protected by intellectual property laws.
+                    <Section title={t("termsOfUse.section8.title")}>
+                        {t("termsOfUse.section8.body1")}
                         <br />
                         <br />
-                        You receive a limited, non-exclusive, non-transferable license to use the
-                        Service for personal, non-commercial purposes.
+                        {t("termsOfUse.section8.body2")}
                     </Section>
 
-                    <Section title="9. User-Generated Content">
-                        If the Service allows users to submit content (e.g., reviews, comments), you
-                        grant us a non-exclusive, worldwide, royalty-free license to use, display,
-                        and distribute that content as needed to operate the Service.
+                    <Section title={t("termsOfUse.section9.title")}>
+                        {t("termsOfUse.section9.body1")}
                         <br />
                         <br />
-                        We may remove content that violates these Terms or applicable laws.
+                        {t("termsOfUse.section9.body2")}
                     </Section>
 
-                    <Section title="10. Availability and Changes">
-                        We may modify, suspend, or discontinue parts of the Service at any time
-                        without notice. We are not liable for any unavailability or interruptions.
+                    <Section title={t("termsOfUse.section10.title")}>
+                        {t("termsOfUse.section10.body")}
                     </Section>
 
-                    <Section title="11. Disclaimers">
-                        The Service is provided "as is" and "as available" without warranties of any
-                        kind. We do not guarantee:
-                        <BulletList
-                            items={[
-                                "Accuracy of sunlight or weather data",
-                                "Accuracy of places information",
-                                "Continuous or error-free operation",
-                            ]}
-                        />
-                        <p className="mt-2">Use of the Service is at your own risk.</p>
+                    <Section title={t("termsOfUse.section11.title")}>
+                        {t("termsOfUse.section11.intro")}
+                        <BulletList items={arr(`${tu}.section11.items`)} />
+                        <p className="mt-2">{t("termsOfUse.section11.outro")}</p>
                     </Section>
 
-                    <Section title="12. Limitation of Liability">
-                        To the maximum extent permitted by law, we are not liable for:
-                        <BulletList
-                            items={[
-                                "Indirect, incidental, or consequential damages",
-                                "Loss of data, profits, or business",
-                                "Errors or inaccuracies in third-party data",
-                                "Issues caused by user misuse or unauthorized access",
-                            ]}
-                        />
-                        <p className="mt-2">
-                            Our total liability is limited to the amount you paid for the Service
-                            (if any).
-                        </p>
+                    <Section title={t("termsOfUse.section12.title")}>
+                        {t("termsOfUse.section12.intro")}
+                        <BulletList items={arr(`${tu}.section12.items`)} />
+                        <p className="mt-2">{t("termsOfUse.section12.outro")}</p>
                     </Section>
 
-                    <Section title="13. Termination">
-                        We may suspend or terminate your access to the Service at any time if you
-                        violate these Terms or if necessary for security or legal reasons.
+                    <Section title={t("termsOfUse.section13.title")}>
+                        {t("termsOfUse.section13.body1")}
                         <br />
                         <br />
-                        You may delete your account at any time.
+                        {t("termsOfUse.section13.body2")}
                     </Section>
 
-                    <Section title="14. Changes to These Terms">
-                        We may update these Terms if needed. Changes will be posted on this page
-                        with a revised "Last updated" date. Continued use of the Service constitutes
-                        acceptance of the updated Terms.
+                    <Section title={t("termsOfUse.section14.title")}>
+                        {t("termsOfUse.section14.body")}
                     </Section>
 
-                    <Section title="15. Governing Law">
-                        These Terms are governed by the laws of Germany, without regard to
-                        conflict-of-law principles. Any disputes shall be resolved in the courts of
-                        Hamburg, Germany.
+                    <Section title={t("termsOfUse.section15.title")}>
+                        {t("termsOfUse.section15.body")}
                     </Section>
 
-                    <Section title="16. Contact">
-                        If you have questions, reach us at{" "}
+                    <Section title={t("termsOfUse.section16.title")}>
+                        {t("termsOfUse.section16.contactNote")}{" "}
                         <a
                             href="mailto:contact@arkie.app"
                             className="underline hover:text-primary-700"

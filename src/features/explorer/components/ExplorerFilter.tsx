@@ -1,5 +1,6 @@
 import { Switch } from "@/components/Switch";
 import { useFilters, type PlaceFilters } from "./MapContext";
+import { useTranslation } from "react-i18next";
 
 type FilterRowProps = {
     label: string;
@@ -16,6 +17,7 @@ const FilterRow = ({ label, checked, onChange }: FilterRowProps) => (
 
 export function ExplorerFilter() {
     const { filters, setFilters } = useFilters();
+    const { t } = useTranslation();
 
     const update = (patch: Partial<PlaceFilters>) => setFilters({ ...filters, ...patch });
 
@@ -24,12 +26,12 @@ export function ExplorerFilter() {
             {/* Panel */}
             <div className="relative bg-primary-50 rounded-lg shadow-lg p-4 flex flex-col gap-3 w-max">
                 <FilterRow
-                    label="Open now"
+                    label={t("filter.openNow")}
                     checked={filters.openOnly}
                     onChange={(v) => update({ openOnly: v })}
                 />
                 <FilterRow
-                    label="Outside seating"
+                    label={t("filter.outdoorSeating")}
                     checked={filters.outdoorSeatingOnly}
                     onChange={(v) => update({ outdoorSeatingOnly: v })}
                 />

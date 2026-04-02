@@ -5,6 +5,7 @@ import { useFilteredPlaces } from "@/features/explorer/hooks/useFilteredPlaces";
 import { calculateDistance } from "@/utils/geo/calculateDistance";
 import { useMapState, useLayout, useListUI, useFilters } from "./MapContext";
 import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
+import { useTranslation } from "react-i18next";
 
 function PlaceListOverlay() {
     const { geolocation } = useGeolocation();
@@ -16,6 +17,7 @@ function PlaceListOverlay() {
     });
     const { filters } = useFilters();
     const hasActiveFilters = filters.openOnly || filters.outdoorSeatingOnly;
+    const { t } = useTranslation();
 
     return (
         <SwipeUp
@@ -27,11 +29,13 @@ function PlaceListOverlay() {
         >
             {!places?.length ? (
                 <div className="flex flex-col items-center justify-center gap-1 py-10 px-6 text-center">
-                    <span className="text-primary-800 font-medium">Nothing to show :(</span>
+                    <span className="text-primary-800 font-medium">
+                        {t("placeList.empty.title")}
+                    </span>
                     <span className="text-xs text-primary-400">
                         {hasActiveFilters
-                            ? "Try to move the map or adjust the filters to see places near you."
-                            : "Try to move the map to see places near you."}
+                            ? t("placeList.empty.withFilters")
+                            : t("placeList.empty.noFilters")}
                     </span>
                 </div>
             ) : (

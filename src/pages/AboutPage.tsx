@@ -1,7 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { BsArrowLeft, BsWhatsapp } from "react-icons/bs";
 import Button from "@/components/Button";
 import { BottomNav } from "@/components/BottomNav";
+import { useTranslation } from "react-i18next";
+import { useLangNavigate } from "@/hooks/useLangNavigate";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
@@ -13,7 +14,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export function AboutPage() {
-    const navigate = useNavigate();
+    const navigate = useLangNavigate();
+    const { t } = useTranslation();
 
     return (
         <div className="fixed rounded-xl inset-2 bg-white overflow-hidden flex flex-col">
@@ -28,31 +30,20 @@ export function AboutPage() {
 
             <div className="flex-1 overflow-y-auto">
                 <div className="flex flex-col gap-8 p-6 pt-2 max-w-lg mx-auto w-full">
-                    <Section title="About">
-                        Life in the north means sunshine is a rare luxury — and when it shows up,
-                        you don't want to miss it. If only you knew where to go for that after-work
-                        drink or Sunday brunch without tall buildings stealing the light.
+                    <Section title={t("about.sections.about.title")}>
+                        {t("about.sections.about.body1")}
                         <br />
                         <br />
-                        In 2025, Lena and Dani decided to join forces to end the pain. Arkie
-                        combines information about cafés and bars with map and sunlight data, all on
-                        one interactive map. So stop guessing — and start soaking up that Vitamin D!
+                        {t("about.sections.about.body2")}
                     </Section>
 
-                    <Section title="How Arkie works">
-                        To explore places, simply zoom in using two fingers. We recommend enabling
-                        your GPS location (you'll be prompted the first time you open Arkie) so you
-                        can discover spots right around you. By default, Arkie highlights sunny
-                        places based on your current date and time — but you can easily plan ahead
-                        by adjusting both.
+                    <Section title={t("about.sections.howItWorks.title")}>
+                        {t("about.sections.howItWorks.body")}
                     </Section>
 
-                    <Section title="Share your feedback">
-                        <p>We want the sun to always shine on you!</p>
-                        <p className="mt-1">
-                            Help us improve Arkie by sharing your feedback with us. Join our
-                            WhatsApp community to get in touch with the Arkie team.
-                        </p>
+                    <Section title={t("about.sections.feedback.title")}>
+                        <p>{t("about.sections.feedback.body1")}</p>
+                        <p className="mt-1">{t("about.sections.feedback.body2")}</p>
                     </Section>
 
                     <Button
@@ -63,7 +54,7 @@ export function AboutPage() {
                         variant="outline"
                     >
                         <BsWhatsapp className="w-4 h-4" />
-                        Join Arkie's community
+                        {t("about.communityCta")}
                     </Button>
                 </div>
             </div>
