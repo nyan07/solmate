@@ -8,10 +8,10 @@ import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
 
 function PlaceListOverlay() {
     const { geolocation } = useGeolocation();
-    const { center, cameraDistance } = useMapState();
+    const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
-    const { data: places } = useNearbyPlaces(center, {
+    const { data: places } = useNearbyPlaces(bounds, {
         enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
     });
 

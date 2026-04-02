@@ -1,4 +1,4 @@
-import type { LatLng } from "@/types/LatLng";
+import type { Bounds } from "@/types/Bounds";
 import type { Place, PlaceSummary } from "./types";
 
 export const fetchPlace = async (id: string): Promise<Place> => {
@@ -13,18 +13,11 @@ export const fetchPlace = async (id: string): Promise<Place> => {
     return res.json() as Promise<Place>;
 };
 
-export const fetchNearbyPlaces = async (
-    location: LatLng,
-    radius = 500
-): Promise<PlaceSummary[]> => {
+export const fetchNearbyPlaces = async (bounds: Bounds): Promise<PlaceSummary[]> => {
     const res = await fetch("/api/places/nearby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            latitude: location.latitude,
-            longitude: location.longitude,
-            radius,
-        }),
+        body: JSON.stringify(bounds),
     });
     if (!res.ok) {
         console.error("fetchNearbyPlaces failed", { location, radius, status: res.status });

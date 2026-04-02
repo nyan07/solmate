@@ -1,11 +1,14 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { LatLng } from "@/types/LatLng";
+import type { Bounds } from "@/types/Bounds";
 
 // ─── Map State ────────────────────────────────────────────────────────────────
 
 type MapStateContextType = {
     center: LatLng | null;
     setCenter: (center: LatLng) => void;
+    bounds: Bounds | null;
+    setBounds: (bounds: Bounds) => void;
     cameraDistance: number | null;
     setCameraDistance: (distance: number) => void;
 };
@@ -57,13 +60,16 @@ export const useListUI = () => {
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
     const [center, setCenter] = useState<LatLng | null>(null);
+    const [bounds, setBounds] = useState<Bounds | null>(null);
     const [cameraDistance, setCameraDistance] = useState<number | null>(null);
     const [topBarHeight, setTopBarHeight] = useState(0);
     const [listOpen, setListOpen] = useState(false);
     const [listScrollTop, setListScrollTop] = useState(0);
 
     return (
-        <MapStateContext.Provider value={{ center, setCenter, cameraDistance, setCameraDistance }}>
+        <MapStateContext.Provider
+            value={{ center, setCenter, bounds, setBounds, cameraDistance, setCameraDistance }}
+        >
             <LayoutContext.Provider value={{ topBarHeight, setTopBarHeight }}>
                 <ListUIContext.Provider
                     value={{ listOpen, setListOpen, listScrollTop, setListScrollTop }}

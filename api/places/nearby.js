@@ -81,14 +81,30 @@ const parsePlace = (place) => {
 export default async function POST(request) {
     try {
         const body = await request.json();
-        const { latitude, longitude, radius = 500 } = body;
+        const { north, south, east, west } = body;
 
-        if (!latitude || !longitude) {
-            return new Response(JSON.stringify({ error: "Missing latitude or longitude" }), {
-                status: 400,
-                headers: { "Content-Type": "application/json" },
-            });
+        if (north == null || south == null || east == null || west == null) {
+            return new Response(
+                JSON.stringify({ error: "Missing bounds (north/south/east/west)" }),
+                {
+                    status: 400,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
         }
+
+        const centerLat = (north + south) / 2;
+        const centerLng = (east + west) / 2;
+        // Haversine distance from center to corner → use as radius
+        const R = 6371000;
+        const dLat = ((north - south) / 2) * (Math.PI / 180);
+        const dLng = ((east - west) / 2) * (Math.PI / 180);
+        const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos((centerLat * Math.PI) / 180) *
+                Math.cos((north * Math.PI) / 180) *
+                Math.sin(dLng / 2) ** 2;
+        const radius = Math.min(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)), 50000);
 
         const fields = [
             "id",
@@ -122,10 +138,7 @@ export default async function POST(request) {
             rankPreference: "DISTANCE",
             locationRestriction: {
                 circle: {
-                    center: {
-                        latitude: parseFloat(latitude),
-                        longitude: parseFloat(longitude),
-                    },
+                    center: { latitude: centerLat, longitude: centerLng },
                     radius,
                 },
             },
