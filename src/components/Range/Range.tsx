@@ -21,7 +21,7 @@ const Range: React.FC<{
         [&::-webkit-slider-thumb]:w-4
         [&::-webkit-slider-thumb]:h-4
         [&::-webkit-slider-thumb]:rounded-full
-        [&::-webkit-slider-thumb]:bg-primary/80
+        [&::-webkit-slider-thumb]:bg-primary
         [&::-webkit-slider-thumb]:hover:bg-primary
         [&::-webkit-slider-thumb]:mt-[-6px]
         [&::-moz-range-track]:h-1
@@ -30,7 +30,7 @@ const Range: React.FC<{
         [&::-moz-range-thumb]:h-4
         [&::-moz-range-thumb]:rounded-full
         [&::-moz-range-thumb]:border-0
-        [&::-moz-range-thumb]:bg-primary/80
+        [&::-moz-range-thumb]:bg-primary
         [&::-moz-range-thumb]:hover:bg-primary
         [&::-moz-range-thumb]:translate-y-0"
             onChange={(e) => onChange(Number(e.target.value))}

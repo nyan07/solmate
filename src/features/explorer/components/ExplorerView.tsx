@@ -45,7 +45,6 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const [date, setDate] = useState<Date>(new Date());
     const [hour, setHour] = useState<number>(new Date().getHours());
     const [viewerReady, setViewerReady] = useState(false);
-    const [showControls, setShowControls] = useState(false);
 
     const { setTopBarHeight } = useLayout();
     const { center: mapCenter } = useMapState();
@@ -56,19 +55,13 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         loading: isGeolocationLoading,
     } = useGeolocation();
     useMapCenter(viewerRef.current);
-    const cameraDistance = useCameraDistance(viewerRef.current);
+    useCameraDistance(viewerRef.current);
     const sunTimes = useSunTimes(date, mapCenter);
 
     const sunData = useSunDirection(date, hour, geolocation);
-    useUserLocationPos(viewerRef.current, geolocation, showControls);
+    useUserLocationPos(viewerRef.current, geolocation, true);
     const placeMatch = useMatch("/:lang/places/:placeId");
     usePins(viewerRef.current, true, placeMatch?.params?.placeId);
-
-    useEffect(() => {
-        if (cameraDistance) {
-            setShowControls(cameraDistance <= MAX_CAMERA_DISTANCE);
-        }
-    }, [cameraDistance]);
 
     useEffect(() => {
         if (!topBarRef.current) return;
@@ -197,7 +190,6 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         <div style={{ width: "100%", height: "100%" }}>
             <ExplorerHeader
                 ref={topBarRef}
-                visible={true}
                 date={date}
                 onDateChange={setDate}
                 hour={hour}

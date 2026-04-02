@@ -8,7 +8,6 @@ import { useFilters } from "./MapContext";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
 type Props = {
-    visible: boolean;
     date: Date;
     onDateChange: (date: Date) => void;
     hour: number;
@@ -17,7 +16,7 @@ type Props = {
 };
 
 const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
-    ({ visible, date, onDateChange, hour, onHourChange, sunTimes }, ref) => {
+    ({ date, onDateChange, hour, onHourChange, sunTimes }, ref) => {
         const [filterOpen, setFilterOpen] = useState(false);
         const filterRef = useRef<HTMLDivElement>(null);
         useClickOutside(
@@ -29,10 +28,7 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
         const activeCount = Number(filters.openOnly) + Number(filters.outdoorSeatingOnly);
 
         return (
-            <div
-                ref={ref}
-                className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${visible ? "translate-y-0" : "-translate-y-full"}`}
-            >
+            <div ref={ref} className="absolute top-0 left-0 right-0 z-50">
                 <div className="p-4 pb-1 bg-white shadow-sm flex flex-col gap-4 items-center">
                     <div className="flex gap-4 items-start w-full">
                         <DatePicker value={date} onChange={onDateChange} />
