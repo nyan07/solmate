@@ -1,16 +1,23 @@
 import { BsCalendar3 } from "react-icons/bs";
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 const DatePicker: React.FC<{
     value: Date;
     onChange: (date: Date) => void;
 }> = ({ value, onChange }) => {
     const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    useClickOutside(
+        ref,
+        useCallback(() => setOpen(false), []),
+        open
+    );
 
     return (
-        <div className="relative">
+        <div className="relative" ref={ref}>
             <div className="flex">
                 <button
                     onClick={() => setOpen(!open)}
@@ -20,7 +27,7 @@ const DatePicker: React.FC<{
                 </button>
 
                 {open && (
-                    <div className="absolute top-10 left-0 bg-primary rounded-lg shadow-lg z-50 text-primary-50 text-xs p-3">
+                    <div className="absolute top-full mt-6 left-0 bg-primary rounded-lg shadow-lg z-50 text-primary-50 text-xs p-3">
                         <DayPicker
                             mode="single"
                             selected={value}

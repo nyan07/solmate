@@ -1,10 +1,11 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useCallback, useRef, useState } from "react";
 import { BsSunset, BsSunrise, BsSliders } from "react-icons/bs";
 import { DatePicker } from "@/components/DatePicker";
 import { Range } from "@/components/Range";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
 import { ExplorerFilter } from "./ExplorerFilter";
 import { useFilters } from "./MapContext";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 type Props = {
     visible: boolean;
@@ -18,6 +19,12 @@ type Props = {
 const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
     ({ visible, date, onDateChange, hour, onHourChange, sunTimes }, ref) => {
         const [filterOpen, setFilterOpen] = useState(false);
+        const filterRef = useRef<HTMLDivElement>(null);
+        useClickOutside(
+            filterRef,
+            useCallback(() => setFilterOpen(false), []),
+            filterOpen
+        );
         const { filters } = useFilters();
         const activeCount = Number(filters.openOnly) + Number(filters.outdoorSeatingOnly);
 
@@ -26,7 +33,7 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
                 ref={ref}
                 className={`absolute top-0 left-0 right-0 z-50 transform transition-transform duration-500 ${visible ? "translate-y-0" : "-translate-y-full"}`}
             >
-                <div className="p-4 pb-2 bg-white shadow-sm flex flex-col gap-4 items-center">
+                <div className="p-4 pb-1 bg-white shadow-sm flex flex-col gap-4 items-center">
                     <div className="flex gap-4 items-start w-full">
                         <DatePicker value={date} onChange={onDateChange} />
                         <BsSunrise className="text-primary w-4 h-4 shrink-0" />
@@ -38,13 +45,13 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
                                 value={hour}
                                 onChange={onHourChange}
                             />
-                            <span className="text-xs text-primary-800">
+                            <span className="text-xs text-primary">
                                 {String(Math.floor(hour)).padStart(2, "0")}:
                                 {hour % 1 === 0 ? "00" : "30"}
                             </span>
                         </div>
                         <BsSunset className="text-primary w-4 h-4 shrink-0" />
-                        <div className="relative">
+                        <div className="relative" ref={filterRef}>
                             <button
                                 onClick={() => setFilterOpen((o) => !o)}
                                 className="text-primary hover:bg-primary-100 rounded-full transition-colors"
