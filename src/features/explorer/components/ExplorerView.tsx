@@ -23,7 +23,11 @@ import { useUserLocationPos } from "@/features/explorer/hooks/useUserLocationPos
 import { useCameraDistance } from "@/features/explorer/hooks/useCameraDistance";
 import type { LatLng } from "@/types/LatLng";
 import { usePins } from "@/features/explorer/hooks/usePins";
-import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
+import {
+    DEFAULT_CAMERA_DISTANCE,
+    MAX_CAMERA_DISTANCE,
+    MIN_CAMERA_DISTANCE,
+} from "@/features/explorer/constants";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
@@ -58,11 +62,11 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const sunData = useSunDirection(date, hour, geolocation);
     useUserLocationPos(viewerRef.current, geolocation, showControls);
     const placeMatch = useMatch("/:lang/places/:placeId");
-    usePins(viewerRef.current, showControls, placeMatch?.params?.placeId);
+    usePins(viewerRef.current, true, placeMatch?.params?.placeId);
 
     useEffect(() => {
         if (cameraDistance) {
-            setShowControls(cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10);
+            setShowControls(cameraDistance <= MAX_CAMERA_DISTANCE);
         }
     }, [cameraDistance]);
 
@@ -108,6 +112,9 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
             viewer.scene.shadowMap.enabled = true;
             viewer.scene.shadowMap.softShadows = true;
             viewer.scene.globe.enableLighting = true;
+
+            viewer.scene.screenSpaceCameraController.maximumZoomDistance = MAX_CAMERA_DISTANCE;
+            viewer.scene.screenSpaceCameraController.minimumZoomDistance = MIN_CAMERA_DISTANCE;
 
             viewerRef.current = viewer;
             viewer.scene.preRender.addEventListener(preRenderHandler);
@@ -161,14 +168,36 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         controller.enableTilt = false;
         controller.enableLook = false;
 
+        controller.zoomEventTypes = [];
+
         viewer.clock.currentTime = sunData.time;
     }, [sunData, viewerReady]);
+
+    // Center-based wheel zoom
+    useEffect(() => {
+        const viewer = viewerRef.current;
+        if (!viewer || !viewerReady) return;
+
+        const handleWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            const height = viewer.camera.positionCartographic.height;
+            const amount = Math.abs(e.deltaY) * height * 0.001;
+            if (e.deltaY < 0) {
+                if (height - amount >= MIN_CAMERA_DISTANCE) viewer.camera.zoomIn(amount);
+            } else {
+                viewer.camera.zoomOut(Math.min(amount, MAX_CAMERA_DISTANCE - height));
+            }
+        };
+
+        viewer.canvas.addEventListener("wheel", handleWheel, { passive: false });
+        return () => viewer.canvas.removeEventListener("wheel", handleWheel);
+    }, [viewerReady]);
 
     return (
         <div style={{ width: "100%", height: "100%" }}>
             <ExplorerHeader
                 ref={topBarRef}
-                visible={showControls}
+                visible={true}
                 date={date}
                 onDateChange={setDate}
                 hour={hour}

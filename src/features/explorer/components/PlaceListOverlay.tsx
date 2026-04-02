@@ -4,7 +4,7 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { useFilteredPlaces } from "@/features/explorer/hooks/useFilteredPlaces";
 import { calculateDistance } from "@/utils/geo/calculateDistance";
 import { useMapState, useLayout, useListUI, useFilters } from "./MapContext";
-import { DEFAULT_CAMERA_DISTANCE } from "@/features/explorer/constants";
+import { MAX_CAMERA_DISTANCE } from "@/features/explorer/constants";
 import { useTranslation } from "react-i18next";
 import { Loader } from "@/components/Loader";
 
@@ -15,7 +15,7 @@ function PlaceListOverlay() {
     const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
     const { i18n } = useTranslation();
     const { data: places, isPending } = useFilteredPlaces(bounds, {
-        enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
+        enabled: !!cameraDistance && cameraDistance <= MAX_CAMERA_DISTANCE,
         lang: i18n.language,
     });
     const { filters } = useFilters();

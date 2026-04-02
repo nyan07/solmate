@@ -8,7 +8,7 @@ import {
 } from "cesium";
 import { useFilteredPlaces } from "./useFilteredPlaces";
 import { useLayout, useMapState } from "@/features/explorer/components/MapContext";
-import { DEFAULT_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
+import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
 
@@ -59,7 +59,7 @@ export const usePins = (
     const navigate = useLangNavigate();
     const { i18n } = useTranslation();
     const { data: places } = useFilteredPlaces(bounds, {
-        enabled: !!cameraDistance && cameraDistance <= DEFAULT_CAMERA_DISTANCE + 10,
+        enabled: !!cameraDistance && cameraDistance <= MAX_CAMERA_DISTANCE,
         lang: i18n.language,
     });
     const [heights, setHeights] = useState<Record<string, number>>({});

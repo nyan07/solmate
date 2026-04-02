@@ -17,7 +17,11 @@ export function ExplorerPage() {
                 </div>
                 <BottomNav />
             </div>
-            {!mapReady && <Loader />}
+            <div
+                className={`transition-opacity duration-700 ${mapReady ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+            >
+                <Loader />
+            </div>
         </MapProvider>
     );
 }
