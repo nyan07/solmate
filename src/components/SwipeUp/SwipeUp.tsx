@@ -5,6 +5,16 @@ const CONTAINER_INSET = 16; // fixed inset-2 = 8px top + 8px bottom
 const BOTTOM_NAV_HEIGHT = 64;
 const HANDLE_HEIGHT = 22; // py-2 (16px) + h-1.5 (6px)
 
+// Fix #1: Read viewport height once via visualViewport (stable on iOS Safari chrome resize)
+// window.innerHeight changes as Safari's address bar shows/hides, causing layout jumps.
+// visualViewport.height tracks the actual visible area and is immune to that instability.
+function getStableViewportHeight(): number {
+    if (typeof window === "undefined") return 800;
+    return (
+        (window.visualViewport?.height ?? window.innerHeight) - CONTAINER_INSET - BOTTOM_NAV_HEIGHT
+    );
+}
+
 type SwipeUpProps = {
     children: React.ReactNode;
     openHeight?: number;
@@ -26,12 +36,10 @@ export default function SwipeUp({
     open,
     initialScrollTop = 0,
 }: SwipeUpProps) {
-    const viewportHeight =
-        typeof window !== "undefined"
-            ? window.innerHeight - CONTAINER_INSET - BOTTOM_NAV_HEIGHT
-            : 800;
-    const defaultHeight = Math.round(viewportHeight * openHeight);
-    const maxHeight = viewportHeight - topOffset;
+    // Captured once on mount — never recalculated from re-renders
+    const viewportHeightRef = useRef(getStableViewportHeight());
+    const defaultHeight = Math.round(viewportHeightRef.current * openHeight);
+    const maxHeight = viewportHeightRef.current - topOffset;
     const peekHeight = HANDLE_HEIGHT;
 
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -44,6 +52,8 @@ export default function SwipeUp({
     const dragStartOpen = useRef(isOpen);
     const scrollRef = useRef<HTMLDivElement>(null);
     const onOpenChangeRef = useRef(onOpenChange);
+    // Fix #2b: debounce timer to absorb iOS momentum/rubber-band scroll oscillation
+    const collapseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useLayoutEffect(() => {
         onOpenChangeRef.current = onOpenChange;
@@ -62,11 +72,18 @@ export default function SwipeUp({
             controls.start({ y: target, transition: TRANSITION });
             setIsOpen(open);
         }
-    }, [open]);
+    }, [open, defaultHeight, peekHeight]); // Fix #3: include derived heights so position stays correct if they ever change
 
     useEffect(() => {
         onOpenChangeRef.current?.(isOpen);
     }, [isOpen]);
+
+    // Fix #2b: clean up debounce timer on unmount
+    useEffect(() => {
+        return () => {
+            if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
+        };
+    }, []);
 
     const handlePointerDown = (e: React.PointerEvent) => {
         dragStartY.current = e.clientY;
@@ -94,11 +111,9 @@ export default function SwipeUp({
                 if (scrollRef.current) scrollRef.current.scrollTop = 0;
                 setExpanded(false);
                 setIsOpen(false);
-                controls.start({
-                    y: defaultHeight - peekHeight,
-                    height: defaultHeight,
-                    transition: TRANSITION,
-                });
+                // Fix #4: snap height synchronously before animating y, so they don't compete
+                controls.set({ height: defaultHeight });
+                controls.start({ y: defaultHeight - peekHeight, transition: TRANSITION });
             } else {
                 controls.start({ y: 0, transition: TRANSITION });
             }
@@ -111,14 +126,20 @@ export default function SwipeUp({
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const el = e.currentTarget;
-        const scrolled = el.scrollTop > 0;
+        // Fix #2a: clamp to 0 — iOS rubber-band overscroll can make scrollTop go negative,
+        // which would otherwise flip `scrolled` false and trigger a spurious collapse.
+        const scrolled = Math.max(0, el.scrollTop) > 0;
         if (scrolled && !expanded) {
+            if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
             setExpanded(true);
             controls.start({ height: maxHeight, transition: TRANSITION });
         } else if (!scrolled && expanded && el.scrollHeight > maxHeight) {
-            // Only collapse if content actually overflows maxHeight (real scrollable content)
-            setExpanded(false);
-            controls.start({ height: defaultHeight, transition: TRANSITION });
+            // Fix #2b: debounce collapse to absorb iOS momentum scroll oscillation around 0
+            if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
+            collapseTimerRef.current = setTimeout(() => {
+                setExpanded(false);
+                controls.start({ height: defaultHeight, transition: TRANSITION });
+            }, 150);
         }
         onScroll?.(e);
     };

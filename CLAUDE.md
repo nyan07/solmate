@@ -19,6 +19,7 @@ Arkie is a 3D map explorer for nearby restaurants, cafes, and bars. It combines 
 | Backend         | Vercel Edge Functions (JS) — 3 endpoints under `api/`      |
 | External API    | Google Places API v1                                       |
 | Testing         | Vitest + React Testing Library + MSW 2                     |
+| E2E testing     | Playwright 1.59 + WebKit (iPhone 14 profile)               |
 | Package manager | pnpm                                                       |
 
 ## How to run
@@ -28,6 +29,7 @@ pnpm install
 # API calls need Vercel CLI so Edge Functions work locally:
 npx vercel dev          # http://localhost:3000  ← use this, not pnpm dev
 pnpm test               # Vitest (jsdom, MSW mocking)
+pnpm test:e2e           # Playwright e2e — requires npx vercel dev running on :3001
 pnpm build              # tsc -b && vite build
 ```
 
@@ -196,6 +198,7 @@ Treat these as high-risk:
 - `src/App.tsx` — language detection, `/beta` redirect, and LangRoute sync
 - `src/i18n/` — locale files; any new user-visible string needs keys in both `en` and `de`
 - Anything that affects whether the Cesium map stays mounted during overlay transitions
+- `src/components/SwipeUp/` — primary mobile interaction surface; iOS Safari scroll/animation behaviour is fragile (see E2E tests)
 
 ## Before finishing a task
 
@@ -208,6 +211,26 @@ Before considering a task complete:
 5. Add keys for any new user-visible string to both `src/i18n/en.json` and `src/i18n/de.json`
 6. Run all commands listed in "Pre-commit hooks" and `pnpm build`; include the result (or note why you couldn't)
 7. Call out any risks, assumptions, or follow-ups
+
+## E2E tests (Playwright + WebKit)
+
+E2E tests live in `e2e/` and run against a full Vercel dev server on `:3001`.
+
+**Why WebKit and not Chromium:** `SwipeUp` is the primary mobile interaction surface. Its iOS Safari bugs (rubber-band overscroll, `window.innerHeight` instability from browser chrome animation) are invisible to jsdom and Chromium. WebKit reproduces these faithfully.
+
+**Running locally:**
+
+```bash
+npx vercel dev --listen 3001   # start the server first
+pnpm test:e2e                  # then run tests
+```
+
+**Key conventions:**
+
+- Use `devices["iPhone 14"]` for all touch/gesture tests.
+- Prefer `page.clock.runFor()` over `waitForTimeout` for debounce assertions.
+- Capture `trace` and `video` on first retry — both are configured automatically.
+- E2E tests do NOT run in the pre-commit hook (too slow); run them manually before PRs that touch `SwipeUp` or gesture handling.
 
 ## UI invariants
 
