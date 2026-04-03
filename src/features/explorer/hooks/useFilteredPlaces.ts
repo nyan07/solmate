@@ -8,8 +8,6 @@ type Options = { enabled: boolean; cacheFirst?: boolean; lang?: string };
 function applyFilters(places: PlaceSummary[], openOnly: boolean, outdoorSeatingOnly: boolean) {
     return places.filter((place) => {
         if (openOnly) {
-            if (place.businessStatus === "CLOSED_PERMANENTLY") return false;
-            if (place.businessStatus === "CLOSED_TEMPORARILY") return false;
             // openNow comes directly from Google's currentOpeningHours
             // undefined means no hours data — don't exclude
             if (place.openingHours?.openNow === false) return false;

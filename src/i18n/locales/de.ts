@@ -28,8 +28,6 @@ const de = {
         openingSoon: "öffnet bald",
         closingSoon: "schließt bald",
         closed: "geschlossen",
-        temporarilyClosed: "vorübergehend geschlossen",
-        permanentlyClosed: "dauerhaft geschlossen",
         closesAt: "schließt um {{time}}",
         opensAt: "öffnet um {{time}}",
     },

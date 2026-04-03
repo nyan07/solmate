@@ -21,12 +21,7 @@ type PlaceItemProps = {
 
 export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
     const { lang = "en" } = useParams<{ lang: string }>();
-    const statusDetail: PlaceStatusDetail | null =
-        place.businessStatus === "CLOSED_TEMPORARILY"
-            ? { status: "temporarily closed" }
-            : place.businessStatus === "CLOSED_PERMANENTLY"
-              ? { status: "permanently closed" }
-              : getPlaceStatusDetail(place.openingHours);
+    const statusDetail: PlaceStatusDetail | null = getPlaceStatusDetail(place.openingHours);
 
     return (
         <Link to={`/${lang}/places/${place.id}`}>

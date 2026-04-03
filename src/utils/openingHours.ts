@@ -40,13 +40,7 @@ export type PlaceStatusDetailInfo = {
 };
 
 export type PlaceStatusDetail = {
-    status:
-        | "open"
-        | "closed"
-        | "closing soon"
-        | "opening soon"
-        | "temporarily closed"
-        | "permanently closed";
+    status: "open" | "closed" | "closing soon" | "opening soon";
     detail?: PlaceStatusDetailInfo;
 };
 

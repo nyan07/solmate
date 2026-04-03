@@ -44,11 +44,7 @@ function PlaceDetailOverlay() {
         : [];
 
     const statusDetail: PlaceStatusDetail | null = place
-        ? place.businessStatus === "CLOSED_TEMPORARILY"
-            ? { status: "temporarily closed" }
-            : place.businessStatus === "CLOSED_PERMANENTLY"
-              ? { status: "permanently closed" }
-              : getPlaceStatusDetail(place.openingHours)
+        ? getPlaceStatusDetail(place.openingHours)
         : null;
 
     return (

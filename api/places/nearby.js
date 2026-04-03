@@ -72,7 +72,6 @@ const parsePlace = (place) => {
         location: place.location,
         hasOutdoorSeating: place.outdoorSeating || false,
         photoUrl,
-        businessStatus: place.businessStatus,
         openingHours: place.currentOpeningHours ?? null,
     };
     return result;
@@ -160,7 +159,9 @@ export default async function POST(request) {
             });
         }
 
-        const places = data.places.map(parsePlace);
+        const places = data.places
+            .filter((p) => p.businessStatus === "OPERATIONAL")
+            .map(parsePlace);
 
         return new Response(JSON.stringify(places), {
             status: 200,

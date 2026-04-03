@@ -28,8 +28,6 @@ const en = {
         openingSoon: "opening soon",
         closingSoon: "closing soon",
         closed: "closed",
-        temporarilyClosed: "temporarily closed",
-        permanentlyClosed: "permanently closed",
         closesAt: "closes at {{time}}",
         opensAt: "opens at {{time}}",
     },

@@ -18,7 +18,6 @@ export type PlaceSummary = {
     location: LatLng;
     hasOutdoorSeating: boolean;
     photoUrl: string;
-    businessStatus?: BusinessStatus;
     openingHours?: RawOpeningHours;
 };
 
@@ -31,8 +30,6 @@ export type AccessibilityOptions = {
     wheelchairAccessibleSeating?: boolean;
 };
 
-export type BusinessStatus = "OPERATIONAL" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY";
-
 export type PriceLevel =
     | "PRICE_LEVEL_FREE"
     | "PRICE_LEVEL_INEXPENSIVE"
@@ -43,7 +40,6 @@ export type PriceLevel =
 export type Place = PlaceSummary & {
     rating?: number;
     formattedAddress?: string;
-    businessStatus?: BusinessStatus;
     regularOpeningHours?: {
         weekdayDescriptions?: string[];
     };

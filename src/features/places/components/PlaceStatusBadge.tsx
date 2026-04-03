@@ -8,8 +8,6 @@ const TONE: Record<string, TagTone> = {
     "opening soon": "warning",
     "closing soon": "warning",
     closed: "neutral",
-    "temporarily closed": "neutral",
-    "permanently closed": "neutral",
 };
 
 const STATUS_KEY = {
@@ -17,8 +15,6 @@ const STATUS_KEY = {
     "opening soon": "status.openingSoon",
     "closing soon": "status.closingSoon",
     closed: "status.closed",
-    "temporarily closed": "status.temporarilyClosed",
-    "permanently closed": "status.permanentlyClosed",
 } as const;
 
 const DETAIL_KEY = {

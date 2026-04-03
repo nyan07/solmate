@@ -10,7 +10,6 @@ export const mockPlace: Place = {
     location: { latitude: 48.8566, longitude: 2.3522 },
     hasOutdoorSeating: true,
     photoUrl: "https://example.com/photo.jpg",
-    businessStatus: "OPERATIONAL",
 };
 
 export const mockPlaceSummary: PlaceSummary = {
