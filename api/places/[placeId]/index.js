@@ -98,7 +98,6 @@ export async function GET(req) {
             status: 200,
             headers: {
                 "Content-Type": "application/json",
-                "Cache-Control": "no-store",
             },
         });
     } catch (err) {

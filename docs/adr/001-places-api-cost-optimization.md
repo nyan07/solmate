@@ -53,9 +53,9 @@ The accepted risk: `businessStatus` (e.g. CLOSED_PERMANENTLY) could become stale
 
 **Files affected:** `cacheFirstOptions.ts`
 
-### 4. Remove `Cache-Control: no-store` from the individual place endpoint
+### 4. Remove `Cache-Control: no-store` from the individual place endpoint ✅
 
-The `/api/places/[placeId]` edge function currently returns `Cache-Control: no-store`, disabling any CDN or browser caching. Removing this allows Vercel's edge network to cache individual place responses and reduces cold-start API calls.
+The `/api/places/[placeId]` edge function previously returned `Cache-Control: no-store`, disabling any CDN or browser caching. The header has been removed entirely, allowing Vercel's edge network to apply default caching for GET responses and reducing Google API calls on cache-cold detail views.
 
 **Files affected:** `api/places/[placeId]/index.js`
 
