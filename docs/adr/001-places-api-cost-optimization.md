@@ -41,7 +41,7 @@ The two optimizations compose in order: `bounds → debounce 400 ms → debounce
 
 **Files affected:** `useNearbyPlaces.ts`
 
-### 3. Set staleTime to Infinity
+### 3. Set staleTime to Infinity ✅
 
 Place data does not meaningfully change within a session. Setting `staleTime: Infinity` prevents background refetches for data that is already in cache.
 
