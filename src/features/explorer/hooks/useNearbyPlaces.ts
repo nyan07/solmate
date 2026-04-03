@@ -6,6 +6,16 @@ import { CACHE_FIRST_OPTIONS } from "@/features/places/hooks/cacheFirstOptions";
 import { fetchNearbyPlaces } from "@/features/places/api";
 
 const BOUNDS_DEBOUNCE_MS = 400;
+const SNAP = 1000; // 0.001° ≈ 111 m at the equator
+
+function snapBounds(b: Bounds) {
+    return {
+        north: Math.round(b.north * SNAP) / SNAP,
+        south: Math.round(b.south * SNAP) / SNAP,
+        east: Math.round(b.east * SNAP) / SNAP,
+        west: Math.round(b.west * SNAP) / SNAP,
+    };
+}
 
 type UseNearbyPlacesOptions = {
     enabled: boolean;
@@ -27,12 +37,14 @@ export const useNearbyPlaces = (
         return () => clearTimeout(timer);
     }, [bounds]);
 
+    const snappedBounds = debouncedBounds ? snapBounds(debouncedBounds) : null;
+
     return useQuery({
         ...(cacheFirst ? CACHE_FIRST_OPTIONS : {}),
-        queryKey: ["nearbyPlaces", debouncedBounds, lang],
+        queryKey: ["nearbyPlaces", snappedBounds, lang],
         queryFn: () =>
-            debouncedBounds ? fetchNearbyPlaces(debouncedBounds, lang) : Promise.resolve([]),
-        enabled: !!debouncedBounds && enabled,
+            snappedBounds ? fetchNearbyPlaces(snappedBounds, lang) : Promise.resolve([]),
+        enabled: !!snappedBounds && enabled,
         placeholderData: keepPreviousData,
     });
 };

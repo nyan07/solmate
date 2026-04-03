@@ -31,20 +31,15 @@ The debounce lives inside `useNearbyPlaces` rather than in `useMapCenter`. This 
 
 **Files affected:** `useNearbyPlaces.ts`
 
-### 2. Snap bounds coordinates to a ~100 m grid
+### 2. Snap bounds coordinates to a ~100 m grid ✅
 
 Before building the React Query key, round each bound coordinate to 3 decimal places (`0.001°` ≈ 111 m at the equator). Small movements within the same cell reuse the existing cache entry.
 
-```
-snappedBounds = {
-  north:  Math.round(bounds.north * 1000) / 1000,
-  south:  Math.round(bounds.south * 1000) / 1000,
-  east:   Math.round(bounds.east  * 1000) / 1000,
-  west:   Math.round(bounds.west  * 1000) / 1000,
-}
-```
+The snap is applied after the debounce, inside `useNearbyPlaces`, as a pure inline helper (`snapBounds`). No shared utility was created — single use case doesn't warrant the abstraction.
 
-**Files affected:** `useNearbyPlaces.ts` (or a shared `snapBounds` utility)
+The two optimizations compose in order: `bounds → debounce 400 ms → debouncedBounds → snap → snappedBounds → query key + API call`.
+
+**Files affected:** `useNearbyPlaces.ts`
 
 ### 3. Set staleTime to Infinity
 
