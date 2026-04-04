@@ -49,6 +49,7 @@ function PlaceDetailOverlay() {
 
     return (
         <SwipeUp
+            key={placeId}
             defaultOpen={true}
             topOffset={topBarHeight}
             onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}
