@@ -1,5 +1,5 @@
 import { Switch } from "@/components/Switch";
-import { useFilters, type PlaceFilters } from "./MapContext";
+import { useFilters, type PlaceFilters } from "@/features/explorer/state/mapStore";
 import { useTranslation } from "react-i18next";
 
 type FilterRowProps = {

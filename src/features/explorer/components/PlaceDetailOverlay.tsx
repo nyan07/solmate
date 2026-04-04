@@ -15,7 +15,7 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { usePlace } from "@/features/places/hooks/usePlace";
 import { useParams } from "react-router-dom";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
-import { useLayout } from "./MapContext";
+import { useLayout } from "@/features/explorer/state/mapStore";
 import { useState } from "react";
 import { PlaceStatusBadge } from "@/features/places/components/PlaceStatusBadge";
 import { useTranslation } from "react-i18next";

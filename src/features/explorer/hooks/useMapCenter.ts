@@ -1,6 +1,6 @@
 import { Cartesian2, Cartographic, Math as CesiumMath, Viewer } from "cesium";
 import { useEffect } from "react";
-import { useMapState, useLayout } from "@/features/explorer/components/MapContext";
+import { useMapState, useLayout } from "@/features/explorer/state/mapStore";
 import type { Bounds } from "@/types/Bounds";
 
 function pickLatLng(viewer: Viewer, x: number, y: number) {

@@ -14,7 +14,7 @@ import {
     ColorMaterialProperty,
 } from "cesium";
 import { useFilteredPlaces } from "./useFilteredPlaces";
-import { useLayout, useMapState, useSunlit } from "@/features/explorer/components/MapContext";
+import { useLayout, useMapState, useSunlit } from "@/features/explorer/state/mapStore";
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";

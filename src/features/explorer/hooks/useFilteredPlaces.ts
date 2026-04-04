@@ -1,6 +1,6 @@
 import type { Bounds } from "@/types/Bounds";
 import { useNearbyPlaces } from "./useNearbyPlaces";
-import { useFilters, useSunlit } from "@/features/explorer/components/MapContext";
+import { useFilters, useSunlit } from "@/features/explorer/state/mapStore";
 import type { PlaceSummary } from "@/features/places/types";
 
 type Options = { enabled: boolean; cacheFirst?: boolean; lang?: string };

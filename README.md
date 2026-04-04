@@ -55,8 +55,9 @@ src/
 │
 ├── features/                     # Self-contained product domains
 │   ├── explorer/                 # 3D map, nearby discovery, search, filters, weather
-│   │   ├── components/           # ExplorerView, MapContext, PlaceListOverlay, PlaceDetailOverlay
+│   │   ├── components/           # ExplorerView, PlaceListOverlay, PlaceDetailOverlay, …
 │   │   ├── hooks/                # useBuildings, usePins, useSunDirection, useSunTimes, useNearbyPlaces, …
+│   │   ├── state/                # Zustand store — mapStore.ts + one slice per concern
 │   │   ├── testing/              # MSW handlers + mock factories (test-only)
 │   │   ├── types.ts              # Building
 │   │   └── constants.ts

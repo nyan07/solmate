@@ -4,7 +4,7 @@ import { DatePicker } from "@/components/DatePicker";
 import { Range } from "@/components/Range";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
 import { ExplorerFilter } from "./ExplorerFilter";
-import { useFilters } from "./MapContext";
+import { useFilters } from "@/features/explorer/state/mapStore";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
 type Props = {

@@ -17,7 +17,7 @@ import { useMatch } from "react-router-dom";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
 import ExplorerHeader from "./ExplorerHeader";
-import { useLayout, useMapState } from "./MapContext";
+import { useLayout, useMapState } from "@/features/explorer/state/mapStore";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
 import { useSunDirection } from "@/features/explorer/hooks/useSunDirection";
 import { useUserLocationPos } from "@/features/explorer/hooks/useUserLocationPos";

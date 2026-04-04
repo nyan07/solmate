@@ -3,7 +3,7 @@ import SwipeUp from "@/components/SwipeUp";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useFilteredPlaces } from "@/features/explorer/hooks/useFilteredPlaces";
 import { calculateDistance } from "@/utils/geo/calculateDistance";
-import { useMapState, useLayout, useListUI, useFilters } from "./MapContext";
+import { useMapState, useLayout, useListUI, useFilters } from "@/features/explorer/state/mapStore";
 import { MAX_CAMERA_DISTANCE } from "@/features/explorer/constants";
 import { useTranslation } from "react-i18next";
 import { Loader } from "@/components/Loader";

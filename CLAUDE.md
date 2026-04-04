@@ -11,7 +11,7 @@ Arkie is a 3D map explorer for nearby restaurants, cafes, and bars. It combines 
 | Frontend        | React 19, TypeScript 5 (strict), Vite 7                    |
 | 3D map          | Cesium 1.134 with OSM buildings + Cesium Ion terrain       |
 | Server state    | TanStack React Query 5 (cache-first — see ADR-001)         |
-| Client state    | React Context (no Redux/Zustand)                           |
+| Client state    | Zustand 5 (`src/features/explorer/state/`)                 |
 | Routing         | React Router v7 with `/:lang/places/:placeId` nesting      |
 | Styling         | Tailwind CSS 4 with custom palette in `tailwind.config.js` |
 | i18n            | i18next + react-i18next, `en` and `de` locales             |
@@ -50,6 +50,9 @@ VITE_SITE_URL=https://arkie.app
 src/
   features/
     explorer/   # Cesium map, camera hooks, sun tracking, pins
+      state/    # Zustand store — mapStore.ts + one slice file per concern
+      hooks/    # Logic hooks (usePins, useMapCenter, useFilteredPlaces, …)
+      components/
     places/     # Place list, detail, hours, photos, API client
     profile/    # (future) favourites, settings
     auth/       # (future) login
@@ -73,7 +76,7 @@ docs/adr/               # Architecture Decision Records
 ### State split
 
 - **React Query** for all server-fetched data (places, details).
-- **React Context** (`MapProvider`) for view state: viewport bounds/center, layout measurements, active filters, list scroll position.
+- **Zustand** (`src/features/explorer/state/`) for view state: viewport bounds/center, layout measurements, active filters, sunlit IDs, list scroll position. The store is split into one slice file per concern (`mapSlice`, `layoutSlice`, `filtersSlice`, `sunlitSlice`, `listUISlice`), composed in `mapStore.ts`. Import the slice hooks (`useMapState`, `useLayout`, `useFilters`, `useSunlit`, `useListUI`) from `@/features/explorer/state/mapStore` — never import `useMapStore` directly in components or feature hooks. Reset state between tests with `useMapStore.setState(initialState)` in `beforeEach`.
 
 ### Route structure
 
@@ -167,7 +170,8 @@ Rules:
 - Do not refactor unrelated code.
 - Do not rename files, routes, exports, or public component props unless required.
 - Reuse existing hooks, utilities, and components before introducing new abstractions.
-- Do not add new runtime dependencies. New devDependencies (test utilities, type stubs) are lower-risk but still need justification.
+- Do not add new runtime dependencies without discussion. New devDependencies (test utilities, type stubs) are lower-risk but still need justification.
+- Do not create new directories or reorganise the folder structure without discussing tradeoffs and getting explicit approval first.
 - Preserve existing user-visible behavior unless the task explicitly asks for a change.
 - Follow the existing folder structure; do not introduce new architectural patterns unless requested.
 
