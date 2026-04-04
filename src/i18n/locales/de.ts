@@ -22,6 +22,7 @@ const de = {
     filter: {
         openNow: "Jetzt geöffnet",
         outdoorSeating: "Außenbereich",
+        sunnyPlaces: "Sonnige Orte",
     },
     status: {
         open: "geöffnet",

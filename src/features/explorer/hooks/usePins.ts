@@ -14,7 +14,7 @@ import {
     ColorMaterialProperty,
 } from "cesium";
 import { useFilteredPlaces } from "./useFilteredPlaces";
-import { useLayout, useMapState } from "@/features/explorer/components/MapContext";
+import { useLayout, useMapState, useSunlit } from "@/features/explorer/components/MapContext";
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
@@ -89,6 +89,7 @@ export const usePins = (
 ) => {
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
+    const { setSunlitIds } = useSunlit();
     const navigate = useLangNavigate();
     const { i18n } = useTranslation();
     const { data: places } = useFilteredPlaces(bounds, {
@@ -302,7 +303,10 @@ export const usePins = (
             const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
             setPolylineColor(line, color);
         });
-    }, [viewer, sunTime, pinTopHeights]);
+        setSunlitIds(
+            new Set([...sunlitIds.current].filter((id) => outdoorSeatingIds.current.has(id)))
+        );
+    }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
 
     // Selection change — update image and stem color
     useEffect(() => {

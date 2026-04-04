@@ -43,6 +43,7 @@ export const useLayout = () => {
 export type PlaceFilters = {
     openOnly: boolean;
     outdoorSeatingOnly: boolean;
+    sunnyOnly: boolean;
 };
 
 type FiltersContextType = {
@@ -56,6 +57,22 @@ const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
 export const useFilters = () => {
     const ctx = useContext(FiltersContext);
     if (!ctx) throw new Error("useFilters must be used within MapProvider");
+    return ctx;
+};
+
+// ─── Sunlit State ─────────────────────────────────────────────────────────────
+
+type SunlitContextType = {
+    sunlitIds: Set<string>;
+    setSunlitIds: (ids: Set<string>) => void;
+};
+
+const SunlitContext = createContext<SunlitContextType | undefined>(undefined);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useSunlit = () => {
+    const ctx = useContext(SunlitContext);
+    if (!ctx) throw new Error("useSunlit must be used within MapProvider");
     return ctx;
 };
 
@@ -89,7 +106,9 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
     const [filters, setFilters] = useState<PlaceFilters>({
         openOnly: false,
         outdoorSeatingOnly: false,
+        sunnyOnly: false,
     });
+    const [sunlitIds, setSunlitIds] = useState<Set<string>>(new Set());
 
     return (
         <MapStateContext.Provider
@@ -97,11 +116,13 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
         >
             <LayoutContext.Provider value={{ topBarHeight, setTopBarHeight }}>
                 <FiltersContext.Provider value={{ filters, setFilters }}>
-                    <ListUIContext.Provider
-                        value={{ listOpen, setListOpen, listScrollTop, setListScrollTop }}
-                    >
-                        {children}
-                    </ListUIContext.Provider>
+                    <SunlitContext.Provider value={{ sunlitIds, setSunlitIds }}>
+                        <ListUIContext.Provider
+                            value={{ listOpen, setListOpen, listScrollTop, setListScrollTop }}
+                        >
+                            {children}
+                        </ListUIContext.Provider>
+                    </SunlitContext.Provider>
                 </FiltersContext.Provider>
             </LayoutContext.Provider>
         </MapStateContext.Provider>

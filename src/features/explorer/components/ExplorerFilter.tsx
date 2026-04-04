@@ -35,6 +35,11 @@ export function ExplorerFilter() {
                     checked={filters.outdoorSeatingOnly}
                     onChange={(v) => update({ outdoorSeatingOnly: v })}
                 />
+                <FilterRow
+                    label={t("filter.sunnyPlaces")}
+                    checked={filters.sunnyOnly}
+                    onChange={(v) => update({ sunnyOnly: v })}
+                />
             </div>
         </div>
     );

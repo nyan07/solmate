@@ -25,7 +25,10 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
             filterOpen
         );
         const { filters } = useFilters();
-        const activeCount = Number(filters.openOnly) + Number(filters.outdoorSeatingOnly);
+        const activeCount =
+            Number(filters.openOnly) +
+            Number(filters.outdoorSeatingOnly) +
+            Number(filters.sunnyOnly);
 
         return (
             <div ref={ref} className="absolute top-0 left-0 right-0 z-50">

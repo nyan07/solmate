@@ -22,6 +22,7 @@ const en = {
     filter: {
         openNow: "Open now",
         outdoorSeating: "Outside seating",
+        sunnyPlaces: "Sunny places",
     },
     status: {
         open: "open",
