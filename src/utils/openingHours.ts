@@ -68,9 +68,13 @@ export function getPlaceStatusDetail(
         const active = periods.find((p) => {
             if (p.open.day === currentDay && toMinutes(p.open.hour, p.open.minute) <= currentMin)
                 return true;
-            // Handles periods that opened the previous day and close today
+            // Handles periods that opened the previous day and close today (close time not yet passed)
             const prevDay = (currentDay + 6) % 7;
-            return p.open.day === prevDay && p.close.day === currentDay;
+            return (
+                p.open.day === prevDay &&
+                p.close.day === currentDay &&
+                toMinutes(p.close.hour, p.close.minute) > currentMin
+            );
         });
 
         if (!active) return { status: "open" };
