@@ -1,7 +1,7 @@
 import React from "react";
 import type { Variant } from "./types";
 
-const BASE = "px-4 py-2 rounded-xl transition-colors duration-200 text-center";
+const BASE = "px-2 py-2 rounded-xl transition-colors duration-200 text-center";
 
 const VARIANT: Record<Variant, string> = {
     filled: "bg-primary text-neutral-50 hover:bg-accent disabled:bg-primary-200",

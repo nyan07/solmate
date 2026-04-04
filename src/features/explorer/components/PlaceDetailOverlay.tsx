@@ -145,6 +145,9 @@ function PlaceDetailOverlay() {
                                 >
                                     {t("place.actions.streetview")}
                                 </Button>
+                                <Button href={place.websiteUri} className="grow">
+                                    {t("place.actions.bookTable")}
+                                </Button>
                                 {place.reservable && (
                                     <Button href={place.websiteUri} className="grow">
                                         {t("place.actions.bookTable")}

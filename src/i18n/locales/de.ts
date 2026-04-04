@@ -42,7 +42,7 @@ const de = {
         actions: {
             navigate: "Navigation",
             streetview: "Streetview",
-            bookTable: "Tisch reservieren",
+            bookTable: "Reservierung",
         },
         accessibility: {
             title: "Barrierefreiheit",
