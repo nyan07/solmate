@@ -52,6 +52,25 @@ const en = {
             seating: "Wheelchair accessible seating",
         },
     },
+    installPrompt: {
+        title: "Add Arkie to your home screen",
+        close: "Close",
+        dismiss: "Not now",
+        added: "I added it!",
+        "ios-safari": {
+            step1: "Tap the Share button (the square with an arrow) at the bottom of Safari.",
+            step2: 'Scroll down and tap "Add to Home Screen".',
+            step3: 'Tap "Add" in the top right corner.',
+        },
+        android: {
+            step1: "Tap the menu button (⋮) in the top right of Chrome.",
+            step2: 'Tap "Add to Home Screen".',
+            step3: 'Tap "Add".',
+        },
+        iosOther: {
+            body: 'To add Arkie to your home screen, open this page in Safari, then tap the Share button and select "Add to Home Screen".',
+        },
+    },
     placeList: {
         empty: {
             title: "Nothing to show :(",

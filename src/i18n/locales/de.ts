@@ -52,6 +52,25 @@ const de = {
             seating: "Rollstuhlgerechte Sitzplätze",
         },
     },
+    installPrompt: {
+        title: "Arkie zum Startbildschirm hinzufügen",
+        close: "Schließen",
+        dismiss: "Nicht jetzt",
+        added: "Ich hab's hinzugefügt!",
+        "ios-safari": {
+            step1: "Tippe unten in Safari auf das Teilen-Symbol (Quadrat mit Pfeil).",
+            step2: 'Scrolle nach unten und tippe auf "Zum Home-Bildschirm".',
+            step3: 'Tippe oben rechts auf "Hinzufügen".',
+        },
+        android: {
+            step1: "Tippe oben rechts in Chrome auf das Menü (⋮).",
+            step2: 'Tippe auf "Zum Startbildschirm hinzufügen".',
+            step3: 'Tippe auf "Hinzufügen".',
+        },
+        iosOther: {
+            body: 'Um Arkie zum Startbildschirm hinzuzufügen, öffne diese Seite in Safari, tippe dann auf das Teilen-Symbol und wähle "Zum Home-Bildschirm".',
+        },
+    },
     placeList: {
         empty: {
             title: "Nichts zu zeigen :(",

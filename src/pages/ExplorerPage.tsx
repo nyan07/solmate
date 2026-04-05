@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import ExplorerView from "@/features/explorer/components/ExplorerView";
 import { BottomNav } from "@/components/BottomNav";
 import { Loader } from "@/components/Loader";
+import { InstallPromptModal } from "@/features/explorer/components/InstallPromptModal";
 
 export function ExplorerPage() {
     const [mapReady, setMapReady] = useState(false);
@@ -21,6 +22,7 @@ export function ExplorerPage() {
             >
                 <Loader />
             </div>
+            <InstallPromptModal />
         </>
     );
 }
