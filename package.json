@@ -75,6 +75,10 @@
         ],
         "**/*.{js,json,css,md}": [
             "prettier --write"
+        ],
+        "src/i18n/locales/*.ts": [
+            "node scripts/export-tranlations.js",
+            "git add translations.md"
         ]
     }
 }
