@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/utils/analytics";
 
 const STORAGE_KEY = "arkie_install_prompt_v1";
@@ -8,6 +8,24 @@ const OPENS_UNTIL_REMINDER = 3;
 export type InstallPlatform = "ios-safari" | "ios-other" | "android" | "desktop";
 
 type StoredState = { status: "added" } | { status: "dismissed"; opensSinceDismissal: number };
+
+interface BeforeInstallPromptEvent extends Event {
+    prompt(): Promise<void>;
+    readonly userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+// Captured at module evaluation time — before React renders — so we never miss
+// the event even if it fires before the component mounts.
+let earlyCapturedPrompt: BeforeInstallPromptEvent | null = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    earlyCapturedPrompt = e as BeforeInstallPromptEvent;
+});
+
+window.addEventListener("appinstalled", () => {
+    earlyCapturedPrompt = null;
+});
 
 function isStandalone(): boolean {
     return (
@@ -48,6 +66,8 @@ function writeState(state: StoredState): void {
 
 export function useInstallPrompt() {
     const [show, setShow] = useState(false);
+    const [canNativePrompt, setCanNativePrompt] = useState(() => earlyCapturedPrompt !== null);
+    const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(earlyCapturedPrompt);
     const platform = detectPlatform();
 
     useEffect(() => {
@@ -65,7 +85,6 @@ export function useInstallPrompt() {
         if (state.status === "added") return;
 
         if (state.status === "dismissed") {
-            // Count once per browser session to track "app opens"
             const alreadyCounted = sessionStorage.getItem(SESSION_KEY) === "1";
             const newCount = state.opensSinceDismissal + (alreadyCounted ? 0 : 1);
 
@@ -82,10 +101,33 @@ export function useInstallPrompt() {
         }
     }, []);
 
+    // Also listen for the event firing after mount (e.g. on subsequent visits
+    // where Chrome defers the prompt until the user has more engagement).
+    useEffect(() => {
+        const handler = (e: Event) => {
+            e.preventDefault();
+            const prompt = e as BeforeInstallPromptEvent;
+            earlyCapturedPrompt = prompt;
+            deferredPrompt.current = prompt;
+            setCanNativePrompt(true);
+        };
+
+        const installedHandler = () => {
+            confirmAdded();
+        };
+
+        window.addEventListener("beforeinstallprompt", handler);
+        window.addEventListener("appinstalled", installedHandler);
+
+        return () => {
+            window.removeEventListener("beforeinstallprompt", handler);
+            window.removeEventListener("appinstalled", installedHandler);
+        };
+    }, []);
+
     function dismiss() {
         const state = readState();
         if (!state) {
-            // First dismissal — start counting from 0, mark this session as counted
             writeState({ status: "dismissed", opensSinceDismissal: 0 });
             sessionStorage.setItem(SESSION_KEY, "1");
         }
@@ -99,5 +141,23 @@ export function useInstallPrompt() {
         setShow(false);
     }
 
-    return { show, platform, dismiss, confirmAdded };
+    async function nativePrompt() {
+        const prompt = deferredPrompt.current;
+        if (!prompt) return;
+
+        deferredPrompt.current = null;
+        earlyCapturedPrompt = null;
+        setCanNativePrompt(false);
+
+        await prompt.prompt();
+        const { outcome } = await prompt.userChoice;
+
+        if (outcome === "accepted") {
+            confirmAdded();
+        } else {
+            dismiss();
+        }
+    }
+
+    return { show, platform, canNativePrompt, dismiss, confirmAdded, nativePrompt };
 }

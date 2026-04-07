@@ -63,6 +63,7 @@ const en = {
             step3: 'Tap "Add" in the top right corner.',
         },
         android: {
+            install: "Install Arkie",
             step1: "Tap the menu button (⋮) in the top right of Chrome.",
             step2: 'Tap "Add to Home Screen".',
             step3: 'Tap "Add".',

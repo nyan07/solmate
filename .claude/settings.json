@@ -6,7 +6,8 @@
             "Bash(pnpm add:*)",
             "Bash(pnpm tsc:*)",
             "Bash(pnpm test:*)",
-            "Bash(node -e \"const C = require\\('cesium'\\); console.log\\(Object.keys\\(C\\).filter\\(k => k.includes\\('Sun'\\) || k.includes\\('Planetary'\\) || k.includes\\('Simon'\\)\\).join\\('\\\\n'\\)\\)\")"
+            "Bash(node -e \"const C = require\\('cesium'\\); console.log\\(Object.keys\\(C\\).filter\\(k => k.includes\\('Sun'\\) || k.includes\\('Planetary'\\) || k.includes\\('Simon'\\)\\).join\\('\\\\n'\\)\\)\")",
+            "Bash(ls -la /Users/dani/Projects/arkie/*.config.*)"
         ],
         "additionalDirectories": ["/Users/dani/Projects/arkie/src/features/explorer"]
     }

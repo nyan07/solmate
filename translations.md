@@ -14,6 +14,7 @@
 | filter.outdoorSeating | Outside seating | Außenbereich |  |
 | filter.sunnyPlaces | Sunny places | Sonnige Orte |  |
 | installPrompt.added | I added it! | Ich hab's hinzugefügt! | Yes |
+| installPrompt.android.install | Install Arkie | Arkie installieren | Yes |
 | installPrompt.android.step1 | Tap the menu button (⋮) in the top right of Chrome. | Tippe oben rechts in Chrome auf das Menü (⋮). | Yes |
 | installPrompt.android.step2 | Tap "Add to Home Screen". | Tippe auf "Zum Startbildschirm hinzufügen". | Yes |
 | installPrompt.android.step3 | Tap "Add". | Tippe auf "Hinzufügen". | Yes |

@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { InstallPromptModal } from "./InstallPromptModal";
-import { UA, setUserAgent, setStandalone } from "@/testUtils/installPrompt";
+import { UA, setUserAgent, setStandalone, fireNativePrompt } from "@/testUtils/installPrompt";
 import "@/i18n";
 
 const STORAGE_KEY = "arkie_install_prompt_v1";
@@ -25,13 +25,12 @@ describe("first visit", () => {
         ).toBeInTheDocument();
     });
 
-    it("shows Android instructions on first visit", () => {
+    it("shows the install button on Android when native prompt is available", async () => {
         setUserAgent(UA.android);
         render(<InstallPromptModal />);
+        act(() => fireNativePrompt());
         expect(screen.getByRole("dialog")).toBeInTheDocument();
-        expect(
-            screen.getByText("Tap the menu button (⋮) in the top right of Chrome.")
-        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Install Arkie" })).toBeInTheDocument();
     });
 
     it("shows open-in-Safari message for Chrome on iOS", () => {

@@ -16,7 +16,8 @@ function Step({ number, text }: { number: number; text: string }) {
 }
 
 export function InstallPromptModal() {
-    const { show, platform, dismiss, confirmAdded } = useInstallPrompt();
+    const { show, platform, canNativePrompt, dismiss, confirmAdded, nativePrompt } =
+        useInstallPrompt();
     const { t } = useTranslation();
 
     return (
@@ -77,16 +78,21 @@ export function InstallPromptModal() {
                                     <Step number={3} text={t("installPrompt.ios-safari.step3")} />
                                 </div>
                             )}
-                            {platform === "android" && (
+                            {platform === "android" && !canNativePrompt && (
                                 <div className="flex flex-col gap-3">
                                     <Step number={1} text={t("installPrompt.android.step1")} />
                                     <Step number={2} text={t("installPrompt.android.step2")} />
                                     <Step number={3} text={t("installPrompt.android.step3")} />
                                 </div>
                             )}
-
                             <div className="flex flex-col gap-2 pt-1">
-                                {(platform === "ios-safari" || platform === "android") && (
+                                {platform === "android" && canNativePrompt && (
+                                    <Button onClick={nativePrompt}>
+                                        {t("installPrompt.android.install")}
+                                    </Button>
+                                )}
+                                {(platform === "ios-safari" ||
+                                    (platform === "android" && !canNativePrompt)) && (
                                     <Button onClick={confirmAdded}>
                                         {t("installPrompt.added")}
                                     </Button>

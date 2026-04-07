@@ -63,6 +63,7 @@ const de = {
             step3: 'Tippe oben rechts auf "Hinzufügen".',
         },
         android: {
+            install: "Arkie installieren",
             step1: "Tippe oben rechts in Chrome auf das Menü (⋮).",
             step2: 'Tippe auf "Zum Startbildschirm hinzufügen".',
             step3: 'Tippe auf "Hinzufügen".',
