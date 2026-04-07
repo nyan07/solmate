@@ -10,7 +10,9 @@
         "preview": "vite preview",
         "prepare": "husky || true",
         "test": "vitest run --passWithNoTests",
-        "test:e2e": "playwright test"
+        "test:e2e": "playwright test",
+        "vercel:preview": "url=$(vercel deploy) && vercel alias \"$url\" staging.arkie.app && echo \"Preview: https://staging.arkie.app\"",
+        "vercel:prod": "vercel deploy --prod"
     },
     "dependencies": {
         "@phoenix344/opening-hours": "^2.0.0",
