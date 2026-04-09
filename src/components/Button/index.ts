@@ -1,2 +1,2 @@
 export { default } from "./Button";
-export type { Variant } from "./types";
+export type { Variant, Size } from "./types";

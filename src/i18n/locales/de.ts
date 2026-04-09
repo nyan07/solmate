@@ -19,6 +19,11 @@ const de = {
         },
         communityCta: "Arkie-Community beitreten",
     },
+    explorer: {
+        today: "Heute",
+        filterToggle: "Filter umschalten",
+        recenter: "Karte zentrieren",
+    },
     filter: {
         open: "Geöffnet",
         outdoorSeating: "Außenbereich",

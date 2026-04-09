@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     Viewer,
     createWorldTerrainAsync,
@@ -12,12 +12,16 @@ import {
 } from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
-import { BsCrosshair } from "react-icons/bs";
+import { BsCrosshair, BsSliders } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
+import Button from "@/components/Button";
 import { useMatch } from "react-router-dom";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
 import ExplorerHeader from "./ExplorerHeader";
-import { useLayout, useMapState } from "@/features/explorer/state/mapStore";
+import { useFilters, useLayout, useMapState } from "@/features/explorer/state/mapStore";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { ExplorerFilter } from "./ExplorerFilter";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
 import { useSunDirection } from "@/features/explorer/hooks/useSunDirection";
 import { useUserLocationPos } from "@/features/explorer/hooks/useUserLocationPos";
@@ -48,9 +52,21 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const [hour, setHour] = useState<number>(new Date().getHours());
     const [viewerReady, setViewerReady] = useState(false);
 
-    const { setTopBarHeight } = useLayout();
+    const { setTopBarHeight, topBarHeight } = useLayout();
     const { center: mapCenter } = useMapState();
 
+    const [filterOpen, setFilterOpen] = useState(false);
+    const filterRef = useRef<HTMLDivElement>(null);
+    useClickOutside(
+        filterRef,
+        useCallback(() => setFilterOpen(false), []),
+        filterOpen
+    );
+    const { filters } = useFilters();
+    const activeCount =
+        Number(filters.openOnly) + Number(filters.outdoorSeatingOnly) + Number(filters.sunnyOnly);
+
+    const { t } = useTranslation();
     const {
         geolocation,
         error: geolocationError,
@@ -205,24 +221,42 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
 
             <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
 
-            {geolocation && (
-                <button
-                    onClick={() => {
-                        trackEvent("map_recentered");
-                        viewerRef.current?.camera.flyTo({
-                            destination: Cartesian3.fromDegrees(
-                                geolocation.longitude,
-                                geolocation.latitude,
-                                DEFAULT_CAMERA_DISTANCE
-                            ),
-                            duration: 1,
-                        });
-                    }}
-                    className="absolute bottom-10 right-4 z-30 bg-white rounded-full p-2.5 shadow-md text-primary hover:text-accent transition-colors"
-                >
-                    <BsCrosshair className="w-5 h-5" />
-                </button>
-            )}
+            <div
+                className="absolute right-2 z-30 flex flex-col gap-1.5"
+                style={{ top: topBarHeight + 8 }}
+            >
+                <div className="relative" ref={filterRef}>
+                    <Button
+                        leadingIcon={<BsSliders />}
+                        label={t("explorer.filterToggle")}
+                        selected={filterOpen}
+                        onClick={() => setFilterOpen((o) => !o)}
+                        variant="ghost"
+                    />
+                    {activeCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-accent pointer-events-none" />
+                    )}
+                    {filterOpen && <ExplorerFilter />}
+                </div>
+                {geolocation && (
+                    <Button
+                        leadingIcon={<BsCrosshair />}
+                        label={t("explorer.recenter")}
+                        variant="ghost"
+                        onClick={() => {
+                            trackEvent("map_recentered");
+                            viewerRef.current?.camera.flyTo({
+                                destination: Cartesian3.fromDegrees(
+                                    geolocation.longitude,
+                                    geolocation.latitude,
+                                    DEFAULT_CAMERA_DISTANCE
+                                ),
+                                duration: 1,
+                            });
+                        }}
+                    />
+                )}
+            </div>
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DatePicker } from "./DatePicker";
+import "@/i18n";
 
 vi.mock("react-day-picker", () => ({
     DayPicker: ({ onSelect }: { onSelect: (date: Date) => void }) => (
@@ -54,5 +55,36 @@ describe("<DatePicker />", () => {
         await user.click(screen.getByRole("button"));
         await user.click(screen.getByTestId("day-picker"));
         expect(screen.queryByTestId("day-picker")).not.toBeInTheDocument();
+    });
+});
+
+describe("date label", () => {
+    beforeEach(() => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date("2024-06-12")); // Wednesday
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it("shows Today when value is today", () => {
+        render(<DatePicker value={new Date("2024-06-12")} onChange={vi.fn()} />);
+        expect(screen.getByRole("button")).toHaveTextContent("Today");
+    });
+
+    it("shows short weekday when value is within 7 days", () => {
+        render(<DatePicker value={new Date("2024-06-14")} onChange={vi.fn()} />); // Friday
+        expect(screen.getByRole("button")).toHaveTextContent("Fri");
+    });
+
+    it("shows short weekday on exactly day 7", () => {
+        render(<DatePicker value={new Date("2024-06-19")} onChange={vi.fn()} />); // 7 days out
+        expect(screen.getByRole("button")).toHaveTextContent("Wed");
+    });
+
+    it("shows month and day when value is more than 7 days away", () => {
+        render(<DatePicker value={new Date("2024-06-22")} onChange={vi.fn()} />); // 10 days out
+        expect(screen.getByRole("button")).toHaveTextContent("Jun 22");
     });
 });

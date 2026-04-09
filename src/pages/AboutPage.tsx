@@ -50,10 +50,10 @@ export function AboutPage() {
                         href="https://chat.whatsapp.com/Dn9NswB1FRr1ivRsiwfyJs"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2"
                         variant="outline"
+                        size="lg"
+                        leadingIcon={<BsWhatsapp />}
                     >
-                        <BsWhatsapp className="w-4 h-4" />
                         {t("about.communityCta")}
                     </Button>
                 </div>

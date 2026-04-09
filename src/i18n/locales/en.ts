@@ -19,6 +19,11 @@ const en = {
         },
         communityCta: "Join Arkie's community",
     },
+    explorer: {
+        today: "Today",
+        filterToggle: "Toggle filters",
+        recenter: "Recenter map",
+    },
     filter: {
         open: "Open",
         outdoorSeating: "Outside seating",

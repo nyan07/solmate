@@ -33,9 +33,9 @@ export function ExplorerFilter() {
     };
 
     return (
-        <div className="absolute top-full right-0 mt-5 z-50">
+        <div className="absolute top-0 right-full mr-2 z-50">
             {/* Panel */}
-            <div className="relative bg-primary-50 rounded-lg shadow-lg p-4 flex flex-col gap-3 w-max">
+            <div className="relative bg-white rounded-lg shadow-lg p-4 flex flex-col gap-3 w-max">
                 <FilterRow
                     label={t("filter.open")}
                     checked={filters.openOnly}
