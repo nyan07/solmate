@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import { useInstallPrompt } from "./useInstallPrompt";
+import { useInstallPrompt, countInstallPromptOpen } from "./useInstallPrompt";
 import { UA, setUserAgent, setStandalone } from "@/testUtils/installPrompt";
 
 const STORAGE_KEY = "arkie_install_prompt_v1";
@@ -60,13 +60,9 @@ describe("useInstallPrompt — visibility", () => {
         expect(result.current.show).toBe(false);
     });
 
-    it("shows again once the open count reaches the threshold", () => {
+    it("shows again when status is due", () => {
         setUserAgent(UA.iosSafari);
-        // Seed one below the threshold so this render pushes it over
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify({ status: "dismissed", opensSinceDismissal: 2 })
-        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ status: "due" }));
         const { result } = renderHook(() => useInstallPrompt());
         expect(result.current.show).toBe(true);
     });
@@ -132,46 +128,51 @@ describe("useInstallPrompt — confirmAdded()", () => {
     });
 });
 
-describe("useInstallPrompt — open counter", () => {
+describe("countInstallPromptOpen()", () => {
     it("increments opensSinceDismissal on each new session", () => {
-        setUserAgent(UA.iosSafari);
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify({ status: "dismissed", opensSinceDismissal: 0 })
         );
 
-        renderHook(() => useInstallPrompt());
+        countInstallPromptOpen();
 
         const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
         expect(stored.opensSinceDismissal).toBe(1);
     });
 
-    it("does not double-count if the hook remounts in the same session", () => {
-        setUserAgent(UA.iosSafari);
+    it("does not double-count if called multiple times in the same session", () => {
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify({ status: "dismissed", opensSinceDismissal: 0 })
         );
         sessionStorage.setItem(SESSION_KEY, "1");
 
-        renderHook(() => useInstallPrompt());
+        countInstallPromptOpen();
 
         const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
         expect(stored.opensSinceDismissal).toBe(0);
     });
 
-    it("resets counter to 0 after showing the reminder", () => {
-        setUserAgent(UA.iosSafari);
-        // Seed one below threshold so this render triggers the show and reset
+    it("transitions to 'due' when the threshold is reached", () => {
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify({ status: "dismissed", opensSinceDismissal: 2 })
         );
 
-        renderHook(() => useInstallPrompt());
+        countInstallPromptOpen();
 
         const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-        expect(stored.opensSinceDismissal).toBe(0);
+        expect(stored.status).toBe("due");
+    });
+
+    it("is a no-op when status is 'added'", () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ status: "added" }));
+
+        countInstallPromptOpen();
+
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+        expect(stored.status).toBe("added");
     });
 });
 

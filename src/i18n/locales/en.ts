@@ -53,7 +53,8 @@ const en = {
         },
     },
     installPrompt: {
-        title: "Add Arkie to your home screen",
+        eyebrow: "Get started",
+        title: "For easier access, add Arkie to your home screen",
         close: "Close",
         dismiss: "Not now",
         added: "I added it!",
@@ -63,7 +64,6 @@ const en = {
             step3: 'Tap "Add" in the top right corner.',
         },
         android: {
-            install: "Install Arkie",
             step1: "Tap the menu button (⋮) in the top right of Chrome.",
             step2: 'Tap "Add to Home Screen".',
             step3: 'Tap "Add".',

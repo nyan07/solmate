@@ -16,8 +16,7 @@ function Step({ number, text }: { number: number; text: string }) {
 }
 
 export function InstallPromptModal() {
-    const { show, platform, canNativePrompt, dismiss, confirmAdded, nativePrompt } =
-        useInstallPrompt();
+    const { show, platform, dismiss, confirmAdded } = useInstallPrompt();
     const { t } = useTranslation();
 
     return (
@@ -56,7 +55,7 @@ export function InstallPromptModal() {
                         <div className="flex flex-col gap-5">
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-1">
-                                    Arkie
+                                    {t("installPrompt.eyebrow")}
                                 </p>
                                 <h2
                                     id="install-prompt-title"
@@ -78,7 +77,7 @@ export function InstallPromptModal() {
                                     <Step number={3} text={t("installPrompt.ios-safari.step3")} />
                                 </div>
                             )}
-                            {platform === "android" && !canNativePrompt && (
+                            {platform === "android" && (
                                 <div className="flex flex-col gap-3">
                                     <Step number={1} text={t("installPrompt.android.step1")} />
                                     <Step number={2} text={t("installPrompt.android.step2")} />
@@ -86,13 +85,7 @@ export function InstallPromptModal() {
                                 </div>
                             )}
                             <div className="flex flex-col gap-2 pt-1">
-                                {platform === "android" && canNativePrompt && (
-                                    <Button onClick={nativePrompt}>
-                                        {t("installPrompt.android.install")}
-                                    </Button>
-                                )}
-                                {(platform === "ios-safari" ||
-                                    (platform === "android" && !canNativePrompt)) && (
+                                {(platform === "ios-safari" || platform === "android") && (
                                     <Button onClick={confirmAdded}>
                                         {t("installPrompt.added")}
                                     </Button>

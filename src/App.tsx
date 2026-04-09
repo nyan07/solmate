@@ -2,6 +2,7 @@ import { Suspense, useEffect } from "react";
 import "./App.css";
 import { Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { countInstallPromptOpen } from "@/features/explorer/hooks/useInstallPrompt";
 import { WaitlistPage } from "@/pages/WaitlistPage";
 import { ExplorerPage } from "@/pages/ExplorerPage";
 import PlaceListOverlay from "@/features/explorer/components/PlaceListOverlay";
@@ -52,6 +53,13 @@ function LangRoute() {
 }
 
 function App() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        if (pathname === "/") return;
+        countInstallPromptOpen();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     return (
         <div className="p-2">
             <Suspense fallback={<Loader />}>

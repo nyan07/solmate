@@ -14,17 +14,17 @@
 | filter.outdoorSeating | Outside seating | Außenbereich |  |
 | filter.sunnyPlaces | Sunny places | Sonnige Orte |  |
 | installPrompt.added | I added it! | Ich hab's hinzugefügt! | Yes |
-| installPrompt.android.install | Install Arkie | Arkie installieren | Yes |
 | installPrompt.android.step1 | Tap the menu button (⋮) in the top right of Chrome. | Tippe oben rechts in Chrome auf das Menü (⋮). | Yes |
 | installPrompt.android.step2 | Tap "Add to Home Screen". | Tippe auf "Zum Startbildschirm hinzufügen". | Yes |
 | installPrompt.android.step3 | Tap "Add". | Tippe auf "Hinzufügen". | Yes |
 | installPrompt.close | Close | Schließen | Yes |
 | installPrompt.dismiss | Not now | Nicht jetzt | Yes |
+| installPrompt.eyebrow | Get started | Los geht's! | Yes |
 | installPrompt.ios-safari.step1 | Tap the Share button (the square with an arrow) at the bottom of Safari. | Tippe unten in Safari auf das Teilen-Symbol (Quadrat mit Pfeil). | Yes |
 | installPrompt.ios-safari.step2 | Scroll down and tap "Add to Home Screen". | Scrolle nach unten und tippe auf "Zum Home-Bildschirm". | Yes |
 | installPrompt.ios-safari.step3 | Tap "Add" in the top right corner. | Tippe oben rechts auf "Hinzufügen". | Yes |
 | installPrompt.iosOther.body | To add Arkie to your home screen, open this page in Safari, then tap the Share button and select "Add to Home Screen". | Um Arkie zum Startbildschirm hinzuzufügen, öffne diese Seite in Safari, tippe dann auf das Teilen-Symbol und wähle "Zum Home-Bildschirm". | Yes |
-| installPrompt.title | Add Arkie to your home screen | Arkie zum Startbildschirm hinzufügen | Yes |
+| installPrompt.title | For easier access, add Arkie to your home screen | Für schnelleren Zugriff, füge Arkie dem Startbildschirm hinzu | Yes |
 | place.accessibility.entrance | Wheelchair accessible entrance | Rollstuhlgerechter Eingang |  |
 | place.accessibility.parking | Wheelchair accessible parking | Rollstuhlgerechter Parkplatz |  |
 | place.accessibility.restroom | Wheelchair accessible restroom | Rollstuhlgerechte Toilette |  |

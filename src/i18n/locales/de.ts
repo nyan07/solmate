@@ -53,7 +53,8 @@ const de = {
         },
     },
     installPrompt: {
-        title: "Arkie zum Startbildschirm hinzufügen",
+        eyebrow: "Los geht's!",
+        title: "Für schnelleren Zugriff, füge Arkie dem Startbildschirm hinzu",
         close: "Schließen",
         dismiss: "Nicht jetzt",
         added: "Ich hab's hinzugefügt!",
@@ -63,7 +64,6 @@ const de = {
             step3: 'Tippe oben rechts auf "Hinzufügen".',
         },
         android: {
-            install: "Arkie installieren",
             step1: "Tippe oben rechts in Chrome auf das Menü (⋮).",
             step2: 'Tippe auf "Zum Startbildschirm hinzufügen".',
             step3: 'Tippe auf "Hinzufügen".',

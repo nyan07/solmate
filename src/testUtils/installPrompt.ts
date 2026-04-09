@@ -14,20 +14,6 @@ export function setStandalone(value: boolean) {
     Object.defineProperty(navigator, "standalone", { value, configurable: true });
 }
 
-/**
- * Fires a fake `beforeinstallprompt` event on window.
- * Returns the mock prompt so tests can assert on it.
- */
-export function fireNativePrompt(outcome: "accepted" | "dismissed" = "accepted") {
-    const mockPrompt = {
-        preventDefault: vi.fn(),
-        prompt: vi.fn().mockResolvedValue(undefined),
-        userChoice: Promise.resolve({ outcome }),
-    };
-    window.dispatchEvent(Object.assign(new Event("beforeinstallprompt"), mockPrompt));
-    return mockPrompt;
-}
-
 export const UA = {
     iosSafari:
         "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
