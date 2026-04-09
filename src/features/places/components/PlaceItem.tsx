@@ -7,6 +7,7 @@ import type { PlaceSummary } from "@/features/places/types";
 import { getPlaceStatusDetail } from "@/utils/openingHours";
 import type { PlaceStatusDetail } from "@/utils/openingHours";
 import { getText } from "@/utils/getText";
+import { trackEvent } from "@/utils/analytics";
 
 const truncate = (text: string | undefined, maxWords: number) => {
     if (!text) return text;
@@ -24,7 +25,10 @@ export const PlaceItem = ({ place, distance }: PlaceItemProps) => {
     const statusDetail: PlaceStatusDetail | null = getPlaceStatusDetail(place.openingHours);
 
     return (
-        <Link to={`/${lang}/places/${place.id}`}>
+        <Link
+            to={`/${lang}/places/${place.id}`}
+            onClick={() => trackEvent("list_item_clicked", { place_id: place.id })}
+        >
             <div className="rounded-lg p-4 flex flex-col gap-2 bg-primary-100">
                 <div className="flex gap-3 items-start">
                     <PlaceName

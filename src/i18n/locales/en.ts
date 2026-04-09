@@ -20,7 +20,7 @@ const en = {
         communityCta: "Join Arkie's community",
     },
     filter: {
-        openNow: "Open now",
+        open: "Open",
         outdoorSeating: "Outside seating",
         sunnyPlaces: "Sunny places",
     },

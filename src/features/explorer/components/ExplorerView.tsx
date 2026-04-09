@@ -29,6 +29,7 @@ import {
     MAX_CAMERA_DISTANCE,
     MIN_CAMERA_DISTANCE,
 } from "@/features/explorer/constants";
+import { trackEvent } from "@/utils/analytics";
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
@@ -192,9 +193,13 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
             <ExplorerHeader
                 ref={topBarRef}
                 date={date}
-                onDateChange={setDate}
+                onDateChange={(d) => {
+                    trackEvent("date_changed", { date: d.toISOString().slice(0, 10) });
+                    setDate(d);
+                }}
                 hour={hour}
                 onHourChange={setHour}
+                onHourChangeCommit={(h) => trackEvent("time_slider_changed", { hour: h })}
                 sunTimes={sunTimes}
             />
 
@@ -202,7 +207,8 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
 
             {geolocation && (
                 <button
-                    onClick={() =>
+                    onClick={() => {
+                        trackEvent("map_recentered");
                         viewerRef.current?.camera.flyTo({
                             destination: Cartesian3.fromDegrees(
                                 geolocation.longitude,
@@ -210,8 +216,8 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
                                 DEFAULT_CAMERA_DISTANCE
                             ),
                             duration: 1,
-                        })
-                    }
+                        });
+                    }}
                     className="absolute bottom-10 right-4 z-30 bg-white rounded-full p-2.5 shadow-md text-primary hover:text-accent transition-colors"
                 >
                     <BsCrosshair className="w-5 h-5" />

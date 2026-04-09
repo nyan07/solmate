@@ -20,6 +20,7 @@ import { useState } from "react";
 import { PlaceStatusBadge } from "@/features/places/components/PlaceStatusBadge";
 import { useTranslation } from "react-i18next";
 import { Loader } from "@/components/Loader";
+import { trackEvent } from "@/utils/analytics";
 
 function PlaceDetailOverlay() {
     const { geolocation } = useGeolocation();
@@ -133,6 +134,9 @@ function PlaceDetailOverlay() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="grow"
+                                    onClick={() =>
+                                        trackEvent("place_navigate_clicked", { place_id: place.id })
+                                    }
                                 >
                                     {t("place.actions.navigate")}
                                 </Button>
@@ -142,11 +146,22 @@ function PlaceDetailOverlay() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="grow"
+                                    onClick={() =>
+                                        trackEvent("place_streetview_clicked", {
+                                            place_id: place.id,
+                                        })
+                                    }
                                 >
                                     {t("place.actions.streetview")}
                                 </Button>
                                 {place.reservable && (
-                                    <Button href={place.websiteUri} className="grow">
+                                    <Button
+                                        href={place.websiteUri}
+                                        className="grow"
+                                        onClick={() =>
+                                            trackEvent("place_book_clicked", { place_id: place.id })
+                                        }
+                                    >
                                         {t("place.actions.bookTable")}
                                     </Button>
                                 )}

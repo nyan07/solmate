@@ -18,6 +18,7 @@ import { useLayout, useMapState, useSunlit } from "@/features/explorer/state/map
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/utils/analytics";
 
 const PIN_HEAD_OFFSET = 3; // meters above surface (terrain or building roof)
 const PIN_WIDTH = 18;
@@ -114,7 +115,11 @@ export const usePins = (
         const handler = (entity: { id?: string } | undefined) => {
             if (!entity?.id) return;
             const prefix = ENTITY_IDS.placeBillboard("");
-            if (entity.id.startsWith(prefix)) navigate(`/places/${entity.id.slice(prefix.length)}`);
+            if (entity.id.startsWith(prefix)) {
+                const placeId = entity.id.slice(prefix.length);
+                trackEvent("pin_clicked", { place_id: placeId });
+                navigate(`/places/${placeId}`);
+            }
         };
         viewer.selectedEntityChanged.addEventListener(handler);
         return () => {

@@ -20,7 +20,7 @@ const de = {
         communityCta: "Arkie-Community beitreten",
     },
     filter: {
-        openNow: "Jetzt geöffnet",
+        open: "Geöffnet",
         outdoorSeating: "Außenbereich",
         sunnyPlaces: "Sonnige Orte",
     },

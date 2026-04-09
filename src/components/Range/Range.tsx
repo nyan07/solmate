@@ -6,7 +6,8 @@ const Range: React.FC<{
     max: number;
     step?: number;
     onChange: (value: number) => void;
-}> = ({ value, min, max, step = 1, onChange }) => {
+    onChangeCommit?: (value: number) => void;
+}> = ({ value, min, max, step = 1, onChange, onChangeCommit }) => {
     return (
         <input
             type="range"
@@ -34,6 +35,8 @@ const Range: React.FC<{
         [&::-moz-range-thumb]:hover:bg-primary
         [&::-moz-range-thumb]:translate-y-0"
             onChange={(e) => onChange(Number(e.target.value))}
+            onPointerUp={(e) => onChangeCommit?.(Number((e.target as HTMLInputElement).value))}
+            onKeyUp={(e) => onChangeCommit?.(Number((e.target as HTMLInputElement).value))}
         />
     );
 };

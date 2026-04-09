@@ -12,11 +12,12 @@ type Props = {
     onDateChange: (date: Date) => void;
     hour: number;
     onHourChange: (hour: number) => void;
+    onHourChangeCommit?: (hour: number) => void;
     sunTimes: ReturnType<typeof useSunTimes>;
 };
 
 const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
-    ({ date, onDateChange, hour, onHourChange, sunTimes }, ref) => {
+    ({ date, onDateChange, hour, onHourChange, onHourChangeCommit, sunTimes }, ref) => {
         const [filterOpen, setFilterOpen] = useState(false);
         const filterRef = useRef<HTMLDivElement>(null);
         useClickOutside(
@@ -43,6 +44,7 @@ const ExplorerHeader = forwardRef<HTMLDivElement, Props>(
                                 step={0.5}
                                 value={hour}
                                 onChange={onHourChange}
+                                onChangeCommit={onHourChangeCommit}
                             />
                             <span className="text-xs text-primary">
                                 {String(Math.floor(hour)).padStart(2, "0")}:
