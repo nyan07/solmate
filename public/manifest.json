@@ -5,8 +5,8 @@
     "start_url": "/beta",
     "scope": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#7c89b7",
+    "background_color": "#eceff8",
+    "theme_color": "#eceff8",
     "icons": [
         {
             "src": "/icon-192.png",
