@@ -13,6 +13,7 @@ function PlaceListOverlay() {
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
+    const { setSwipeUpExpanded } = useLayout();
     const { i18n } = useTranslation();
     const { data: places, isPending } = useFilteredPlaces(bounds, {
         enabled: !!cameraDistance && cameraDistance <= MAX_CAMERA_DISTANCE,
@@ -28,6 +29,7 @@ function PlaceListOverlay() {
             open={listOpen || undefined}
             initialScrollTop={listScrollTop}
             onOpenChange={setListOpen}
+            onExpandedChange={setSwipeUpExpanded}
             onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
         >
             {isPending ? (

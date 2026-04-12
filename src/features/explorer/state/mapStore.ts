@@ -35,6 +35,8 @@ export const useLayout = () =>
         useShallow((s) => ({
             topBarHeight: s.topBarHeight,
             setTopBarHeight: s.setTopBarHeight,
+            swipeUpExpanded: s.swipeUpExpanded,
+            setSwipeUpExpanded: s.setSwipeUpExpanded,
         }))
     );
 

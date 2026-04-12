@@ -32,7 +32,7 @@ function PlaceDetailOverlay() {
         lang: i18n.language,
     });
 
-    const { topBarHeight } = useLayout();
+    const { topBarHeight, setSwipeUpExpanded } = useLayout();
     const [scrolled, setScrolled] = useState(false);
 
     const tags = place
@@ -53,6 +53,7 @@ function PlaceDetailOverlay() {
             key={placeId}
             defaultOpen={true}
             topOffset={topBarHeight}
+            onExpandedChange={setSwipeUpExpanded}
             onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}
         >
             <div className="rounded-lg bg-primary-100 min-h-0">

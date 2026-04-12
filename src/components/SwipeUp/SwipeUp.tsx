@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 
-const CONTAINER_INSET = 16; // fixed inset-2 = 8px top + 8px bottom
+const CONTAINER_INSET = 12; // fixed inset-2 = 8px top + 8px bottom
 const BOTTOM_NAV_HEIGHT = 64;
 const HANDLE_HEIGHT = 22; // py-2 (16px) + h-1.5 (6px)
 
@@ -21,6 +21,7 @@ type SwipeUpProps = {
     topOffset?: number;
     defaultOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
+    onExpandedChange?: (expanded: boolean) => void;
     onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
     open?: boolean;
     initialScrollTop?: number;
@@ -32,6 +33,7 @@ export default function SwipeUp({
     topOffset = 0,
     defaultOpen = false,
     onOpenChange,
+    onExpandedChange,
     onScroll,
     open,
     initialScrollTop = 0,
@@ -52,11 +54,13 @@ export default function SwipeUp({
     const dragStartOpen = useRef(isOpen);
     const scrollRef = useRef<HTMLDivElement>(null);
     const onOpenChangeRef = useRef(onOpenChange);
+    const onExpandedChangeRef = useRef(onExpandedChange);
     // Fix #2b: debounce timer to absorb iOS momentum/rubber-band scroll oscillation
     const collapseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useLayoutEffect(() => {
         onOpenChangeRef.current = onOpenChange;
+        onExpandedChangeRef.current = onExpandedChange;
     });
 
     useEffect(() => {
@@ -77,6 +81,10 @@ export default function SwipeUp({
     useEffect(() => {
         onOpenChangeRef.current?.(isOpen);
     }, [isOpen]);
+
+    useEffect(() => {
+        onExpandedChangeRef.current?.(expanded);
+    }, [expanded]);
 
     // Fix #2b: clean up debounce timer on unmount
     useEffect(() => {
@@ -150,7 +158,13 @@ export default function SwipeUp({
             aria-modal="true"
             animate={controls}
             initial={{ y: defaultHeight - peekHeight, height: defaultHeight }}
-            className="absolute left-0 right-0 bottom-0 z-40 flex flex-col bg-white rounded-t-2xl w-full shadow-2xl"
+            className="absolute left-0 right-0 bottom-0 z-40 flex flex-col bg-white w-full shadow-2xl"
+            style={{
+                borderTopLeftRadius: expanded ? 0 : "0.75rem",
+                borderTopRightRadius: expanded ? 0 : "0.75rem",
+                transition:
+                    "border-top-left-radius 0.2s ease-out, border-top-right-radius 0.2s ease-out",
+            }}
         >
             <div
                 className="flex justify-center w-full py-2 shrink-0 cursor-grab active:cursor-grabbing"
@@ -164,7 +178,7 @@ export default function SwipeUp({
 
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto px-2 pb-16 min-h-0"
+                className="flex-1 overflow-y-auto px-2 pb-16 min-h-0 rounded-b-xl"
                 style={{ touchAction: "pan-y" }}
                 onScroll={handleScroll}
             >

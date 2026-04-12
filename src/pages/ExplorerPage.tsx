@@ -10,7 +10,7 @@ export function ExplorerPage() {
 
     return (
         <>
-            <div className="fixed inset-2 rounded-xl bg-white overflow-hidden flex flex-col">
+            <div className="fixed inset-1.5 rounded-xl bg-white overflow-hidden flex flex-col">
                 <div className="relative flex-1 min-h-0 isolate">
                     <ExplorerView onReady={() => setMapReady(true)} />
                     <Outlet />
