@@ -84,7 +84,7 @@ const Button = ({
     const content = (
         <>
             {leadingIcon && sizeIcon(leadingIcon)}
-            {children}
+            {children && <span className="flex-grow">{children}</span>}
             {trailingIcon && sizeIcon(trailingIcon)}
         </>
     );

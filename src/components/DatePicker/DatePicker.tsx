@@ -26,21 +26,22 @@ const DatePicker: React.FC<{
     const today = startOfDay(new Date());
     const diffDays = Math.round((startOfDay(value).getTime() - today.getTime()) / 86400000);
 
-    let label: string;
-    if (diffDays === 0) {
-        label = t("explorer.today");
-    } else if (diffDays <= 7) {
-        label = value.toLocaleDateString(i18n.language, { weekday: "short" });
-    } else {
-        label = value.toLocaleDateString(i18n.language, { month: "short", day: "numeric" });
-    }
+    const label =
+        diffDays === 0
+            ? t("explorer.today")
+            : value.toLocaleDateString(i18n.language, { day: "2-digit", month: "2-digit" });
 
     return (
         <div className="relative" ref={ref}>
             <div className="flex">
-                <Button onClick={() => setOpen(!open)} variant="ghost" size="sm" className="w-20">
-                    <BsCalendar3 className="w-4 h-4 shrink-0" />
-                    <span className="flex-1 text-center">{label}</span>
+                <Button
+                    onClick={() => setOpen(!open)}
+                    variant="ghost"
+                    size="sm"
+                    className="w-20"
+                    leadingIcon={<BsCalendar3 />}
+                >
+                    {label}
                 </Button>
 
                 {open && (

@@ -73,18 +73,8 @@ describe("date label", () => {
         expect(screen.getByRole("button")).toHaveTextContent("Today");
     });
 
-    it("shows short weekday when value is within 7 days", () => {
-        render(<DatePicker value={new Date("2024-06-14")} onChange={vi.fn()} />); // Friday
-        expect(screen.getByRole("button")).toHaveTextContent("Fri");
-    });
-
-    it("shows short weekday on exactly day 7", () => {
-        render(<DatePicker value={new Date("2024-06-19")} onChange={vi.fn()} />); // 7 days out
-        expect(screen.getByRole("button")).toHaveTextContent("Wed");
-    });
-
     it("shows month and day when value is more than 7 days away", () => {
         render(<DatePicker value={new Date("2024-06-22")} onChange={vi.fn()} />); // 10 days out
-        expect(screen.getByRole("button")).toHaveTextContent("Jun 22");
+        expect(screen.getByRole("button")).toHaveTextContent("06/22");
     });
 });
