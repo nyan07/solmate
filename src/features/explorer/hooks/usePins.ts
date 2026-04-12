@@ -10,8 +10,6 @@ import {
     Transforms,
     Ray,
     JulianDate,
-    Color,
-    ColorMaterialProperty,
 } from "cesium";
 import { useFilteredPlaces } from "./useFilteredPlaces";
 import { useLayout, useMapState, useSunlit } from "@/features/explorer/state/mapStore";
@@ -20,59 +18,70 @@ import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
 import { trackEvent } from "@/utils/analytics";
 
-const PIN_HEAD_OFFSET = 3; // meters above surface (terrain or building roof)
-const PIN_WIDTH = 18;
-const PIN_HEIGHT = 38;
+const PIN_HEAD_OFFSET = 2; // meters above surface (terrain or building roof)
+const PIN_DIAMETER = 24;
+const PIN_CANVAS_SIZE = 32; // PIN_DIAMETER + 2px padding on each side
+const PIN_ICON_SIZE = 16;
 
-function createPinCanvas(fillColor: string): HTMLCanvasElement {
-    const r = 8,
-        lineW = 2,
-        lineH = 20,
-        pad = 1;
-    const w = r * 2 + pad * 2;
-    const h = r * 2 + lineH + pad * 2;
+// Bootstrap Icon SVG paths (viewBox 0 0 16 16)
+const BS_SUN_PATH =
+    "M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708";
+const BS_CLOUD_FILL_PATH =
+    "M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383";
+
+function createPinCanvas(
+    fillColor: string,
+    iconPath: string,
+    iconColor: string,
+    selected: boolean
+): HTMLCanvasElement {
+    const dpr = Math.ceil(window.devicePixelRatio ?? 1);
     const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
+    // Physical pixels for crisp rendering on retina displays;
+    // billboard width/height stays at PIN_CANVAS_SIZE (logical px).
+    canvas.width = PIN_CANVAS_SIZE * dpr;
+    canvas.height = PIN_CANVAS_SIZE * dpr;
     const ctx = canvas.getContext("2d")!;
-    const cx = w / 2,
-        cy = r + pad;
+    ctx.scale(dpr, dpr);
+
+    const cx = PIN_CANVAS_SIZE / 2;
+    const cy = PIN_CANVAS_SIZE / 2;
+    const r = PIN_DIAMETER / 2;
+
+    // Circle background
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fillStyle = fillColor;
     ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(cx - lineW / 2, cy + r);
-    ctx.lineTo(cx - lineW / 2, h - pad);
-    ctx.lineTo(cx + lineW / 2, h - pad);
-    ctx.lineTo(cx + lineW / 2, cy + r);
-    ctx.closePath();
-    ctx.fillStyle = fillColor;
-    ctx.fill();
+
+    // Dotted border overlapping the circle edge when selected
+    if (selected) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([2, 2]);
+        ctx.stroke();
+    }
+
+    // Icon scaled from 16×16 viewBox to PIN_ICON_SIZE×PIN_ICON_SIZE
+    const scale = PIN_ICON_SIZE / 16;
+    const iconX = cx - PIN_ICON_SIZE / 2;
+    const iconY = cy - PIN_ICON_SIZE / 2;
+    ctx.save();
+    ctx.translate(iconX, iconY);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = iconColor;
+    ctx.fill(new Path2D(iconPath));
+    ctx.restore();
+
     return canvas;
 }
 
-const PIN_IMAGE = createPinCanvas("#5363a2");
-const PIN_SUNLIT_IMAGE = createPinCanvas("#F2EBCF");
-const SELECTED_PIN_IMAGE = createPinCanvas("#ff5a59");
-
-const PIN_COLOR = Color.fromCssColorString("#5363a2");
-const PIN_SUNLIT_COLOR = Color.fromCssColorString("#F2EBCF");
-const SELECTED_COLOR = Color.fromCssColorString("#ff5a59");
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyEntity = any;
-
-function setPolylineColor(line: AnyEntity, color: Color) {
-    if (!line?.polyline) return;
-    line.polyline.material = new ColorMaterialProperty(color);
-    line.polyline.depthFailMaterial = new ColorMaterialProperty(color.withAlpha(0.4));
-}
-
-function setPolylinePositions(line: AnyEntity, positions: Cartesian3[]) {
-    if (!line?.polyline) return;
-    line.polyline.positions = positions;
-}
+const PIN_SHADOW_IMAGE = createPinCanvas("#909CC2", BS_CLOUD_FILL_PATH, "#ffffff", false);
+const PIN_SUN_IMAGE = createPinCanvas("#FF5959", BS_SUN_PATH, "#000000", false);
+const SELECTED_SHADOW_IMAGE = createPinCanvas("#909CC2", BS_CLOUD_FILL_PATH, "#ffffff", true);
+const SELECTED_SUN_IMAGE = createPinCanvas("#FF5959", BS_SUN_PATH, "#000000", true);
 
 function getSunDirectionECEF(time: JulianDate): Cartesian3 | null {
     const icrfToFixed = Transforms.computeIcrfToFixedMatrix(time, new Matrix3());
@@ -108,6 +117,7 @@ export const usePins = (
     const sunlitIds = useRef<Set<string>>(new Set());
     const outdoorSeatingIds = useRef<Set<string>>(new Set());
     const groundPositions = useRef<Record<string, Cartesian3>>({});
+    const headPositions = useRef<Record<string, Cartesian3>>({});
 
     // Navigate on entity click
     useEffect(() => {
@@ -220,7 +230,7 @@ export const usePins = (
         });
     }, [viewer, places]);
 
-    // Create/update billboard + stem entities
+    // Create/update billboard entities
     useEffect(() => {
         if (!viewer || !places?.length) return;
         places.forEach((place) => {
@@ -232,10 +242,8 @@ export const usePins = (
             const alreadyApplied = appliedPinTops.current[place.id] === pinTop;
             const groundPos = Cartesian3.fromDegrees(longitude, latitude, terrain);
             const headPos = Cartesian3.fromDegrees(longitude, latitude, pinTop);
-            const image = place.id === selectedPlaceId ? SELECTED_PIN_IMAGE : PIN_IMAGE;
-            const stemColor = place.id === selectedPlaceId ? SELECTED_COLOR : PIN_COLOR;
 
-            // Billboard (pin head)
+            // Billboard (circle pin)
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
                 viewer.entities.add({
@@ -243,10 +251,10 @@ export const usePins = (
                     show: visible,
                     position: headPos,
                     billboard: {
-                        image,
-                        width: PIN_WIDTH,
-                        height: PIN_HEIGHT,
-                        verticalOrigin: VerticalOrigin.BOTTOM,
+                        image: PIN_SHADOW_IMAGE,
+                        width: PIN_CANVAS_SIZE,
+                        height: PIN_CANVAS_SIZE,
+                        verticalOrigin: VerticalOrigin.CENTER,
                         disableDepthTestDistance: Number.POSITIVE_INFINITY,
                     },
                 });
@@ -254,28 +262,11 @@ export const usePins = (
                 billboard.position = headPos as never;
             }
 
-            // Polyline stem (ground → pin head, visible through buildings via depthFailMaterial)
-            const line = viewer.entities.getById(ENTITY_IDS.placeLine(place.id));
-            if (!line) {
-                viewer.entities.add({
-                    id: ENTITY_IDS.placeLine(place.id),
-                    show: visible,
-                    polyline: {
-                        positions: [groundPos, headPos],
-                        width: 2,
-                        material: new ColorMaterialProperty(stemColor),
-                        depthFailMaterial: new ColorMaterialProperty(stemColor.withAlpha(0.4)),
-                        clampToGround: false,
-                    },
-                });
-            } else if (!alreadyApplied) {
-                setPolylinePositions(line, [groundPos, headPos]);
-            }
-
             managedIds.current.add(place.id);
             appliedPinTops.current[place.id] = pinTop;
             if (place.hasOutdoorSeating) outdoorSeatingIds.current.add(place.id);
             groundPositions.current[place.id] = groundPos;
+            headPositions.current[place.id] = headPos;
         });
     }, [viewer, places, terrainHeights, pinTopHeights, visible]);
 
@@ -301,33 +292,45 @@ export const usePins = (
             else sunlitIds.current.delete(id);
 
             const isLit = inSunlight && outdoorSeatingIds.current.has(id);
-            const color = isLit ? PIN_SUNLIT_COLOR : PIN_COLOR;
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
             if (billboard?.billboard)
-                billboard.billboard.image = (isLit ? PIN_SUNLIT_IMAGE : PIN_IMAGE) as never;
-            const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
-            setPolylineColor(line, color);
+                billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
         });
         setSunlitIds(
             new Set([...sunlitIds.current].filter((id) => outdoorSeatingIds.current.has(id)))
         );
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
 
-    // Selection change — update image and stem color
+    // Selection change — update image and bring selected pin to front
     useEffect(() => {
         if (!viewer) return;
         managedIds.current.forEach((id) => {
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
-            const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
+            if (!billboard?.billboard) return;
+            const isLit = sunlitIds.current.has(id) && outdoorSeatingIds.current.has(id);
             if (id === selectedPlaceId) {
-                if (billboard?.billboard) billboard.billboard.image = SELECTED_PIN_IMAGE as never;
-                setPolylineColor(line, SELECTED_COLOR);
+                const image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
+                // Remove and re-add so it is last in the collection → drawn on top
+                const headPos = headPositions.current[id];
+                if (headPos) {
+                    viewer.entities.remove(billboard);
+                    viewer.entities.add({
+                        id: ENTITY_IDS.placeBillboard(id),
+                        show: billboard.show,
+                        position: headPos,
+                        billboard: {
+                            image,
+                            width: PIN_CANVAS_SIZE,
+                            height: PIN_CANVAS_SIZE,
+                            verticalOrigin: VerticalOrigin.CENTER,
+                            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                        },
+                    });
+                } else {
+                    billboard.billboard.image = image as never;
+                }
             } else {
-                const isLit = sunlitIds.current.has(id) && outdoorSeatingIds.current.has(id);
-                const color = isLit ? PIN_SUNLIT_COLOR : PIN_COLOR;
-                if (billboard?.billboard)
-                    billboard.billboard.image = (isLit ? PIN_SUNLIT_IMAGE : PIN_IMAGE) as never;
-                setPolylineColor(line, color);
+                billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
             }
         });
     }, [viewer, selectedPlaceId]);
