@@ -3,22 +3,23 @@
     "short_name": "Arkie",
     "description": "Find the sunniest cafés, restaurants and outdoor spots near you.",
     "start_url": "/beta",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#7c89b7",
     "icons": [
         {
-            "src": "/icons/icon-192.png",
+            "src": "/icon-192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon-512.png",
+            "src": "/icon-512.png",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon-512.png",
+            "src": "/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
