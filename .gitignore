@@ -29,3 +29,6 @@ dist-ssr
 # Playwright
 playwright-report/
 test-results/
+
+# Notion raw export
+Notion/

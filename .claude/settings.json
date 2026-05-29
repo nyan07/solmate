@@ -1,14 +1,27 @@
 {
-    "permissions": {
-        "allow": [
-            "Bash(find /Users/dani/Projects/arkie/node_modules/react-day-picker -name \"style.css\" -exec head -60 {} \\\\;)",
-            "Bash(pnpm remove:*)",
-            "Bash(pnpm add:*)",
-            "Bash(pnpm tsc:*)",
-            "Bash(pnpm test:*)",
-            "Bash(node -e \"const C = require\\('cesium'\\); console.log\\(Object.keys\\(C\\).filter\\(k => k.includes\\('Sun'\\) || k.includes\\('Planetary'\\) || k.includes\\('Simon'\\)\\).join\\('\\\\n'\\)\\)\")",
-            "Bash(ls -la /Users/dani/Projects/arkie/*.config.*)"
-        ],
-        "additionalDirectories": ["/Users/dani/Projects/arkie/src/features/explorer"]
-    }
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/dani/Projects/arkie/node_modules/react-day-picker -name \"style.css\" -exec head -60 {} \\\\;)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm test:*)",
+      "Bash(node -e \"const C = require\\('cesium'\\); console.log\\(Object.keys\\(C\\).filter\\(k => k.includes\\('Sun'\\) || k.includes\\('Planetary'\\) || k.includes\\('Simon'\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(ls -la /Users/dani/Projects/arkie/*.config.*)",
+      "WebFetch(domain:app.notion.com)",
+      "Bash(ls /Users/dani/.cache/plugins/ 2>/dev/null || echo \"no plugins cache dir\")",
+      "Read(//Users/dani/.cache/plugins/**)",
+      "Bash(gh repo *)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(git -C /Users/dani/Projects/arkie status)",
+      "Bash(git -C /Users/dani/Projects/arkie log --oneline -3)",
+      "Bash(git -C /Users/dani/Projects/arkie diff .claude/settings.json)",
+      "Bash(git -C /Users/dani/Projects/arkie add brain/ .gitignore .claude/settings.json)",
+      "Bash(git -C /Users/dani/Projects/arkie commit -m ' *)"
+    ],
+    "additionalDirectories": [
+      "/Users/dani/Projects/arkie/src/features/explorer"
+    ]
+  }
 }
