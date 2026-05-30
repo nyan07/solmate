@@ -59,12 +59,12 @@ const de = {
     },
     installPrompt: {
         eyebrow: "Los geht's!",
-        title: "Für schnelleren Zugriff, füge Arkie dem Startbildschirm hinzu",
+        title: "Für schnellen Zugang, füge Arkie deinem Startbildschirm hinzu",
         close: "Schließen",
         dismiss: "Nicht jetzt",
         added: "Ich hab's hinzugefügt!",
         "ios-safari": {
-            step1: "Tippe unten in Safari auf das Teilen-Symbol (Quadrat mit Pfeil).",
+            step1: 'Öffne das Safari Menü und wähle "Teilen"',
             step2: 'Scrolle nach unten und tippe auf "Zum Home-Bildschirm".',
             step3: 'Tippe oben rechts auf "Hinzufügen".',
         },
@@ -74,7 +74,7 @@ const de = {
             step3: 'Tippe auf "Hinzufügen".',
         },
         iosOther: {
-            body: 'Um Arkie zum Startbildschirm hinzuzufügen, öffne diese Seite in Safari, tippe dann auf das Teilen-Symbol und wähle "Zum Home-Bildschirm".',
+            body: 'Um Arkie zum Startbildschirm hinzuzufügen, öffne diese Seite in Safari, wähle "Teilen" im Safari Menü aus und wähle "Zum Home-Bildschirm".',
         },
     },
     placeList: {

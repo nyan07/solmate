@@ -64,7 +64,7 @@ const en = {
         dismiss: "Not now",
         added: "I added it!",
         "ios-safari": {
-            step1: "Tap the Share button (the square with an arrow) at the bottom of Safari.",
+            step1: 'Open the Safari menu and select "Share"',
             step2: 'Scroll down and tap "Add to Home Screen".',
             step3: 'Tap "Add" in the top right corner.',
         },
@@ -74,7 +74,7 @@ const en = {
             step3: 'Tap "Add".',
         },
         iosOther: {
-            body: 'To add Arkie to your home screen, open this page in Safari, then tap the Share button and select "Add to Home Screen".',
+            body: 'To add Arkie to your home screen, open this page in Safari, then select "share" in the Safari menu, then select "Add to Home Screen".',
         },
     },
     placeList: {
