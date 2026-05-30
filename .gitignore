@@ -13,6 +13,7 @@ dist-ssr
 *.local
 
 .claude/*
+!.claude/skills/
 
 # Editor directories and files
 .vscode/*
