@@ -50,9 +50,18 @@ When the user says they're done (e.g. "done", "open PR", "I'm finished", "create
    git push -u origin <branch-name>
    ```
 
-4. Show the user the GitHub PR creation URL from the push output (it looks like `https://github.com/<owner>/<repo>/pull/new/<branch>`). Tell them to click it to open the PR.
+4. Create the PR with `gh`:
+   ```
+   gh pr create --title "<type(scope): summary>" --body "..."
+   ```
+   Use a short imperative title following Conventional Commits. Body should have a `## Summary` section with 2–3 bullets and a `## Test plan` checklist. End with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 
-5. Suggest a short PR title and a 2–3 bullet summary they can paste into the PR description.
+5. Share the PR URL with the user.
+
+6. Switch back to `main`:
+   ```
+   git checkout main
+   ```
 
 6. Switch back to `main`:
    ```
@@ -64,4 +73,4 @@ When the user says they're done (e.g. "done", "open PR", "I'm finished", "create
 - The pre-commit hook runs Prettier, ESLint, tsc, and the full test suite. If it fails due to a Vitest worker timeout (workers never start, no tests actually ran), that's a known flaky infrastructure issue — the user may choose to commit with `--no-verify` and note it in the PR.
 - Follow Conventional Commits and the `@/` import alias rule from CLAUDE.md.
 - Never push to `main` directly.
-- If `gh` CLI is not available (which it isn't in this project), always use the URL from the push output for PR creation.
+- Use `gh pr create` for PR creation. If `gh` is not authenticated, fall back to the URL from the push output.
