@@ -7,9 +7,9 @@ import posthog from "posthog-js";
 import "./i18n";
 import { PostHogProvider } from "./PostHogProvider.tsx";
 
-if (import.meta.env.VITE_POSTHOG_TOKEN) {
+if (import.meta.env.VITE_PUBLIC_POSTHOG_TOKEN) {
     posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_TOKEN, {
-        api_host: import.meta.env.VITE_PUBLIC_POSTHOG_TOKEN ?? "https://eu.i.posthog.com",
+        api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com",
         person_profiles: "identified_only",
         autocapture: false,
         capture_pageview: false,
