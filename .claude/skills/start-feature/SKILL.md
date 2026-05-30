@@ -54,6 +54,11 @@ When the user says they're done (e.g. "done", "open PR", "I'm finished", "create
 
 5. Suggest a short PR title and a 2–3 bullet summary they can paste into the PR description.
 
+6. Switch back to `main`:
+   ```
+   git checkout main
+   ```
+
 ## Notes
 
 - The pre-commit hook runs Prettier, ESLint, tsc, and the full test suite. If it fails due to a Vitest worker timeout (workers never start, no tests actually ran), that's a known flaky infrastructure issue — the user may choose to commit with `--no-verify` and note it in the PR.
