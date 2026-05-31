@@ -10,6 +10,7 @@ import {
     Transforms,
     Ray,
     JulianDate,
+    BillboardCollection,
 } from "cesium";
 import pinSvgRaw from "@/assets/pin.svg?raw";
 import cloudSvgRaw from "@/assets/cloud.svg?raw";
@@ -115,19 +116,63 @@ export const usePins = (
     const selectedIdRef = useRef<string | null | undefined>(null);
     selectedIdRef.current = selectedPlaceId;
 
+    // Dedicated BillboardCollection in scene.primitives for the selected-pin overlay.
+    // Cesium sorts all billboards within a single BillboardCollection by depth (back-to-front)
+    // for translucency, making insertion order unreliable for overlapping pins. Primitives in
+    // scene.primitives are rendered in strict order, so this collection — always raised to the
+    // top — is guaranteed to draw after every entity billboard.
+    const overlayCollectionRef = useRef<BillboardCollection | null>(null);
+
+    useEffect(() => {
+        if (!viewer) return;
+        const collection = new BillboardCollection({ scene: viewer.scene });
+        viewer.scene.primitives.add(collection);
+        overlayCollectionRef.current = collection;
+        return () => {
+            overlayCollectionRef.current = null;
+            if (!viewer.isDestroyed() && !collection.isDestroyed()) {
+                viewer.scene.primitives.remove(collection);
+            }
+        };
+    }, [viewer]);
+
+    // Rebuild the overlay billboard.
+    // Cesium sorts ALL translucent draw commands back-to-front by bounding-volume distance every
+    // frame, so primitive collection order and raiseToTop have no effect on the final draw order.
+    // The only reliable way to win the sort is to place the overlay physically closer to the
+    // camera: offset it 5 m outward along the surface normal so it always beats overlapping pins.
+    const syncOverlay = (id: string | null, show: boolean) => {
+        const collection = overlayCollectionRef.current;
+        if (!collection || collection.isDestroyed()) return;
+        collection.removeAll();
+        if (!id || !show) return;
+        const headPos = headPositions.current[id];
+        if (!headPos) return;
+        const radialUp = Cartesian3.normalize(headPos, new Cartesian3());
+        const overlayPos = Cartesian3.add(
+            headPos,
+            Cartesian3.multiplyByScalar(radialUp, 5, new Cartesian3()),
+            new Cartesian3()
+        );
+        const isLit = sunlitIds.current.has(id) && outdoorSeatingIds.current.has(id);
+        collection.add({
+            image: isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE,
+            position: overlayPos,
+            width: BILL_W,
+            height: BILL_H,
+            verticalOrigin: VerticalOrigin.BOTTOM,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        });
+    };
+
     // Navigate on entity click
     useEffect(() => {
         if (!viewer) return;
         const handler = (entity: { id?: string } | undefined) => {
             if (!entity?.id) return;
             const prefix = ENTITY_IDS.placeBillboard("");
-            let placeId: string | null = null;
             if (entity.id.startsWith(prefix)) {
-                placeId = entity.id.slice(prefix.length);
-            } else if (entity.id === ENTITY_IDS.selectedOverlay && selectedIdRef.current) {
-                placeId = selectedIdRef.current;
-            }
-            if (placeId) {
+                const placeId = entity.id.slice(prefix.length);
                 trackEvent("pin_clicked", { place_id: placeId });
                 navigate(`/places/${placeId}`);
             }
@@ -231,31 +276,10 @@ export const usePins = (
         });
     }, [viewer, places]);
 
-    // Remove + re-add overlay so it is last in the collection (rendered on top)
-    const liftOverlay = (v: Viewer, pos: Cartesian3, image: string, show: boolean) => {
-        const existing = v.entities.getById(ENTITY_IDS.selectedOverlay);
-        if (existing) v.entities.remove(existing);
-        v.entities.add({
-            id: ENTITY_IDS.selectedOverlay,
-            show,
-            position: pos as never,
-            billboard: {
-                image,
-                width: BILL_W,
-                height: BILL_H,
-                verticalOrigin: VerticalOrigin.BOTTOM,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            },
-        });
-    };
-
-    // Ref storing the last overlay state so we can re-lift it after new pins are added
-    const overlayRef = useRef<{ pos: Cartesian3; image: string } | null>(null);
-
     // Create/update billboard entities
     useEffect(() => {
         if (!viewer || !places?.length) return;
-        let addedCount = 0;
+        let addedAny = false;
         places.forEach((place) => {
             const terrain = terrainHeights[place.id];
             const pinTop = pinTopHeights[place.id];
@@ -265,17 +289,20 @@ export const usePins = (
             const alreadyApplied = appliedPinTops.current[place.id] === pinTop;
             const groundPos = Cartesian3.fromDegrees(longitude, latitude, terrain);
             const headPos = Cartesian3.fromDegrees(longitude, latitude, pinTop);
+            const isLit =
+                sunlitIds.current.has(place.id) && outdoorSeatingIds.current.has(place.id);
 
-            // Always store the unselected image — the overlay entity carries the selected style
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
-                addedCount++;
+                addedAny = true;
+                const isSelected = place.id === selectedIdRef.current;
                 viewer.entities.add({
                     id: ENTITY_IDS.placeBillboard(place.id),
-                    show: visible,
+                    // hide underlying entity when selected — overlay primitive sits on top
+                    show: visible && !isSelected,
                     position: headPos,
                     billboard: {
-                        image: PIN_SHADOW_IMAGE,
+                        image: isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE,
                         width: BILL_W,
                         height: BILL_H,
                         verticalOrigin: VerticalOrigin.BOTTOM,
@@ -291,25 +318,11 @@ export const usePins = (
             if (place.hasOutdoorSeating) outdoorSeatingIds.current.add(place.id);
             groundPositions.current[place.id] = groundPos;
             headPositions.current[place.id] = headPos;
-
-            // If this newly-placed pin is the selected one, hide it and set up the overlay
-            if (place.id === selectedIdRef.current) {
-                const justAdded = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
-                if (justAdded) justAdded.show = false;
-                if (!overlayRef.current) {
-                    const isLit =
-                        sunlitIds.current.has(place.id) && outdoorSeatingIds.current.has(place.id);
-                    overlayRef.current = {
-                        pos: headPos,
-                        image: isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE,
-                    };
-                }
-            }
         });
 
-        // Re-lift overlay only when new entities were added this run (keeps it last in collection)
-        if (overlayRef.current && addedCount > 0) {
-            liftOverlay(viewer, overlayRef.current.pos, overlayRef.current.image, visible);
+        // Re-raise overlay collection after new entity billboards were inserted
+        if (addedAny && selectedIdRef.current) {
+            syncOverlay(selectedIdRef.current, visible);
         }
     }, [viewer, places, terrainHeights, pinTopHeights, visible]);
 
@@ -335,12 +348,9 @@ export const usePins = (
 
             const isLit = inSunlight && outdoorSeatingIds.current.has(id);
             if (id === selectedPlaceId) {
-                const headPos = headPositions.current[id];
-                if (headPos && overlayRef.current) {
-                    const image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
-                    overlayRef.current = { pos: headPos, image };
-                    const overlay = viewer.entities.getById(ENTITY_IDS.selectedOverlay);
-                    if (overlay?.billboard) overlay.billboard.image = image as never;
+                const collection = overlayCollectionRef.current;
+                if (collection && !collection.isDestroyed() && collection.length > 0) {
+                    collection.get(0).image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
                 }
             } else {
                 const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
@@ -353,56 +363,43 @@ export const usePins = (
         );
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
 
-    // Selection change — move overlay to new selected pin, hide/restore underlying entities
+    // Selection change — hide/show underlying entity, rebuild overlay in primitive collection
     const prevSelectedIdRef = useRef<string | null | undefined>(null);
     useEffect(() => {
         if (!viewer) return;
 
-        // Restore the previously selected pin's underlying entity
+        // Restore previously selected pin's underlying entity
         const prevId = prevSelectedIdRef.current;
         if (prevId) {
             const prev = viewer.entities.getById(ENTITY_IDS.placeBillboard(prevId));
             if (prev) prev.show = visible;
         }
 
-        // Remove overlay when nothing is selected
         if (!selectedPlaceId) {
-            const existing = viewer.entities.getById(ENTITY_IDS.selectedOverlay);
-            if (existing) viewer.entities.remove(existing);
-            overlayRef.current = null;
+            syncOverlay(null, false);
             prevSelectedIdRef.current = null;
             return;
         }
 
-        const headPos = headPositions.current[selectedPlaceId];
-        if (!headPos) {
-            prevSelectedIdRef.current = selectedPlaceId;
-            return;
-        }
-
-        // Hide the underlying entity — the overlay is the visual representation
+        // Hide underlying entity — overlay primitive is the visual for the selected pin
         const underlying = viewer.entities.getById(ENTITY_IDS.placeBillboard(selectedPlaceId));
         if (underlying) underlying.show = false;
 
-        const isLit =
-            sunlitIds.current.has(selectedPlaceId) &&
-            outdoorSeatingIds.current.has(selectedPlaceId);
-        const image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
-        overlayRef.current = { pos: headPos, image };
-        liftOverlay(viewer, headPos, image, visible);
+        syncOverlay(selectedPlaceId, visible);
         prevSelectedIdRef.current = selectedPlaceId;
-    }, [viewer, selectedPlaceId]);
+    }, [viewer, selectedPlaceId, visible]);
 
     // Visibility toggle
     useEffect(() => {
         if (!viewer) return;
         managedIds.current.forEach((id) => {
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
-            if (billboard) billboard.show = visible;
+            // keep selected pin's underlying entity hidden regardless of visible
+            if (billboard) billboard.show = visible && id !== selectedIdRef.current;
             const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
             if (line) line.show = visible;
         });
-        const overlay = viewer.entities.getById(ENTITY_IDS.selectedOverlay);
-        if (overlay) overlay.show = visible;
+        const collection = overlayCollectionRef.current;
+        if (collection && !collection.isDestroyed()) collection.show = visible;
     }, [viewer, visible]);
 };
