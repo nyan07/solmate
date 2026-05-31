@@ -21,14 +21,16 @@ import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
 import { trackEvent } from "@/utils/analytics";
+import { resolveGooglePlaceId } from "@/features/places/api";
+import type { PlaceSummary } from "@/features/places/types";
 
 const PIN_HEAD_OFFSET = 2; // meters above surface (terrain or building roof)
 const ACCENT_COLOR = "#ff5a59";
 const PIN_BG_COLOR = "#0D0A1A";
 // Rendered billboard size in logical pixels — PAD gives room for the outline stroke
 // PIN_H derived from PIN_W to preserve the path's natural 11:16 aspect ratio
-const PIN_W = 36;
-const PIN_H = Math.round((PIN_W * 16) / 11); // ~52
+const PIN_W = 23;
+const PIN_H = Math.round((PIN_W * 16) / 11); // ~33
 const PIN_PAD = 4; // padding on each side so outline stroke isn't clipped
 const BILL_W = PIN_W + PIN_PAD * 2;
 const BILL_H = PIN_H + PIN_PAD * 2;
@@ -57,7 +59,7 @@ const SUN_ICON = extractSvgInner(sunSvgRaw);
 function buildPinSvgUrl(selected: boolean, sunlit: boolean): string {
     const outlineColor = selected ? ACCENT_COLOR : PIN_BG_COLOR;
     const icon = sunlit ? SUN_ICON : CLOUD_ICON;
-    const iconSize = 22;
+    const iconSize = 14;
     const iconX = (PIN_W - iconSize) / 2;
     const iconY = (PIN_H * 0.6 - iconSize) / 2 + (sunlit ? 2 : 0);
 
@@ -109,6 +111,8 @@ export const usePins = (
 
     const managedIds = useRef<Set<string>>(new Set());
     const appliedPinTops = useRef<Record<string, number>>({});
+    const placesRef = useRef<PlaceSummary[]>([]);
+    placesRef.current = places ?? [];
     const sunlitIds = useRef<Set<string>>(new Set());
     const outdoorSeatingIds = useRef<Set<string>>(new Set());
     const groundPositions = useRef<Record<string, Cartesian3>>({});
@@ -168,12 +172,18 @@ export const usePins = (
     // Navigate on entity click
     useEffect(() => {
         if (!viewer) return;
-        const handler = (entity: { id?: string } | undefined) => {
+        const handler = async (entity: { id?: string } | undefined) => {
             if (!entity?.id) return;
             const prefix = ENTITY_IDS.placeBillboard("");
-            if (entity.id.startsWith(prefix)) {
-                const placeId = entity.id.slice(prefix.length);
-                trackEvent("pin_clicked", { place_id: placeId });
+            if (!entity.id.startsWith(prefix)) return;
+            const placeId = entity.id.slice(prefix.length);
+            trackEvent("pin_clicked", { place_id: placeId });
+            if (placeId.startsWith("osm:")) {
+                const place = placesRef.current.find((p) => p.id === placeId);
+                if (!place) return;
+                const googleId = await resolveGooglePlaceId(place.displayName, place.location);
+                if (googleId) navigate(`/places/${googleId}`);
+            } else {
                 navigate(`/places/${placeId}`);
             }
         };

@@ -151,6 +151,8 @@ export default async function POST(request) {
             body: JSON.stringify(requestBody),
         });
 
+        console.log("Nearby: Places API", response.body);
+
         const data = await response.json();
 
         if (!data.places) {

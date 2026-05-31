@@ -64,6 +64,8 @@ export default async function POST(request) {
             });
         }
 
+        console.log("Nearby: OSM", response.body);
+
         if (!response.ok) {
             await captureServerEvent("places_osm_error", {
                 type: "upstream_error",
@@ -78,6 +80,7 @@ export default async function POST(request) {
         const data = await response.json();
         const places = (data.elements ?? [])
             .filter((el) => el.type === "node" && el.tags?.name)
+            .slice(0, 50)
             .map(parseOsmNode);
 
         await captureServerEvent("places_osm_searched", { result_count: places.length });

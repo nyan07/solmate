@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery, type UseQueryResult } from "@tanstack/react-query";
-import posthog from "posthog-js";
+//import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import type { Bounds } from "@/types/Bounds";
 import type { PlaceSummary } from "@/features/places/types";
@@ -26,6 +26,20 @@ function boundsAreaKm2(b: Bounds): number {
     return Math.abs(latKm * lngKm);
 }
 
+// Read the experiment flag without using React hooks — avoids PostHog-triggered re-renders
+// interfering with the debounce. The flag is evaluated at query execution time, so switching
+// the flag takes effect on the next map move (which issues a fresh query).
+function readPlacesSource(): "control" | "osm" {
+    try {
+        // if (posthog.isFeatureEnabled("places-source") && posthog.getFeatureFlag("places-source") === "osm") {
+        //     return "osm";
+        // }
+    } catch {
+        // PostHog not initialised (local dev without token)
+    }
+    return "control";
+}
+
 type UseNearbyPlacesOptions = {
     enabled: boolean;
     cacheFirst?: boolean;
@@ -48,16 +62,13 @@ export const useNearbyPlaces = (
 
     const snappedBounds = debouncedBounds ? snapBounds(debouncedBounds) : null;
 
-    // PostHog experiment: "places-source" variants are "google" (control) and "osm" (test)
-    const placesSource = posthog.getFeatureFlag("places-source") ?? "google";
-    const isOSM = placesSource === "osm";
-    const fetchFn = isOSM ? fetchNearbyPlacesOSM : fetchNearbyPlaces;
-
     return useQuery({
         ...(cacheFirst ? CACHE_FIRST_OPTIONS : {}),
-        queryKey: ["nearbyPlaces", snappedBounds, lang, placesSource],
+        queryKey: ["nearbyPlaces", snappedBounds, lang],
         queryFn: async () => {
             if (!snappedBounds) return [];
+            const source = readPlacesSource();
+            const fetchFn = source === "osm" ? fetchNearbyPlacesOSM : fetchNearbyPlaces;
             const results = await fetchFn(snappedBounds, lang);
 
             const typeDistribution = results.reduce(
@@ -69,7 +80,7 @@ export const useNearbyPlaces = (
             );
 
             trackEvent("places_loaded", {
-                source: isOSM ? "osm" : "google",
+                source: source === "osm" ? "osm" : "google",
                 count: results.length,
                 type_distribution: typeDistribution,
                 bounds_area_km2: boundsAreaKm2(snappedBounds),
