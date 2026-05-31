@@ -33,3 +33,4 @@ test-results/
 
 # Notion raw export
 Notion/
+.env.local

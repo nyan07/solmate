@@ -1,24 +1,10 @@
+import { captureServerEvent, captureServerException } from "../_posthog.js";
+
 export const config = {
     runtime: "edge",
 };
 
 const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
-
-const POSTHOG_HOST = "https://eu.i.posthog.com";
-
-function captureServerEvent(token, event, properties) {
-    if (!token) return;
-    // fire-and-forget — no await needed
-    fetch(`${POSTHOG_HOST}/capture`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            api_key: token,
-            event,
-            properties: { distinct_id: "server", ...properties },
-        }),
-    }).catch(() => {});
-}
 
 const amenityToType = {
     restaurant: "restaurant",
@@ -50,8 +36,6 @@ function parseOsmNode(node) {
 }
 
 export default async function POST(request) {
-    const phToken = process.env.VITE_PUBLIC_POSTHOG_TOKEN;
-
     try {
         const body = await request.json();
         const { north, south, east, west } = body;
@@ -73,7 +57,7 @@ export default async function POST(request) {
         });
 
         if (response.status === 429) {
-            captureServerEvent(phToken, "places_osm_error", { type: "rate_limit" });
+            await captureServerEvent("places_osm_error", { type: "rate_limit" });
             return new Response(JSON.stringify({ error: "Overpass rate limit" }), {
                 status: 429,
                 headers: { "Content-Type": "application/json" },
@@ -81,7 +65,7 @@ export default async function POST(request) {
         }
 
         if (!response.ok) {
-            captureServerEvent(phToken, "places_osm_error", {
+            await captureServerEvent("places_osm_error", {
                 type: "upstream_error",
                 status: response.status,
             });
@@ -96,12 +80,15 @@ export default async function POST(request) {
             .filter((el) => el.type === "node" && el.tags?.name)
             .map(parseOsmNode);
 
+        await captureServerEvent("places_osm_searched", { result_count: places.length });
+
         return new Response(JSON.stringify(places), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
     } catch (err) {
         console.error("Error calling Overpass API:", err);
+        await captureServerException(err, { endpoint: "places_osm" });
         return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

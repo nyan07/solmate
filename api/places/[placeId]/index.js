@@ -1,3 +1,5 @@
+import { captureServerEvent, captureServerException } from "../../_posthog.js";
+
 export const config = {
     runtime: "edge",
 };
@@ -67,6 +69,10 @@ export async function GET(req) {
         if (!response.ok) {
             const body = await response.text();
             console.error("Places API error:", response.status, body);
+            await captureServerEvent("place_detail_error", {
+                place_id: placeId,
+                status: response.status,
+            });
             return error(500, `Failed to fetch: ${response.statusText}`);
         }
 
@@ -94,6 +100,8 @@ export async function GET(req) {
             websiteUri: place.websiteUri,
         };
 
+        await captureServerEvent("place_detail_viewed", { place_id: parsed.id, lang });
+
         return new Response(JSON.stringify(parsed), {
             status: 200,
             headers: {
@@ -101,6 +109,7 @@ export async function GET(req) {
             },
         });
     } catch (err) {
+        await captureServerException(err, { endpoint: "place_detail", place_id: placeId });
         return error(500, "Internal server error");
     }
 }

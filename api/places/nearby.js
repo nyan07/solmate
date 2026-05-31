@@ -1,3 +1,5 @@
+import { captureServerEvent, captureServerException } from "../_posthog.js";
+
 export const config = {
     runtime: "edge", // força rodar como Edge Function
 };
@@ -153,6 +155,7 @@ export default async function POST(request) {
 
         if (!data.places) {
             console.error("Places API error:", data);
+            await captureServerEvent("places_nearby_error", { type: "upstream_error" });
             return new Response(JSON.stringify({ error: "Places API error", details: data }), {
                 status: 500,
                 headers: { "Content-Type": "application/json" },
@@ -163,12 +166,20 @@ export default async function POST(request) {
             .filter((p) => p.businessStatus === "OPERATIONAL")
             .map(parsePlace);
 
+        await captureServerEvent("places_nearby_searched", {
+            result_count: places.length,
+            center_lat: centerLat,
+            center_lng: centerLng,
+            radius_m: Math.round(radius),
+        });
+
         return new Response(JSON.stringify(places), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
     } catch (err) {
         console.error("Error calling Places API:", err);
+        await captureServerException(err, { endpoint: "places_nearby" });
         return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
