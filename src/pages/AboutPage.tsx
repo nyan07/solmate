@@ -1,5 +1,6 @@
 import { BsArrowLeft, BsWhatsapp } from "react-icons/bs";
 import Button from "@/components/Button";
+import { InlineLink } from "@/components/InlineLink";
 import { BottomNav } from "@/components/BottomNav";
 import { useTranslation } from "react-i18next";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
@@ -56,6 +57,15 @@ export function AboutPage() {
                     >
                         {t("about.communityCta")}
                     </Button>
+
+                    <div className="flex gap-4 text-sm text-primary-500 justify-center">
+                        <InlineLink onClick={() => navigate("/privacy-policy")}>
+                            {t("about.privacyPolicyLink")}
+                        </InlineLink>
+                        <InlineLink onClick={() => navigate("/terms-of-use")}>
+                            {t("about.termsOfUseLink")}
+                        </InlineLink>
+                    </div>
                 </div>
             </div>
 

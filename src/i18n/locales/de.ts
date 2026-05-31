@@ -18,6 +18,8 @@ const de = {
             },
         },
         communityCta: "Arkie-Community beitreten",
+        privacyPolicyLink: "Datenschutzerklärung",
+        termsOfUseLink: "Nutzungsbedingungen",
     },
     explorer: {
         today: "Heute",

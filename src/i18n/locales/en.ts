@@ -18,6 +18,8 @@ const en = {
             },
         },
         communityCta: "Join Arkie's community",
+        privacyPolicyLink: "Privacy Policy",
+        termsOfUseLink: "Terms of Use",
     },
     explorer: {
         today: "Today",
