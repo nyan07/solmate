@@ -11,6 +11,9 @@ import {
     Ray,
     JulianDate,
 } from "cesium";
+import pinSvgRaw from "@/assets/pin.svg?raw";
+import cloudSvgRaw from "@/assets/cloud.svg?raw";
+import sunSvgRaw from "@/assets/sun.svg?raw";
 import { useFilteredPlaces } from "./useFilteredPlaces";
 import { useLayout, useMapState, useSunlit } from "@/features/explorer/state/mapStore";
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
@@ -19,69 +22,60 @@ import { useTranslation } from "react-i18next";
 import { trackEvent } from "@/utils/analytics";
 
 const PIN_HEAD_OFFSET = 2; // meters above surface (terrain or building roof)
-const PIN_DIAMETER = 24;
-const PIN_CANVAS_SIZE = 32; // PIN_DIAMETER + 2px padding on each side
-const PIN_ICON_SIZE = 16;
+const ACCENT_COLOR = "#ff5a59";
+const PIN_BG_COLOR = "#0D0A1A";
+// Rendered billboard size in logical pixels — PAD gives room for the outline stroke
+// PIN_H derived from PIN_W to preserve the path's natural 11:16 aspect ratio
+const PIN_W = 36;
+const PIN_H = Math.round((PIN_W * 16) / 11); // ~52
+const PIN_PAD = 4; // padding on each side so outline stroke isn't clipped
+const BILL_W = PIN_W + PIN_PAD * 2;
+const BILL_H = PIN_H + PIN_PAD * 2;
 
-// Bootstrap Icon SVG paths (viewBox 0 0 16 16)
-const BS_SUN_PATH =
-    "M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708";
-const BS_CLOUD_FILL_PATH =
-    "M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383";
+// Extract the <path> from pin.svg to re-color stroke dynamically
+const PIN_PATH_MATCH = pinSvgRaw.match(/<path[^>]*d="([^"]+)"[^>]*>/);
+const PIN_PATH_D = PIN_PATH_MATCH ? PIN_PATH_MATCH[1] : "";
+const PIN_STROKE_W = (pinSvgRaw.match(/stroke-width="([^"]+)"/) ?? [])[1] ?? "3";
 
-function createPinCanvas(
-    fillColor: string,
-    iconPath: string,
-    iconColor: string,
-    selected: boolean
-): HTMLCanvasElement {
-    const dpr = Math.ceil(window.devicePixelRatio ?? 1);
-    const canvas = document.createElement("canvas");
-    // Physical pixels for crisp rendering on retina displays;
-    // billboard width/height stays at PIN_CANVAS_SIZE (logical px).
-    canvas.width = PIN_CANVAS_SIZE * dpr;
-    canvas.height = PIN_CANVAS_SIZE * dpr;
-    const ctx = canvas.getContext("2d")!;
-    ctx.scale(dpr, dpr);
-
-    const cx = PIN_CANVAS_SIZE / 2;
-    const cy = PIN_CANVAS_SIZE / 2;
-    const r = PIN_DIAMETER / 2;
-
-    // Circle background
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = fillColor;
-    ctx.fill();
-
-    // Dotted border overlapping the circle edge when selected
-    if (selected) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([2, 2]);
-        ctx.stroke();
-    }
-
-    // Icon scaled from 16×16 viewBox to PIN_ICON_SIZE×PIN_ICON_SIZE
-    const scale = PIN_ICON_SIZE / 16;
-    const iconX = cx - PIN_ICON_SIZE / 2;
-    const iconY = cy - PIN_ICON_SIZE / 2;
-    ctx.save();
-    ctx.translate(iconX, iconY);
-    ctx.scale(scale, scale);
-    ctx.fillStyle = iconColor;
-    ctx.fill(new Path2D(iconPath));
-    ctx.restore();
-
-    return canvas;
+// Extract the inner content of the icon SVGs (already have correct colors baked in)
+function extractSvgInner(raw: string): { viewBox: string; inner: string } {
+    const viewBox = (raw.match(/viewBox="([^"]+)"/) ?? [])[1] ?? "0 0 24 24";
+    // Strip outer <svg> tags, keep everything inside
+    const inner = raw
+        .replace(/<\?xml[^>]*>/g, "")
+        .replace(/<!DOCTYPE[^>]*>/g, "")
+        .replace(/<svg[^>]*>/, "")
+        .replace(/<\/svg>\s*$/, "")
+        .trim();
+    return { viewBox, inner };
 }
 
-const PIN_SHADOW_IMAGE = createPinCanvas("#909CC2", BS_CLOUD_FILL_PATH, "#ffffff", false);
-const PIN_SUN_IMAGE = createPinCanvas("#FF5959", BS_SUN_PATH, "#000000", false);
-const SELECTED_SHADOW_IMAGE = createPinCanvas("#909CC2", BS_CLOUD_FILL_PATH, "#ffffff", true);
-const SELECTED_SUN_IMAGE = createPinCanvas("#FF5959", BS_SUN_PATH, "#000000", true);
+const CLOUD_ICON = extractSvgInner(cloudSvgRaw);
+const SUN_ICON = extractSvgInner(sunSvgRaw);
+
+function buildPinSvgUrl(selected: boolean, sunlit: boolean): string {
+    const outlineColor = selected ? ACCENT_COLOR : PIN_BG_COLOR;
+    const icon = sunlit ? SUN_ICON : CLOUD_ICON;
+    const iconSize = 22;
+    const iconX = (PIN_W - iconSize) / 2;
+    const iconY = (PIN_H * 0.6 - iconSize) / 2 + (sunlit ? 2 : 0);
+
+    // viewBox starts at -PIN_PAD so outline stroke on all edges isn't clipped
+    const vb = `-${PIN_PAD} -${PIN_PAD} ${BILL_W} ${BILL_H}`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${BILL_W}" height="${BILL_H}" viewBox="${vb}">
+  <path d="${PIN_PATH_D}" fill="${PIN_BG_COLOR}" stroke="${outlineColor}" stroke-width="${PIN_STROKE_W}" stroke-linejoin="round"/>
+  <svg x="${iconX}" y="${iconY}" width="${iconSize}" height="${iconSize}" viewBox="${icon.viewBox}">
+    ${icon.inner}
+  </svg>
+</svg>`;
+
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+const PIN_SHADOW_IMAGE = buildPinSvgUrl(false, false);
+const PIN_SUN_IMAGE = buildPinSvgUrl(false, true);
+const SELECTED_SHADOW_IMAGE = buildPinSvgUrl(true, false);
+const SELECTED_SUN_IMAGE = buildPinSvgUrl(true, true);
 
 function getSunDirectionECEF(time: JulianDate): Cartesian3 | null {
     const icrfToFixed = Transforms.computeIcrfToFixedMatrix(time, new Matrix3());
@@ -118,6 +112,8 @@ export const usePins = (
     const outdoorSeatingIds = useRef<Set<string>>(new Set());
     const groundPositions = useRef<Record<string, Cartesian3>>({});
     const headPositions = useRef<Record<string, Cartesian3>>({});
+    const selectedIdRef = useRef<string | null | undefined>(null);
+    selectedIdRef.current = selectedPlaceId;
 
     // Navigate on entity click
     useEffect(() => {
@@ -125,8 +121,13 @@ export const usePins = (
         const handler = (entity: { id?: string } | undefined) => {
             if (!entity?.id) return;
             const prefix = ENTITY_IDS.placeBillboard("");
+            let placeId: string | null = null;
             if (entity.id.startsWith(prefix)) {
-                const placeId = entity.id.slice(prefix.length);
+                placeId = entity.id.slice(prefix.length);
+            } else if (entity.id === ENTITY_IDS.selectedOverlay && selectedIdRef.current) {
+                placeId = selectedIdRef.current;
+            }
+            if (placeId) {
                 trackEvent("pin_clicked", { place_id: placeId });
                 navigate(`/places/${placeId}`);
             }
@@ -230,9 +231,31 @@ export const usePins = (
         });
     }, [viewer, places]);
 
+    // Remove + re-add overlay so it is last in the collection (rendered on top)
+    const liftOverlay = (v: Viewer, pos: Cartesian3, image: string, show: boolean) => {
+        const existing = v.entities.getById(ENTITY_IDS.selectedOverlay);
+        if (existing) v.entities.remove(existing);
+        v.entities.add({
+            id: ENTITY_IDS.selectedOverlay,
+            show,
+            position: pos as never,
+            billboard: {
+                image,
+                width: BILL_W,
+                height: BILL_H,
+                verticalOrigin: VerticalOrigin.BOTTOM,
+                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            },
+        });
+    };
+
+    // Ref storing the last overlay state so we can re-lift it after new pins are added
+    const overlayRef = useRef<{ pos: Cartesian3; image: string } | null>(null);
+
     // Create/update billboard entities
     useEffect(() => {
         if (!viewer || !places?.length) return;
+        let addedCount = 0;
         places.forEach((place) => {
             const terrain = terrainHeights[place.id];
             const pinTop = pinTopHeights[place.id];
@@ -243,18 +266,19 @@ export const usePins = (
             const groundPos = Cartesian3.fromDegrees(longitude, latitude, terrain);
             const headPos = Cartesian3.fromDegrees(longitude, latitude, pinTop);
 
-            // Billboard (circle pin)
+            // Always store the unselected image — the overlay entity carries the selected style
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
+                addedCount++;
                 viewer.entities.add({
                     id: ENTITY_IDS.placeBillboard(place.id),
                     show: visible,
                     position: headPos,
                     billboard: {
                         image: PIN_SHADOW_IMAGE,
-                        width: PIN_CANVAS_SIZE,
-                        height: PIN_CANVAS_SIZE,
-                        verticalOrigin: VerticalOrigin.CENTER,
+                        width: BILL_W,
+                        height: BILL_H,
+                        verticalOrigin: VerticalOrigin.BOTTOM,
                         disableDepthTestDistance: Number.POSITIVE_INFINITY,
                     },
                 });
@@ -267,16 +291,34 @@ export const usePins = (
             if (place.hasOutdoorSeating) outdoorSeatingIds.current.add(place.id);
             groundPositions.current[place.id] = groundPos;
             headPositions.current[place.id] = headPos;
+
+            // If this newly-placed pin is the selected one, hide it and set up the overlay
+            if (place.id === selectedIdRef.current) {
+                const justAdded = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
+                if (justAdded) justAdded.show = false;
+                if (!overlayRef.current) {
+                    const isLit =
+                        sunlitIds.current.has(place.id) && outdoorSeatingIds.current.has(place.id);
+                    overlayRef.current = {
+                        pos: headPos,
+                        image: isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE,
+                    };
+                }
+            }
         });
+
+        // Re-lift overlay only when new entities were added this run (keeps it last in collection)
+        if (overlayRef.current && addedCount > 0) {
+            liftOverlay(viewer, overlayRef.current.pos, overlayRef.current.image, visible);
+        }
     }, [viewer, places, terrainHeights, pinTopHeights, visible]);
 
-    // Shadow check — update billboard image and stem color
+    // Shadow check — update billboard image
     useEffect(() => {
         if (!viewer || !sunTime) return;
         const sunDir = getSunDirectionECEF(sunTime);
         if (!sunDir) return;
         managedIds.current.forEach((id) => {
-            if (id === selectedPlaceId) return;
             const groundPos = groundPositions.current[id];
             if (!groundPos) return;
             const radialUp = Cartesian3.normalize(groundPos, new Cartesian3());
@@ -292,47 +334,63 @@ export const usePins = (
             else sunlitIds.current.delete(id);
 
             const isLit = inSunlight && outdoorSeatingIds.current.has(id);
-            const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
-            if (billboard?.billboard)
-                billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
+            if (id === selectedPlaceId) {
+                const headPos = headPositions.current[id];
+                if (headPos && overlayRef.current) {
+                    const image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
+                    overlayRef.current = { pos: headPos, image };
+                    const overlay = viewer.entities.getById(ENTITY_IDS.selectedOverlay);
+                    if (overlay?.billboard) overlay.billboard.image = image as never;
+                }
+            } else {
+                const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
+                if (billboard?.billboard)
+                    billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
+            }
         });
         setSunlitIds(
             new Set([...sunlitIds.current].filter((id) => outdoorSeatingIds.current.has(id)))
         );
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
 
-    // Selection change — update image and bring selected pin to front
+    // Selection change — move overlay to new selected pin, hide/restore underlying entities
+    const prevSelectedIdRef = useRef<string | null | undefined>(null);
     useEffect(() => {
         if (!viewer) return;
-        managedIds.current.forEach((id) => {
-            const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(id));
-            if (!billboard?.billboard) return;
-            const isLit = sunlitIds.current.has(id) && outdoorSeatingIds.current.has(id);
-            if (id === selectedPlaceId) {
-                const image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
-                // Remove and re-add so it is last in the collection → drawn on top
-                const headPos = headPositions.current[id];
-                if (headPos) {
-                    viewer.entities.remove(billboard);
-                    viewer.entities.add({
-                        id: ENTITY_IDS.placeBillboard(id),
-                        show: billboard.show,
-                        position: headPos,
-                        billboard: {
-                            image,
-                            width: PIN_CANVAS_SIZE,
-                            height: PIN_CANVAS_SIZE,
-                            verticalOrigin: VerticalOrigin.CENTER,
-                            disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                        },
-                    });
-                } else {
-                    billboard.billboard.image = image as never;
-                }
-            } else {
-                billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
-            }
-        });
+
+        // Restore the previously selected pin's underlying entity
+        const prevId = prevSelectedIdRef.current;
+        if (prevId) {
+            const prev = viewer.entities.getById(ENTITY_IDS.placeBillboard(prevId));
+            if (prev) prev.show = visible;
+        }
+
+        // Remove overlay when nothing is selected
+        if (!selectedPlaceId) {
+            const existing = viewer.entities.getById(ENTITY_IDS.selectedOverlay);
+            if (existing) viewer.entities.remove(existing);
+            overlayRef.current = null;
+            prevSelectedIdRef.current = null;
+            return;
+        }
+
+        const headPos = headPositions.current[selectedPlaceId];
+        if (!headPos) {
+            prevSelectedIdRef.current = selectedPlaceId;
+            return;
+        }
+
+        // Hide the underlying entity — the overlay is the visual representation
+        const underlying = viewer.entities.getById(ENTITY_IDS.placeBillboard(selectedPlaceId));
+        if (underlying) underlying.show = false;
+
+        const isLit =
+            sunlitIds.current.has(selectedPlaceId) &&
+            outdoorSeatingIds.current.has(selectedPlaceId);
+        const image = isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE;
+        overlayRef.current = { pos: headPos, image };
+        liftOverlay(viewer, headPos, image, visible);
+        prevSelectedIdRef.current = selectedPlaceId;
     }, [viewer, selectedPlaceId]);
 
     // Visibility toggle
@@ -344,5 +402,7 @@ export const usePins = (
             const line = viewer.entities.getById(ENTITY_IDS.placeLine(id));
             if (line) line.show = visible;
         });
+        const overlay = viewer.entities.getById(ENTITY_IDS.selectedOverlay);
+        if (overlay) overlay.show = visible;
     }, [viewer, visible]);
 };

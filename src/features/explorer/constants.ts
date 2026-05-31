@@ -10,4 +10,5 @@ export const ENTITY_IDS = {
     locationLine: "location-line",
     placeBillboard: (id: string) => `place-billboard-${id}`,
     placeLine: (id: string) => `place-line-${id}`,
+    selectedOverlay: "selected-pin-overlay",
 } as const;
