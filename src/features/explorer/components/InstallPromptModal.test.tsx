@@ -19,11 +19,7 @@ describe("first visit", () => {
         setUserAgent(UA.iosSafari);
         render(<InstallPromptModal />);
         expect(screen.getByRole("dialog")).toBeInTheDocument();
-        expect(
-            screen.getByText(
-                "Tap the Share button (the square with an arrow) at the bottom of Safari."
-            )
-        ).toBeInTheDocument();
+        expect(screen.getByText('Open the Safari menu and select "Share"')).toBeInTheDocument();
     });
 
     it("shows Android manual steps on first visit", () => {
