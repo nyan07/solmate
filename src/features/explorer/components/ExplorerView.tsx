@@ -9,6 +9,7 @@ import {
     Ion,
     UrlTemplateImageryProvider,
     CameraEventType,
+    Cesium3DTileStyle,
 } from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
@@ -117,6 +118,9 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
 
             const osmBuildings = await createOsmBuildingsAsync();
             osmBuildings.shadows = 2;
+            osmBuildings.style = new Cesium3DTileStyle({
+                color: "color('white', 0.35)",
+            });
             viewer.scene.primitives.add(osmBuildings);
 
             viewer.shadows = true;
