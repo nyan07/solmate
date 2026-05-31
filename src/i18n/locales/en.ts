@@ -85,6 +85,10 @@ const en = {
             noFilters: "Try to move the map to see places near you.",
             withFilters: "Try to move the map or adjust the filters to see places near you.",
         },
+        zoomedOut: {
+            title: "Zoom in to see places",
+            body: "Pinch in on the map to discover cafés, bars, and restaurants near you.",
+        },
     },
     privacyPolicy: {
         title: "Privacy Policy",
