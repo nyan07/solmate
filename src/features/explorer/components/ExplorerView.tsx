@@ -1,15 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-    Viewer,
-    createWorldTerrainAsync,
-    createOsmBuildingsAsync,
-    Cartesian3,
-    Color,
-    DirectionalLight,
-    Ion,
-    UrlTemplateImageryProvider,
-    CameraEventType,
-} from "cesium";
+import * as Cesium from "cesium";
 
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import { BsCrosshair, BsSliders } from "react-icons/bs";
@@ -35,7 +25,7 @@ import {
 } from "@/features/explorer/constants";
 import { trackEvent } from "@/utils/analytics";
 
-Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
+Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION;
 
 const FALLBACK_LOCATION: LatLng = { latitude: 52.5195605, longitude: 13.3988917 }; // Berlin
 
@@ -45,7 +35,7 @@ type ExplorerViewProps = {
 
 const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const mapRef = useRef<HTMLDivElement>(null);
-    const viewerRef = useRef<Viewer | null>(null);
+    const viewerRef = useRef<Cesium.Viewer | null>(null);
     const topBarRef = useRef<HTMLDivElement>(null);
 
     const [date, setDate] = useState<Date>(new Date());
@@ -91,11 +81,11 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     // Initialize Cesium viewer
     useEffect(() => {
         if (isGeolocationLoading && !viewerReady) return;
-        let viewer: Viewer;
+        let viewer: Cesium.Viewer;
 
         const initViewer = async () => {
-            const terrain = await createWorldTerrainAsync();
-            viewer = new Viewer(mapRef.current!, {
+            const terrain = await Cesium.createWorldTerrainAsync();
+            viewer = new Cesium.Viewer(mapRef.current!, {
                 terrainProvider: terrain,
                 baseLayerPicker: false,
                 timeline: false,
@@ -110,13 +100,22 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
                 shadows: true,
             });
 
-            const osmLayer = new UrlTemplateImageryProvider({
+            const osmLayer = new Cesium.UrlTemplateImageryProvider({
                 url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png?layers=V",
             });
             viewer.imageryLayers.addImageryProvider(osmLayer);
 
-            const osmBuildings = await createOsmBuildingsAsync();
+            const osmBuildings = await Cesium.createOsmBuildingsAsync({
+                showOutline: false,
+            });
+
             osmBuildings.shadows = 2;
+            osmBuildings.style = new Cesium.Cesium3DTileStyle({
+                color: "color('#f7eae3')",
+            });
+
+            osmBuildings.maximumScreenSpaceError = 4;
+
             viewer.scene.primitives.add(osmBuildings);
 
             viewer.shadows = true;
@@ -135,7 +134,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
             const initialPos = geolocation || FALLBACK_LOCATION;
             if (!viewerReady) {
                 viewer.camera.setView({
-                    destination: Cartesian3.fromDegrees(
+                    destination: Cesium.Cartesian3.fromDegrees(
                         initialPos.longitude,
                         initialPos.latitude,
                         DEFAULT_CAMERA_DISTANCE
@@ -165,12 +164,12 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         if (!viewer || !viewerReady || !sunData) return;
 
         if (!viewer.scene.light) {
-            viewer.scene.light = new DirectionalLight({
+            viewer.scene.light = new Cesium.DirectionalLight({
                 direction: sunData.direction,
-                color: Color.WHITE,
+                color: Cesium.Color.WHITE,
             });
         } else {
-            (viewer.scene.light as DirectionalLight).direction = sunData.direction;
+            (viewer.scene.light as Cesium.DirectionalLight).direction = sunData.direction;
         }
 
         const controller = viewer.scene.screenSpaceCameraController;
@@ -187,7 +186,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
         const viewer = viewerRef.current;
         if (!viewer || !viewerReady) return;
 
-        viewer.scene.screenSpaceCameraController.zoomEventTypes = [CameraEventType.PINCH];
+        viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.PINCH];
 
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
@@ -246,7 +245,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
                         onClick={() => {
                             trackEvent("map_recentered");
                             viewerRef.current?.camera.flyTo({
-                                destination: Cartesian3.fromDegrees(
+                                destination: Cesium.Cartesian3.fromDegrees(
                                     geolocation.longitude,
                                     geolocation.latitude,
                                     DEFAULT_CAMERA_DISTANCE
