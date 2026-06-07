@@ -46,6 +46,10 @@ const en = {
             goodForChildren: "Good for children",
             allowsDogs: "Dogs allowed",
         },
+        sunnyHours: {
+            title: "Sunny hours today",
+            none: "No sunny hours today",
+        },
         actions: {
             navigate: "Navigate",
             streetview: "Streetview",

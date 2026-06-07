@@ -46,6 +46,10 @@ const de = {
             goodForChildren: "Kinderfreundlich",
             allowsDogs: "Hunde erlaubt",
         },
+        sunnyHours: {
+            title: "Heute sonnig",
+            none: "Heute keine Sonnenstunden",
+        },
         actions: {
             navigate: "Navigation",
             streetview: "Streetview",

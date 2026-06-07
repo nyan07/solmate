@@ -14,11 +14,14 @@ function minutesToTimeString(minutes: number) {
     return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
 }
 
-export function useSunnyHours(date: Date, location: LatLng | null | undefined) {
-    return useMemo(() => {
-        if (!location) return null;
+export type SunnyWindow = { start: string; end: string };
 
-        let firstSunny: number | null = null;
+export function useSunnyHours(date: Date, location: LatLng | null | undefined): SunnyWindow[] {
+    return useMemo(() => {
+        if (!location) return [];
+
+        const windows: SunnyWindow[] = [];
+        let windowStart: number | null = null;
         let lastSunny: number | null = null;
 
         for (let m = 0; m < 24 * 60; m += STEP_MINUTES) {
@@ -26,16 +29,28 @@ export function useSunnyHours(date: Date, location: LatLng | null | undefined) {
             d.setHours(0, m, 0, 0);
             const pos = SunCalc.getPosition(d, location.latitude, location.longitude);
             if (pos.altitude >= MIN_ALTITUDE_RAD) {
-                if (firstSunny === null) firstSunny = m;
+                if (windowStart === null) windowStart = m;
                 lastSunny = m;
+            } else {
+                if (windowStart !== null && lastSunny !== null) {
+                    windows.push({
+                        start: minutesToTimeString(windowStart),
+                        end: minutesToTimeString(lastSunny + STEP_MINUTES),
+                    });
+                    windowStart = null;
+                    lastSunny = null;
+                }
             }
         }
 
-        if (firstSunny === null || lastSunny === null) return null;
+        // Close any still-open window at end of day
+        if (windowStart !== null && lastSunny !== null) {
+            windows.push({
+                start: minutesToTimeString(windowStart),
+                end: minutesToTimeString(lastSunny + STEP_MINUTES),
+            });
+        }
 
-        return {
-            start: minutesToTimeString(firstSunny),
-            end: minutesToTimeString(lastSunny),
-        };
+        return windows;
     }, [date, location?.latitude, location?.longitude]);
 }
