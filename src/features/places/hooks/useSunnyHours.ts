@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import SunCalc from "suncalc";
 import type { LatLng } from "@/types/LatLng";
+import type { SunnyWindow } from "@/features/places/types";
 
 // Sun must be at least this high to clear typical urban buildings
 const MIN_ALTITUDE_RAD = (15 * Math.PI) / 180;
@@ -13,8 +14,6 @@ function pad(n: number) {
 function minutesToTimeString(minutes: number) {
     return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
 }
-
-export type SunnyWindow = { start: string; end: string };
 
 export function useSunnyHours(date: Date, location: LatLng | null | undefined): SunnyWindow[] {
     return useMemo(() => {

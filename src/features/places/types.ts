@@ -3,6 +3,8 @@ import type { RawOpeningHours, PlaceStatuses } from "@/utils/openingHours";
 
 export type { PlaceStatuses };
 
+export type SunnyWindow = { start: string; end: string };
+
 // ─── Place Types ──────────────────────────────────────────────────────────────
 
 export type PlaceTypes = "bar" | "cafe" | "restaurant";

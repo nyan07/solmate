@@ -16,7 +16,13 @@ import pinSvgRaw from "@/assets/pin.svg?raw";
 import cloudSvgRaw from "@/assets/cloud.svg?raw";
 import sunSvgRaw from "@/assets/sun.svg?raw";
 import { useFilteredPlaces } from "./useFilteredPlaces";
-import { useLayout, useMapState, useSunlit } from "@/features/explorer/state/mapStore";
+import {
+    useLayout,
+    useMapState,
+    useSunlit,
+    useSelectedSunnyWindows,
+} from "@/features/explorer/state/mapStore";
+import type { SunnyWindow } from "@/features/places/types";
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
@@ -80,6 +86,16 @@ const PIN_SUN_IMAGE = buildPinSvgUrl(false, true);
 const SELECTED_SHADOW_IMAGE = buildPinSvgUrl(true, false);
 const SELECTED_SUN_IMAGE = buildPinSvgUrl(true, true);
 
+const SUNNY_HOURS_STEP = 15; // minutes
+
+function padTwo(n: number) {
+    return String(n).padStart(2, "0");
+}
+
+function minutesToTimeString(minutes: number) {
+    return `${padTwo(Math.floor(minutes / 60))}:${padTwo(minutes % 60)}`;
+}
+
 function getSunDirectionECEF(time: JulianDate): Cartesian3 | null {
     const icrfToFixed = Transforms.computeIcrfToFixedMatrix(time, new Matrix3());
     if (!icrfToFixed) return null;
@@ -97,6 +113,7 @@ export const usePins = (
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { setSunlitIds } = useSunlit();
+    const { setSelectedSunnyWindows } = useSelectedSunnyWindows();
     const navigate = useLangNavigate();
     const { i18n } = useTranslation();
     const { data: places } = useFilteredPlaces(bounds, {
@@ -372,6 +389,71 @@ export const usePins = (
             new Set([...sunlitIds.current].filter((id) => outdoorSeatingIds.current.has(id)))
         );
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
+
+    // Compute sunny windows for the selected place using Cesium ray casting.
+    // Mirrors the shadow-check logic above but sweeps all 15-min slots in today,
+    // so the result respects actual building geometry — not just sun altitude.
+    useEffect(() => {
+        if (!viewer || !selectedPlaceId) {
+            setSelectedSunnyWindows(null);
+            return;
+        }
+        const groundPos = groundPositions.current[selectedPlaceId];
+        if (!groundPos) return; // terrain not loaded yet — effect re-runs when pinTopHeights updates
+
+        const today = new Date();
+        const radialUp = Cartesian3.normalize(groundPos, new Cartesian3());
+        // Offset origin 1 m up along surface normal (same as shadow-check effect)
+        const origin = Cartesian3.add(
+            groundPos,
+            Cartesian3.multiplyByScalar(radialUp, 1, new Cartesian3()),
+            new Cartesian3()
+        );
+
+        const windows: SunnyWindow[] = [];
+        let windowStart: number | null = null;
+        let lastSunny: number | null = null;
+
+        for (let m = 0; m < 24 * 60; m += SUNNY_HOURS_STEP) {
+            const d = new Date(today);
+            d.setHours(0, m, 0, 0);
+            const jd = JulianDate.fromDate(d);
+            const sunDir = getSunDirectionECEF(jd);
+
+            let inSunlight = false;
+            if (sunDir) {
+                // Only check when sun is above the local horizon
+                const aboveHorizon = Cartesian3.dot(sunDir, radialUp) > 0;
+                if (aboveHorizon) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const hit = (viewer.scene as any).pickFromRay(new Ray(origin, sunDir));
+                    inSunlight = !hit?.position;
+                }
+            }
+
+            if (inSunlight) {
+                if (windowStart === null) windowStart = m;
+                lastSunny = m;
+            } else {
+                if (windowStart !== null && lastSunny !== null) {
+                    windows.push({
+                        start: minutesToTimeString(windowStart),
+                        end: minutesToTimeString(lastSunny + SUNNY_HOURS_STEP),
+                    });
+                    windowStart = null;
+                    lastSunny = null;
+                }
+            }
+        }
+        if (windowStart !== null && lastSunny !== null) {
+            windows.push({
+                start: minutesToTimeString(windowStart),
+                end: minutesToTimeString(lastSunny + SUNNY_HOURS_STEP),
+            });
+        }
+
+        setSelectedSunnyWindows(windows);
+    }, [viewer, selectedPlaceId, pinTopHeights, setSelectedSunnyWindows]);
 
     // Selection change — hide/show underlying entity, rebuild overlay in primitive collection
     const prevSelectedIdRef = useRef<string | null | undefined>(null);

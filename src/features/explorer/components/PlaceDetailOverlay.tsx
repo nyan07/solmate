@@ -35,7 +35,7 @@ function PlaceDetailOverlay() {
 
     const { topBarHeight, setSwipeUpExpanded } = useLayout();
     const [scrolled, setScrolled] = useState(false);
-    const today = new Date();
+
 
     const tags = place
         ? ([
@@ -85,7 +85,7 @@ function PlaceDetailOverlay() {
                         <div className="flex flex-col p-4 pt-0 gap-6">
                             {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
 
-                            <SunnyHoursSection location={place.location} date={today} />
+                            <SunnyHoursSection />
 
                             <PlaceMeta
                                 geolocation={geolocation}
