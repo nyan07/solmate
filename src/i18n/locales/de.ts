@@ -46,6 +46,12 @@ const de = {
             goodForChildren: "Kinderfreundlich",
             allowsDogs: "Hunde erlaubt",
         },
+        sunnyHours: {
+            title: "Heute sonnig & geöffnet",
+            titleOnDate: "Sonnig & geöffnet am {{date}}",
+            none: "Kein Sonnenschein während der Öffnungszeiten",
+            noneOnDate: "Kein Sonnenschein während der Öffnungszeiten am {{date}}",
+        },
         actions: {
             navigate: "Navigation",
             streetview: "Streetview",

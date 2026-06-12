@@ -16,11 +16,17 @@ import pinSvgRaw from "@/assets/pin.svg?raw";
 import cloudSvgRaw from "@/assets/cloud.svg?raw";
 import sunSvgRaw from "@/assets/sun.svg?raw";
 import { useFilteredPlaces } from "./useFilteredPlaces";
-import { useLayout, useMapState, useSunlit } from "@/features/explorer/state/mapStore";
+import {
+    useLayout,
+    useMapState,
+    useSunlit,
+    useSelectedSunnyWindows,
+} from "@/features/explorer/state/mapStore";
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
 import { trackEvent } from "@/utils/analytics";
+import { getOpenIntervalsForDay } from "@/utils/openingHours";
 import { resolveGooglePlaceId } from "@/features/places/api";
 import type { PlaceSummary } from "@/features/places/types";
 
@@ -80,6 +86,16 @@ const PIN_SUN_IMAGE = buildPinSvgUrl(false, true);
 const SELECTED_SHADOW_IMAGE = buildPinSvgUrl(true, false);
 const SELECTED_SUN_IMAGE = buildPinSvgUrl(true, true);
 
+const SUNNY_HOURS_STEP = 30; // minutes
+
+function padTwo(n: number) {
+    return String(n).padStart(2, "0");
+}
+
+function minutesToTimeString(minutes: number) {
+    return `${padTwo(Math.floor(minutes / 60))}:${padTwo(minutes % 60)}`;
+}
+
 function getSunDirectionECEF(time: JulianDate): Cartesian3 | null {
     const icrfToFixed = Transforms.computeIcrfToFixedMatrix(time, new Matrix3());
     if (!icrfToFixed) return null;
@@ -97,6 +113,7 @@ export const usePins = (
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { setSunlitIds } = useSunlit();
+    const { setSelectedSunnyWindows, explorerDate } = useSelectedSunnyWindows();
     const navigate = useLangNavigate();
     const { i18n } = useTranslation();
     const { data: places } = useFilteredPlaces(bounds, {
@@ -114,7 +131,6 @@ export const usePins = (
     const placesRef = useRef<PlaceSummary[]>([]);
     placesRef.current = places ?? [];
     const sunlitIds = useRef<Set<string>>(new Set());
-    const outdoorSeatingIds = useRef<Set<string>>(new Set());
     const groundPositions = useRef<Record<string, Cartesian3>>({});
     const headPositions = useRef<Record<string, Cartesian3>>({});
     const selectedIdRef = useRef<string | null | undefined>(null);
@@ -158,7 +174,7 @@ export const usePins = (
             Cartesian3.multiplyByScalar(radialUp, 5, new Cartesian3()),
             new Cartesian3()
         );
-        const isLit = sunlitIds.current.has(id) && outdoorSeatingIds.current.has(id);
+        const isLit = sunlitIds.current.has(id);
         collection.add({
             image: isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE,
             position: overlayPos,
@@ -299,8 +315,7 @@ export const usePins = (
             const alreadyApplied = appliedPinTops.current[place.id] === pinTop;
             const groundPos = Cartesian3.fromDegrees(longitude, latitude, terrain);
             const headPos = Cartesian3.fromDegrees(longitude, latitude, pinTop);
-            const isLit =
-                sunlitIds.current.has(place.id) && outdoorSeatingIds.current.has(place.id);
+            const isLit = sunlitIds.current.has(place.id);
 
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
@@ -325,7 +340,6 @@ export const usePins = (
 
             managedIds.current.add(place.id);
             appliedPinTops.current[place.id] = pinTop;
-            if (place.hasOutdoorSeating) outdoorSeatingIds.current.add(place.id);
             groundPositions.current[place.id] = groundPos;
             headPositions.current[place.id] = headPos;
         });
@@ -356,7 +370,7 @@ export const usePins = (
             if (inSunlight) sunlitIds.current.add(id);
             else sunlitIds.current.delete(id);
 
-            const isLit = inSunlight && outdoorSeatingIds.current.has(id);
+            const isLit = inSunlight;
             if (id === selectedPlaceId) {
                 const collection = overlayCollectionRef.current;
                 if (collection && !collection.isDestroyed() && collection.length > 0) {
@@ -368,10 +382,92 @@ export const usePins = (
                     billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
             }
         });
-        setSunlitIds(
-            new Set([...sunlitIds.current].filter((id) => outdoorSeatingIds.current.has(id)))
-        );
+        setSunlitIds(new Set(sunlitIds.current));
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
+
+    // Compute sunny windows for the selected place using Cesium ray casting,
+    // clipped to the place's opening hours for the selected day.
+    useEffect(() => {
+        if (!viewer || !selectedPlaceId) {
+            setSelectedSunnyWindows(null);
+            return;
+        }
+        const groundPos = groundPositions.current[selectedPlaceId];
+        if (!groundPos) return; // terrain not loaded yet — effect re-runs when pinTopHeights updates
+
+        const today = explorerDate;
+        const radialUp = Cartesian3.normalize(groundPos, new Cartesian3());
+        // Offset origin 1 m up along surface normal (same as shadow-check effect)
+        const origin = Cartesian3.add(
+            groundPos,
+            Cartesian3.multiplyByScalar(radialUp, 1, new Cartesian3()),
+            new Cartesian3()
+        );
+
+        // Collect raw sunny minute ranges
+        type MinuteRange = { start: number; end: number };
+        const rawRanges: MinuteRange[] = [];
+        let rangeStart: number | null = null;
+        let lastSunny: number | null = null;
+
+        for (let m = 0; m < 24 * 60; m += SUNNY_HOURS_STEP) {
+            const d = new Date(today);
+            d.setHours(0, m, 0, 0);
+            const jd = JulianDate.fromDate(d);
+            const sunDir = getSunDirectionECEF(jd);
+
+            let inSunlight = false;
+            if (sunDir) {
+                // Only check when sun is above the local horizon
+                const aboveHorizon = Cartesian3.dot(sunDir, radialUp) > 0;
+                if (aboveHorizon) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const hit = (viewer.scene as any).pickFromRay(new Ray(origin, sunDir));
+                    inSunlight = !hit?.position;
+                }
+            }
+
+            if (inSunlight) {
+                if (rangeStart === null) rangeStart = m;
+                lastSunny = m;
+            } else {
+                if (rangeStart !== null && lastSunny !== null) {
+                    rawRanges.push({ start: rangeStart, end: lastSunny + SUNNY_HOURS_STEP });
+                    rangeStart = null;
+                    lastSunny = null;
+                }
+            }
+        }
+        if (rangeStart !== null && lastSunny !== null) {
+            rawRanges.push({ start: rangeStart, end: lastSunny + SUNNY_HOURS_STEP });
+        }
+
+        // Clip to opening hours for the selected day
+        const place = placesRef.current.find((p) => p.id === selectedPlaceId);
+        const openIntervals = getOpenIntervalsForDay(place?.openingHours, today.getDay());
+
+        let clippedRanges: MinuteRange[];
+        if (openIntervals === null) {
+            // No opening hours data — show all sunny windows
+            clippedRanges = rawRanges;
+        } else {
+            clippedRanges = rawRanges.flatMap((sunny) =>
+                openIntervals
+                    .map((open) => ({
+                        start: Math.max(sunny.start, open.start),
+                        end: Math.min(sunny.end, open.end),
+                    }))
+                    .filter((r) => r.end > r.start)
+            );
+        }
+
+        setSelectedSunnyWindows(
+            clippedRanges.map((r) => ({
+                start: minutesToTimeString(r.start),
+                end: minutesToTimeString(r.end),
+            }))
+        );
+    }, [viewer, selectedPlaceId, pinTopHeights, explorerDate, setSelectedSunnyWindows]);
 
     // Selection change — hide/show underlying entity, rebuild overlay in primitive collection
     const prevSelectedIdRef = useRef<string | null | undefined>(null);
