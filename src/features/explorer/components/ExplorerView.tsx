@@ -43,7 +43,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
     const [viewerReady, setViewerReady] = useState(false);
 
     const { setTopBarHeight, topBarHeight } = useLayout();
-    const { center: mapCenter } = useMapState();
+    const { center: mapCenter, cameraDistance } = useMapState();
 
     const [filterOpen, setFilterOpen] = useState(false);
     const filterRef = useRef<HTMLDivElement>(null);
@@ -219,6 +219,14 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
             />
 
             <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+
+            {cameraDistance !== null && cameraDistance >= MAX_CAMERA_DISTANCE && (
+                <div className="absolute bottom-24 left-1/2 z-30 -translate-x-1/2 pointer-events-none">
+                    <div className="rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-primary-800 shadow-md backdrop-blur-sm whitespace-nowrap">
+                        {t("placeList.zoomedOut.title")}
+                    </div>
+                </div>
+            )}
 
             <div
                 className="absolute right-2 z-30 flex flex-col gap-1.5"

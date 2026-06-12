@@ -18,6 +18,7 @@ import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useLayout } from "@/features/explorer/state/mapStore";
 import { useState } from "react";
 import { PlaceStatusBadge } from "@/features/places/components/PlaceStatusBadge";
+import { SunnyHoursSection } from "@/features/places/components/SunnyHoursSection";
 import { useTranslation } from "react-i18next";
 import { Loader } from "@/components/Loader";
 import { trackEvent } from "@/utils/analytics";
@@ -34,6 +35,7 @@ function PlaceDetailOverlay() {
 
     const { topBarHeight, setSwipeUpExpanded } = useLayout();
     const [scrolled, setScrolled] = useState(false);
+
 
     const tags = place
         ? ([
@@ -82,6 +84,8 @@ function PlaceDetailOverlay() {
                         />
                         <div className="flex flex-col p-4 pt-0 gap-6">
                             {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
+
+                            <SunnyHoursSection />
 
                             <PlaceMeta
                                 geolocation={geolocation}

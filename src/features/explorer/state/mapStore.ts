@@ -5,10 +5,19 @@ import { createLayoutSlice, type LayoutSlice } from "./layoutSlice";
 import { createFiltersSlice, type FiltersSlice } from "./filtersSlice";
 import { createSunlitSlice, type SunlitSlice } from "./sunlitSlice";
 import { createListUISlice, type ListUISlice } from "./listUISlice";
+import {
+    createSelectedSunnyWindowsSlice,
+    type SelectedSunnyWindowsSlice,
+} from "./selectedSunnyWindowsSlice";
 
 export type { PlaceFilters } from "./filtersSlice";
 
-type MapStore = MapSlice & LayoutSlice & FiltersSlice & SunlitSlice & ListUISlice;
+type MapStore = MapSlice &
+    LayoutSlice &
+    FiltersSlice &
+    SunlitSlice &
+    ListUISlice &
+    SelectedSunnyWindowsSlice;
 
 export const useMapStore = create<MapStore>()((...a) => ({
     ...createMapSlice(...a),
@@ -16,6 +25,7 @@ export const useMapStore = create<MapStore>()((...a) => ({
     ...createFiltersSlice(...a),
     ...createSunlitSlice(...a),
     ...createListUISlice(...a),
+    ...createSelectedSunnyWindowsSlice(...a),
 }));
 
 export const useMapState = () =>
@@ -63,5 +73,13 @@ export const useListUI = () =>
             setListOpen: s.setListOpen,
             listScrollTop: s.listScrollTop,
             setListScrollTop: s.setListScrollTop,
+        }))
+    );
+
+export const useSelectedSunnyWindows = () =>
+    useMapStore(
+        useShallow((s) => ({
+            selectedSunnyWindows: s.selectedSunnyWindows,
+            setSelectedSunnyWindows: s.setSelectedSunnyWindows,
         }))
     );

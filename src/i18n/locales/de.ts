@@ -46,6 +46,10 @@ const de = {
             goodForChildren: "Kinderfreundlich",
             allowsDogs: "Hunde erlaubt",
         },
+        sunnyHours: {
+            title: "Heute sonnig",
+            none: "Heute keine Sonnenstunden",
+        },
         actions: {
             navigate: "Navigation",
             streetview: "Streetview",
@@ -85,6 +89,10 @@ const de = {
             noFilters: "Verschiebe die Karte, um Orte in deiner Nähe zu sehen.",
             withFilters:
                 "Verschiebe die Karte oder passe die Filter an, um Orte in deiner Nähe zu sehen.",
+        },
+        zoomedOut: {
+            title: "Zoome rein, um Orte zu sehen",
+            body: "Zoome auf der Karte rein, um Cafés, Bars und Restaurants in deiner Nähe zu entdecken.",
         },
     },
     privacyPolicy: {

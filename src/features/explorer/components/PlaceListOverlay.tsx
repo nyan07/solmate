@@ -15,8 +15,9 @@ function PlaceListOverlay() {
     const { listOpen, setListOpen, listScrollTop, setListScrollTop } = useListUI();
     const { setSwipeUpExpanded } = useLayout();
     const { i18n } = useTranslation();
+    const isZoomedOut = !!cameraDistance && cameraDistance >= MAX_CAMERA_DISTANCE;
     const { data: places, isPending } = useFilteredPlaces(bounds, {
-        enabled: !!cameraDistance && cameraDistance <= MAX_CAMERA_DISTANCE,
+        enabled: !!cameraDistance && !isZoomedOut,
         lang: i18n.language,
     });
     const { filters } = useFilters();
@@ -32,7 +33,16 @@ function PlaceListOverlay() {
             onExpandedChange={setSwipeUpExpanded}
             onScroll={(e) => setListScrollTop(e.currentTarget.scrollTop)}
         >
-            {isPending ? (
+            {isZoomedOut ? (
+                <div className="flex flex-col items-center justify-center gap-1 py-10 px-6 text-center">
+                    <span className="text-primary-800 font-medium">
+                        {t("placeList.zoomedOut.title")}
+                    </span>
+                    <span className="text-xs text-primary-400">
+                        {t("placeList.zoomedOut.body")}
+                    </span>
+                </div>
+            ) : isPending ? (
                 <Loader inline />
             ) : !places?.length ? (
                 <div className="flex flex-col items-center justify-center gap-1 py-10 px-6 text-center">
