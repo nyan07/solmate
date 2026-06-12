@@ -118,3 +118,44 @@ export function getPlaceStatusDetail(
 
     return { status: "closed" };
 }
+
+// ─── Open intervals for a specific day ───────────────────────────────────────
+
+export type MinuteInterval = { start: number; end: number };
+
+/**
+ * Returns the open intervals (in minutes since midnight) for a given day of
+ * the week (0=Sun … 6=Sat), derived from the raw Google Places periods.
+ * Returns an empty array if the place is closed all day, or null if no period
+ * data is available (caller should treat null as "no restriction").
+ */
+export function getOpenIntervalsForDay(
+    openingHours: RawOpeningHours | undefined,
+    dayOfWeek: number
+): MinuteInterval[] | null {
+    const periods = openingHours?.periods;
+    if (!periods?.length) return null;
+
+    const intervals: MinuteInterval[] = [];
+    const prevDay = (dayOfWeek + 6) % 7;
+
+    for (const period of periods) {
+        // Period that opens today
+        if (period.open.day === dayOfWeek) {
+            const start = toMinutes(period.open.hour, period.open.minute);
+            // Close time: same day, next day (treat as 24:00), or missing (24-hr open)
+            const end =
+                period.close.day === dayOfWeek
+                    ? toMinutes(period.close.hour, period.close.minute)
+                    : 24 * 60;
+            if (end > start) intervals.push({ start, end });
+        }
+        // Period that opened yesterday and closes today
+        if (period.open.day === prevDay && period.close.day === dayOfWeek) {
+            const end = toMinutes(period.close.hour, period.close.minute);
+            if (end > 0) intervals.push({ start: 0, end });
+        }
+    }
+
+    return intervals;
+}
