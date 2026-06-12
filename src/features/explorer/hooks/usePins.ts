@@ -86,7 +86,7 @@ const PIN_SUN_IMAGE = buildPinSvgUrl(false, true);
 const SELECTED_SHADOW_IMAGE = buildPinSvgUrl(true, false);
 const SELECTED_SUN_IMAGE = buildPinSvgUrl(true, true);
 
-const SUNNY_HOURS_STEP = 15; // minutes
+const SUNNY_HOURS_STEP = 30; // minutes
 
 function padTwo(n: number) {
     return String(n).padStart(2, "0");
@@ -113,7 +113,7 @@ export const usePins = (
     const { bounds, cameraDistance } = useMapState();
     const { topBarHeight } = useLayout();
     const { setSunlitIds } = useSunlit();
-    const { setSelectedSunnyWindows } = useSelectedSunnyWindows();
+    const { setSelectedSunnyWindows, explorerDate } = useSelectedSunnyWindows();
     const navigate = useLangNavigate();
     const { i18n } = useTranslation();
     const { data: places } = useFilteredPlaces(bounds, {
@@ -401,7 +401,7 @@ export const usePins = (
         const groundPos = groundPositions.current[selectedPlaceId];
         if (!groundPos) return; // terrain not loaded yet — effect re-runs when pinTopHeights updates
 
-        const today = new Date();
+        const today = explorerDate;
         const radialUp = Cartesian3.normalize(groundPos, new Cartesian3());
         // Offset origin 1 m up along surface normal (same as shadow-check effect)
         const origin = Cartesian3.add(
@@ -453,7 +453,7 @@ export const usePins = (
         }
 
         setSelectedSunnyWindows(windows);
-    }, [viewer, selectedPlaceId, pinTopHeights, setSelectedSunnyWindows]);
+    }, [viewer, selectedPlaceId, pinTopHeights, explorerDate, setSelectedSunnyWindows]);
 
     // Selection change — hide/show underlying entity, rebuild overlay in primitive collection
     const prevSelectedIdRef = useRef<string | null | undefined>(null);

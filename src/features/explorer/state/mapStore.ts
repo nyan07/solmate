@@ -81,5 +81,7 @@ export const useSelectedSunnyWindows = () =>
         useShallow((s) => ({
             selectedSunnyWindows: s.selectedSunnyWindows,
             setSelectedSunnyWindows: s.setSelectedSunnyWindows,
+            explorerDate: s.explorerDate,
+            setExplorerDate: s.setExplorerDate,
         }))
     );

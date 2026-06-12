@@ -9,7 +9,12 @@ import { useMatch } from "react-router-dom";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useMapCenter } from "@/features/explorer/hooks/useMapCenter";
 import ExplorerHeader from "./ExplorerHeader";
-import { useFilters, useLayout, useMapState } from "@/features/explorer/state/mapStore";
+import {
+    useFilters,
+    useLayout,
+    useMapState,
+    useSelectedSunnyWindows,
+} from "@/features/explorer/state/mapStore";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { ExplorerFilter } from "./ExplorerFilter";
 import { useSunTimes } from "@/features/explorer/hooks/useSunTimes";
@@ -44,6 +49,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
 
     const { setTopBarHeight, topBarHeight } = useLayout();
     const { center: mapCenter, cameraDistance } = useMapState();
+    const { setExplorerDate } = useSelectedSunnyWindows();
 
     const [filterOpen, setFilterOpen] = useState(false);
     const filterRef = useRef<HTMLDivElement>(null);
@@ -211,6 +217,7 @@ const ExplorerView: React.FC<ExplorerViewProps> = ({ onReady }) => {
                 onDateChange={(d) => {
                     trackEvent("date_changed", { date: d.toISOString().slice(0, 10) });
                     setDate(d);
+                    setExplorerDate(d);
                 }}
                 hour={hour}
                 onHourChange={setHour}

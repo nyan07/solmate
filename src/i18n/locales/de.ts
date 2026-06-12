@@ -48,7 +48,9 @@ const de = {
         },
         sunnyHours: {
             title: "Heute sonnig",
+            titleOnDate: "Sonnenstunden am {{date}}",
             none: "Heute keine Sonnenstunden",
+            noneOnDate: "Keine Sonnenstunden am {{date}}",
         },
         actions: {
             navigate: "Navigation",
