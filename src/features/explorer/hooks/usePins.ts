@@ -131,7 +131,6 @@ export const usePins = (
     const placesRef = useRef<PlaceSummary[]>([]);
     placesRef.current = places ?? [];
     const sunlitIds = useRef<Set<string>>(new Set());
-    const outdoorSeatingIds = useRef<Set<string>>(new Set());
     const groundPositions = useRef<Record<string, Cartesian3>>({});
     const headPositions = useRef<Record<string, Cartesian3>>({});
     const selectedIdRef = useRef<string | null | undefined>(null);
@@ -175,7 +174,7 @@ export const usePins = (
             Cartesian3.multiplyByScalar(radialUp, 5, new Cartesian3()),
             new Cartesian3()
         );
-        const isLit = sunlitIds.current.has(id) && outdoorSeatingIds.current.has(id);
+        const isLit = sunlitIds.current.has(id);
         collection.add({
             image: isLit ? SELECTED_SUN_IMAGE : SELECTED_SHADOW_IMAGE,
             position: overlayPos,
@@ -316,8 +315,7 @@ export const usePins = (
             const alreadyApplied = appliedPinTops.current[place.id] === pinTop;
             const groundPos = Cartesian3.fromDegrees(longitude, latitude, terrain);
             const headPos = Cartesian3.fromDegrees(longitude, latitude, pinTop);
-            const isLit =
-                sunlitIds.current.has(place.id) && outdoorSeatingIds.current.has(place.id);
+            const isLit = sunlitIds.current.has(place.id);
 
             const billboard = viewer.entities.getById(ENTITY_IDS.placeBillboard(place.id));
             if (!billboard) {
@@ -342,7 +340,6 @@ export const usePins = (
 
             managedIds.current.add(place.id);
             appliedPinTops.current[place.id] = pinTop;
-            if (place.hasOutdoorSeating) outdoorSeatingIds.current.add(place.id);
             groundPositions.current[place.id] = groundPos;
             headPositions.current[place.id] = headPos;
         });
@@ -373,7 +370,7 @@ export const usePins = (
             if (inSunlight) sunlitIds.current.add(id);
             else sunlitIds.current.delete(id);
 
-            const isLit = inSunlight && outdoorSeatingIds.current.has(id);
+            const isLit = inSunlight;
             if (id === selectedPlaceId) {
                 const collection = overlayCollectionRef.current;
                 if (collection && !collection.isDestroyed() && collection.length > 0) {
@@ -385,9 +382,7 @@ export const usePins = (
                     billboard.billboard.image = (isLit ? PIN_SUN_IMAGE : PIN_SHADOW_IMAGE) as never;
             }
         });
-        setSunlitIds(
-            new Set([...sunlitIds.current].filter((id) => outdoorSeatingIds.current.has(id)))
-        );
+        setSunlitIds(new Set(sunlitIds.current));
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
 
     // Compute sunny windows for the selected place using Cesium ray casting,

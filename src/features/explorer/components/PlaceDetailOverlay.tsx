@@ -36,7 +36,6 @@ function PlaceDetailOverlay() {
     const { topBarHeight, setSwipeUpExpanded } = useLayout();
     const [scrolled, setScrolled] = useState(false);
 
-
     const tags = place
         ? ([
               place.hasOutdoorSeating && t("place.tags.outdoorSeating"),
@@ -85,7 +84,7 @@ function PlaceDetailOverlay() {
                         <div className="flex flex-col p-4 pt-0 gap-6">
                             {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
 
-                            {place.hasOutdoorSeating && <SunnyHoursSection />}
+                            <SunnyHoursSection />
 
                             <PlaceMeta
                                 geolocation={geolocation}
