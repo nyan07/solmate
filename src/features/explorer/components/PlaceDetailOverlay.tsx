@@ -85,7 +85,7 @@ function PlaceDetailOverlay() {
                         <div className="flex flex-col p-4 pt-0 gap-6">
                             {statusDetail && <PlaceStatusBadge statusDetail={statusDetail} />}
 
-                            <SunnyHoursSection />
+                            {place.hasOutdoorSeating && <SunnyHoursSection />}
 
                             <PlaceMeta
                                 geolocation={geolocation}
