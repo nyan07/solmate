@@ -22,11 +22,11 @@ import {
     useSunlit,
     useSelectedSunnyWindows,
 } from "@/features/explorer/state/mapStore";
-import type { SunnyWindow } from "@/features/places/types";
 import { MAX_CAMERA_DISTANCE, ENTITY_IDS } from "@/features/explorer/constants";
 import { useLangNavigate } from "@/hooks/useLangNavigate";
 import { useTranslation } from "react-i18next";
 import { trackEvent } from "@/utils/analytics";
+import { getOpenIntervalsForDay } from "@/utils/openingHours";
 import { resolveGooglePlaceId } from "@/features/places/api";
 import type { PlaceSummary } from "@/features/places/types";
 
@@ -390,9 +390,8 @@ export const usePins = (
         );
     }, [viewer, sunTime, pinTopHeights, setSunlitIds]);
 
-    // Compute sunny windows for the selected place using Cesium ray casting.
-    // Mirrors the shadow-check logic above but sweeps all 15-min slots in today,
-    // so the result respects actual building geometry — not just sun altitude.
+    // Compute sunny windows for the selected place using Cesium ray casting,
+    // clipped to the place's opening hours for the selected day.
     useEffect(() => {
         if (!viewer || !selectedPlaceId) {
             setSelectedSunnyWindows(null);
@@ -410,8 +409,10 @@ export const usePins = (
             new Cartesian3()
         );
 
-        const windows: SunnyWindow[] = [];
-        let windowStart: number | null = null;
+        // Collect raw sunny minute ranges
+        type MinuteRange = { start: number; end: number };
+        const rawRanges: MinuteRange[] = [];
+        let rangeStart: number | null = null;
         let lastSunny: number | null = null;
 
         for (let m = 0; m < 24 * 60; m += SUNNY_HOURS_STEP) {
@@ -432,27 +433,45 @@ export const usePins = (
             }
 
             if (inSunlight) {
-                if (windowStart === null) windowStart = m;
+                if (rangeStart === null) rangeStart = m;
                 lastSunny = m;
             } else {
-                if (windowStart !== null && lastSunny !== null) {
-                    windows.push({
-                        start: minutesToTimeString(windowStart),
-                        end: minutesToTimeString(lastSunny + SUNNY_HOURS_STEP),
-                    });
-                    windowStart = null;
+                if (rangeStart !== null && lastSunny !== null) {
+                    rawRanges.push({ start: rangeStart, end: lastSunny + SUNNY_HOURS_STEP });
+                    rangeStart = null;
                     lastSunny = null;
                 }
             }
         }
-        if (windowStart !== null && lastSunny !== null) {
-            windows.push({
-                start: minutesToTimeString(windowStart),
-                end: minutesToTimeString(lastSunny + SUNNY_HOURS_STEP),
-            });
+        if (rangeStart !== null && lastSunny !== null) {
+            rawRanges.push({ start: rangeStart, end: lastSunny + SUNNY_HOURS_STEP });
         }
 
-        setSelectedSunnyWindows(windows);
+        // Clip to opening hours for the selected day
+        const place = placesRef.current.find((p) => p.id === selectedPlaceId);
+        const openIntervals = getOpenIntervalsForDay(place?.openingHours, today.getDay());
+
+        let clippedRanges: MinuteRange[];
+        if (openIntervals === null) {
+            // No opening hours data — show all sunny windows
+            clippedRanges = rawRanges;
+        } else {
+            clippedRanges = rawRanges.flatMap((sunny) =>
+                openIntervals
+                    .map((open) => ({
+                        start: Math.max(sunny.start, open.start),
+                        end: Math.min(sunny.end, open.end),
+                    }))
+                    .filter((r) => r.end > r.start)
+            );
+        }
+
+        setSelectedSunnyWindows(
+            clippedRanges.map((r) => ({
+                start: minutesToTimeString(r.start),
+                end: minutesToTimeString(r.end),
+            }))
+        );
     }, [viewer, selectedPlaceId, pinTopHeights, explorerDate, setSelectedSunnyWindows]);
 
     // Selection change — hide/show underlying entity, rebuild overlay in primitive collection
