@@ -47,10 +47,10 @@ const de = {
             allowsDogs: "Hunde erlaubt",
         },
         sunnyHours: {
-            title: "Heute sonnig",
-            titleOnDate: "Sonnenstunden am {{date}}",
-            none: "Heute keine Sonnenstunden",
-            noneOnDate: "Keine Sonnenstunden am {{date}}",
+            title: "Heute sonnig & geöffnet",
+            titleOnDate: "Sonnig & geöffnet am {{date}}",
+            none: "Kein Sonnenschein während der Öffnungszeiten",
+            noneOnDate: "Kein Sonnenschein während der Öffnungszeiten am {{date}}",
         },
         actions: {
             navigate: "Navigation",

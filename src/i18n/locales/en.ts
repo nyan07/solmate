@@ -47,8 +47,8 @@ const en = {
             allowsDogs: "Dogs allowed",
         },
         sunnyHours: {
-            title: "Sunny hours today",
-            titleOnDate: "Sunny hours on {{date}}",
+            title: "Sunny & open today",
+            titleOnDate: "Sunny & open on {{date}}",
             none: "No sunny hours today",
             noneOnDate: "No sunny hours on {{date}}",
         },
